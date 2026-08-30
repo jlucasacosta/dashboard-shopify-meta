@@ -12,7 +12,7 @@ import { supabaseKey, supabaseUrl } from '@/lib/supabase/env'
 // Rutas que se pueden ver sin estar logueado.
 const RUTAS_PUBLICAS = ['/login', '/auth']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(supabaseUrl(), supabaseKey(), {
