@@ -42,3 +42,10 @@ next-env.d.ts
 
 # .env.example SI va al repo: es la plantilla que copia cada alumno.
 !.env.example
+
+# Configuracion de los conectores MCP: lleva el identificador de TU proyecto
+# de Supabase. Cada persona arma el suyo copiando .mcp.json.example
+.mcp.json
+
+# Respuestas crudas de los MCP durante una sincronizacion
+.sync-cache/
