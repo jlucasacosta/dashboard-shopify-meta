@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:sql": "node scripts/psql.mjs",
+    "db:test": "node scripts/psql.mjs supabase/tests/daily_metrics.test.sql",
+    "db:reset": "supabase db reset",
+    "test": "vitest run"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
