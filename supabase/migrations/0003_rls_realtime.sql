@@ -45,3 +45,13 @@ create policy "auth edita gasto manual"
 -- Realtime: cuando /sync escribe, el dashboard abierto se actualiza solo.
 alter publication supabase_realtime add table daily_sales;
 alter publication supabase_realtime add table daily_ad_spend;
+
+-- Sin esto Realtime no funciona y no avisa por que.
+-- Con RLS activo, Realtime tiene que evaluar las policies sobre la fila que
+-- cambio antes de decidir si te manda el evento. Por defecto Postgres solo
+-- publica la clave primaria en un UPDATE, asi que Realtime no tiene con que
+-- evaluar la policy y descarta el evento en silencio: el canal queda
+-- 'SUBSCRIBED', todo parece bien, y nunca llega nada.
+-- REPLICA IDENTITY FULL hace que se publique la fila entera.
+alter table daily_sales    replica identity full;
+alter table daily_ad_spend replica identity full;

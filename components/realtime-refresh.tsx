@@ -7,9 +7,16 @@ import { createClient } from '@/lib/supabase/client'
 /**
  * Escucha cambios en Supabase y refresca la página sola.
  *
- * Cuando corrés /sync, se escriben cientos de filas en pocos segundos. Sin el
- * retardo de abajo eso serían cientos de refrescos seguidos, así que
- * esperamos a que se calme antes de recargar una sola vez.
+ * Dos detalles que hacen la diferencia entre que ande y que no:
+ *
+ * 1. `realtime.setAuth(token)`. Las policies de RLS son "to authenticated", así
+ *    que el socket tiene que llevar el JWT del usuario. Si se conecta sin él,
+ *    queda como anónimo, RLS filtra todos los eventos, y el canal igual reporta
+ *    SUBSCRIBED. Todo parece bien y no llega nunca nada: el fallo más silencioso
+ *    de los que hay acá. Se puede verificar con `npm run test:realtime`.
+ *
+ * 2. El retardo antes de refrescar. Una corrida de /sync escribe cientos de
+ *    filas en pocos segundos; sin esto serían cientos de refrescos seguidos.
  */
 export function RealtimeRefresh() {
   const router = useRouter()
@@ -18,21 +25,35 @@ export function RealtimeRefresh() {
 
   useEffect(() => {
     const supabase = createClient()
+    let canal: ReturnType<typeof supabase.channel> | null = null
+    let cancelado = false
 
     function refrescarPronto() {
       if (timer.current) clearTimeout(timer.current)
       timer.current = setTimeout(() => router.refresh(), 800)
     }
 
-    const canal = supabase
-      .channel('cambios-dashboard')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_sales' }, refrescarPronto)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_ad_spend' }, refrescarPronto)
-      .subscribe((estado) => setConectado(estado === 'SUBSCRIBED'))
+    async function conectar() {
+      const { data } = await supabase.auth.getSession()
+      const token = data.session?.access_token
+      if (!token || cancelado) return
+
+      await supabase.realtime.setAuth(token)
+      if (cancelado) return
+
+      canal = supabase
+        .channel('cambios-dashboard')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_sales' }, refrescarPronto)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_ad_spend' }, refrescarPronto)
+        .subscribe((estado) => setConectado(estado === 'SUBSCRIBED'))
+    }
+
+    conectar()
 
     return () => {
+      cancelado = true
       if (timer.current) clearTimeout(timer.current)
-      supabase.removeChannel(canal)
+      if (canal) supabase.removeChannel(canal)
     }
   }, [router])
 
