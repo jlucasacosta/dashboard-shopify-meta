@@ -128,3 +128,18 @@
     @apply font-sans;
   }
 }
+/* Colores de las gráficas.
+   Slots 1 y 2 de una paleta categórica validada: azul = facturación/ingreso,
+   naranja = costo. La asignación es semántica y fija — el color sigue a la
+   entidad, nunca al orden en que aparece.
+   Validado con el script de la skill dataviz contra las superficies reales
+   de este tema: todos los checks pasan en claro y oscuro
+   (separación para daltonismo ΔE 24.7 claro / 26.8 oscuro, mínimo 8). */
+:root {
+  --chart-revenue: #2a78d6;
+  --chart-cost: #eb6834;
+}
+.dark {
+  --chart-revenue: #3987e5;
+  --chart-cost: #d95926;
+}

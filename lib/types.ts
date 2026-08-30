@@ -385,7 +385,69 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      campaign_totals: {
+        Args: { desde: string; hasta: string }
+        Returns: {
+          campaign_id: string
+          campaign_name: string
+          clicks: number
+          cpc: number
+          cpm: number
+          ctr: number
+          dias_sin_tasa: number
+          impressions: number
+          objective: string
+          reach: number
+          spend: number
+          status: string
+        }[]
+      }
+      period_totals: {
+        Args: { desde: string; hasta: string }
+        Returns: {
+          ad_spend: number
+          ad_spend_pct: number
+          aov: number
+          cac: number
+          clicks: number
+          contribution: number
+          conversion_rate: number
+          cpc: number
+          cpm: number
+          ctr: number
+          customers: number
+          dias: number
+          dias_sin_gasto: number
+          dias_sin_tasa: number
+          discounts: number
+          gross_sales: number
+          impressions: number
+          mer: number
+          net_sales: number
+          new_customers: number
+          orders: number
+          reach: number
+          returning_customers: number
+          returns: number
+          roas: number
+          sessions: number
+          store_currency: string
+          total_sales: number
+          visitors: number
+        }[]
+      }
+      product_totals: {
+        Args: { desde: string; hasta: string; tope?: number }
+        Returns: {
+          gross_sales: number
+          net_sales: number
+          orders: number
+          pct_del_total: number
+          product_id: string
+          product_title: string
+          units: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

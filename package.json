@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:sql": "node scripts/psql.mjs",
-    "db:test": "node scripts/psql.mjs supabase/tests/daily_metrics.test.sql",
+    "db:test": "node scripts/psql.mjs supabase/tests/daily_metrics.test.sql && node scripts/psql.mjs supabase/tests/period_totals.test.sql",
     "db:reset": "supabase db reset",
     "test": "vitest run"
   },

@@ -31,11 +31,17 @@ function aNumero(v: Valor): number | null {
 export function formatMoney(v: Valor, currency: string): string {
   const n = aNumero(v)
   if (n === null) return SIN_DATO
+
+  // Decimales segun magnitud. Con un rango fijo de 0 a 2 decimales, los montos
+  // grandes quedan con una cola irregular ("$ 1.131.760,8") que se lee como si
+  // faltara un digito. Arriba de mil los centavos no aportan nada; abajo, si.
+  const decimales = Math.abs(n) >= 1000 ? 0 : 2
+
   return new Intl.NumberFormat(LOCALE, {
     style: 'currency',
     currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: decimales,
+    maximumFractionDigits: decimales,
   }).format(n)
 }
 

@@ -2,15 +2,28 @@ import { describe, it, expect } from 'vitest'
 import { formatMoney, formatPct, formatInt, formatRatio, formatMetric, SIN_DATO } from './format'
 
 describe('formatMoney', () => {
-  it('usa separadores en espanol', () => {
-    expect(formatMoney(1234.5, 'UYU')).toContain('1.234,5')
+  it('usa coma decimal y punto de miles, como en es-UY', () => {
+    expect(formatMoney(12.5, 'UYU')).toContain('12,5')
+    expect(formatMoney(1234, 'UYU')).toContain('1.234')
   })
+
+  // Con decimales fijos, los montos grandes quedaban con una cola irregular
+  // ("$ 1.131.760,8") que se lee como si faltara un digito.
+  it('arriba de mil no muestra centavos', () => {
+    expect(formatMoney(1131760.8, 'UYU')).not.toContain(',')
+    expect(formatMoney(1234.5, 'UYU')).not.toContain(',5')
+  })
+  it('abajo de mil si muestra centavos, y siempre dos', () => {
+    expect(formatMoney(999.5, 'UYU')).toContain('999,50')
+    expect(formatMoney(12, 'UYU')).toContain('12,00')
+  })
+
   it('muestra el guion cuando no hay dato', () => {
     expect(formatMoney(null, 'UYU')).toBe(SIN_DATO)
     expect(formatMoney(undefined, 'UYU')).toBe(SIN_DATO)
   })
   it('acepta el numero como texto, que es como lo devuelve Postgres', () => {
-    expect(formatMoney('1234.5', 'UYU')).toContain('1.234,5')
+    expect(formatMoney('999.5', 'UYU')).toContain('999,50')
   })
 })
 
