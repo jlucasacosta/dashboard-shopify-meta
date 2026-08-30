@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# .env.example SI va al repo: es la plantilla que copia cada alumno.
+!.env.example
