@@ -10,7 +10,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { supabaseKey, supabaseUrl } from '@/lib/supabase/env'
 
 // Rutas que se pueden ver sin estar logueado.
-const RUTAS_PUBLICAS = ['/login', '/auth']
+// El inicio de sesión es con un código que se escribe en la misma pantalla,
+// así que no hay ninguna ruta de retorno que haya que dejar abierta.
+const RUTAS_PUBLICAS = ['/login']
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })

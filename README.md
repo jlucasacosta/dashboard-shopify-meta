@@ -40,7 +40,8 @@ npm run dev
 Abrí **http://localhost:3000** (por `localhost`, no por `127.0.0.1`) y vas a ver
 el panel con **12 meses de datos de ejemplo**, antes de conectar nada.
 
-El correo de acceso llega a la casilla falsa en **http://localhost:54324**.
+Habilitá tu correo con `npm run usuario:crear -- vos@tutienda.com`. El código
+de acceso llega a la casilla falsa en **http://localhost:54324**.
 
 Después seguí **[docs/00-empezar-aca.md](docs/00-empezar-aca.md)**.
 
@@ -82,6 +83,7 @@ miente siempre.
 | `npm run db:reset` | Recrea la base y carga los datos de ejemplo |
 | `npm run db:sql -- -c "..."` | Ejecuta SQL contra la base local |
 | `npm run test:realtime` | Diagnostica si Realtime entrega eventos |
+| `npm run usuario:crear -- mail@x.com` | Habilita a alguien para entrar al panel |
 
 `db:sql` y `db:test` usan el psql que viene adentro del contenedor de Docker,
 así que **no hace falta instalar psql**.
@@ -102,6 +104,10 @@ tienda, eso es un error del repo base.
 
 Next.js 16 · TypeScript · Tailwind CSS · shadcn/ui · Recharts · Supabase ·
 Vercel
+
+Se entra con un código de 6 dígitos que llega por correo. Sin contraseñas, sin
+links que abrir, y sin altas automáticas: solo entran los correos que vos
+habilitás.
 
 ## Documentación
 

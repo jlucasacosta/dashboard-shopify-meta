@@ -24,22 +24,22 @@ el celular. Es gratis para este uso.
 > Variables** y después **Deployments → ⋯ → Redeploy**. Sin el redeploy no toma
 > los cambios.
 
-## Volver a Supabase — este paso es obligatorio
+## Habilitar tu correo en el proyecto de la nube
 
-Ahora que tenés tu dirección de Vercel (algo como
-`https://dashboard-mitienda.vercel.app`), volvé a Supabase:
+Los usuarios que creaste en tu máquina no existen en tu Supabase de la nube.
+Habilitá el tuyo allá:
 
-**Authentication → URL Configuration → Redirect URLs**, y agregá:
-
-```
-https://dashboard-mitienda.vercel.app/**
+```bash
+SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com
 ```
 
-**Si no hacés esto, no vas a poder entrar a tu panel publicado.** El link del
-correo te va a mandar a `localhost`, que en tu celular no existe. Y no vas a ver
-ningún mensaje de error que te explique por qué.
+Y verificá que la plantilla del correo en la nube mande el código y no un link
+(ver [la guía de Supabase](01-supabase.md)). Es el paso que más se saltea.
 
-Aprovechá y cambiá también la **Site URL** a tu dirección de Vercel.
+> **Bueno saber:** como se entra con un código escrito en la misma pantalla, no
+> hay ninguna URL de retorno que configurar. Si seguiste tutoriales de link
+> mágico, ese paso acá no existe — y es justamente el que más problemas da al
+> publicar.
 
 ## Entrar desde el celular
 

@@ -22,24 +22,60 @@ puerto o dirección, agregala ahí.
 
 ---
 
-## El link del correo no me deja entrar
+## Me dice que mi email no está habilitado
 
-**Síntoma:** hacés clic en el link y volvés a la pantalla de login, o caés en
-una página que no existe.
+**Síntoma:** *"Ese email no está habilitado para entrar."*
 
-**Causa:** la dirección no está en la lista de Supabase. Supabase ignora tu
-pedido **sin avisar** y usa la Site URL por defecto.
+**Causa:** el panel es privado y ese correo no está dado de alta. No es un error:
+es el comportamiento esperado.
 
-**Solución:** Supabase → **Authentication → URL Configuration → Redirect URLs**.
-Agregá la dirección desde la que estás entrando, con `/**` al final:
+**Solución:**
 
-```
-http://localhost:3000/**
-https://tu-proyecto.vercel.app/**
+```bash
+npm run usuario:crear -- vos@tutienda.com
 ```
 
-Es el error más común al publicar en Vercel, porque hasta ese momento todo
-funcionaba en tu compu.
+Si estás en tu panel publicado, agregale las credenciales de tu proyecto de la
+nube (ver [la guía de Vercel](06-vercel.md)). Un usuario creado en tu máquina
+**no** existe en la nube: son dos bases distintas.
+
+---
+
+## El correo me llega con un link, no con un código
+
+**Síntoma:** la pantalla te pide 6 dígitos pero el correo trae un botón o un link.
+
+**Causa:** la plantilla del correo en tu proyecto de la nube sigue siendo la de
+Supabase por defecto.
+
+**Solución:** **Authentication → Emails → Magic Link**, y cambiá
+`{{ .ConfirmationURL }}` por `{{ .Token }}`. El contenido completo está en
+`supabase/templates/magic_link.html`.
+
+---
+
+## El código no me lo toma
+
+**Síntoma:** *"Ese código no es correcto"* o *"El código venció"*.
+
+**Causas y qué hacer:**
+
+- **Venció:** dura 15 minutos. Pedí uno nuevo con *Usar otro correo* y volvé a
+  entrar tu email.
+- **Es viejo:** si pediste varios códigos, solo sirve el último.
+- **Está mal copiado:** la pantalla ignora espacios y guiones, así que podés
+  pegarlo como venga. Lo que no perdona es un dígito cambiado.
+
+---
+
+## Pedí muchos códigos y ahora no me manda ninguno
+
+**Síntoma:** *"Pediste varios códigos seguidos. Esperá un minuto."*
+
+**Causa:** Supabase limita cuántos correos manda seguidos, para que nadie use tu
+proyecto para spamear.
+
+**Solución:** esperá un minuto. No hay nada roto.
 
 ---
 

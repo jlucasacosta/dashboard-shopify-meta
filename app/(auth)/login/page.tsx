@@ -1,53 +1,115 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import {
+  normalizarEmail, normalizarCodigo, codigoCompleto,
+  mensajeDeError, LARGO_CODIGO,
+} from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-type Estado =
-  | { tipo: 'inicial' }
-  | { tipo: 'enviando' }
-  | { tipo: 'enviado'; email: string }
-  | { tipo: 'error'; mensaje: string }
+type Paso =
+  | { en: 'email' }
+  | { en: 'codigo'; email: string }
 
 export default function LoginPage() {
+  const router = useRouter()
+  const [paso, setPaso] = useState<Paso>({ en: 'email' })
   const [email, setEmail] = useState('')
-  const [estado, setEstado] = useState<Estado>({ tipo: 'inicial' })
+  const [codigo, setCodigo] = useState('')
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  async function enviarLink(e: React.FormEvent) {
+  async function pedirCodigo(e: React.FormEvent) {
     e.preventDefault()
-    setEstado({ tipo: 'enviando' })
+    setCargando(true)
+    setError(null)
 
+    const limpio = normalizarEmail(email)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        // origin en vez de una URL fija: asi funciona igual en tu maquina,
-        // en el preview de Vercel y en produccion.
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+
+    const { error: err } = await supabase.auth.signInWithOtp({
+      email: limpio,
+      // Sin esto, Supabase crea el usuario en el momento y cualquiera con un
+      // correo entra. Es lo único que hace que el panel sea realmente privado.
+      options: { shouldCreateUser: false },
     })
 
-    if (error) {
-      setEstado({ tipo: 'error', mensaje: error.message })
-      return
-    }
-    setEstado({ tipo: 'enviado', email })
+    setCargando(false)
+    if (err) return setError(mensajeDeError(err.message))
+
+    setPaso({ en: 'codigo', email: limpio })
   }
 
-  if (estado.tipo === 'enviado') {
+  async function verificarCodigo(e: React.FormEvent) {
+    e.preventDefault()
+    if (paso.en !== 'codigo') return
+
+    setCargando(true)
+    setError(null)
+
+    const supabase = createClient()
+    const { error: err } = await supabase.auth.verifyOtp({
+      email: paso.email,
+      token: normalizarCodigo(codigo),
+      type: 'email',
+    })
+
+    if (err) {
+      setCargando(false)
+      return setError(mensajeDeError(err.message))
+    }
+
+    // refresh() además de push() para que el layout del panel se vuelva a
+    // renderizar en el servidor ya con la sesión puesta.
+    router.push('/')
+    router.refresh()
+  }
+
+  if (paso.en === 'codigo') {
     return (
       <Marco>
-        <h1 className="text-lg font-medium tracking-tight">Revisá tu correo</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Te mandamos un link de acceso a{' '}
-          <span className="text-foreground">{estado.email}</span>. Abrilo desde
-          este mismo dispositivo.
+        <h1 className="text-lg font-medium tracking-tight">Escribí tu código</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Te mandamos {LARGO_CODIGO} dígitos a{' '}
+          <span className="text-foreground">{paso.email}</span>. Vence en 15 minutos.
         </p>
+
+        <form onSubmit={verificarCodigo} className="mt-6 space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="codigo">Código</Label>
+            <Input
+              id="codigo"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              autoFocus
+              placeholder="000000"
+              maxLength={LARGO_CODIGO + 6}
+              value={codigo}
+              onChange={(ev) => setCodigo(normalizarCodigo(ev.target.value))}
+              disabled={cargando}
+              className="text-center font-mono text-xl tracking-[0.4em]"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={cargando || !codigoCompleto(codigo)}
+          >
+            {cargando ? 'Verificando…' : 'Entrar'}
+          </Button>
+
+          {error && (
+            <p role="alert" className="text-sm text-destructive">{error}</p>
+          )}
+        </form>
+
         <button
-          onClick={() => setEstado({ tipo: 'inicial' })}
+          onClick={() => { setPaso({ en: 'email' }); setCodigo(''); setError(null) }}
           className="mt-6 text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
         >
           Usar otro correo
@@ -60,10 +122,10 @@ export default function LoginPage() {
     <Marco>
       <h1 className="text-lg font-medium tracking-tight">Entrar</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Te mandamos un link por correo. No hace falta contraseña.
+        Te mandamos un código por correo. No hace falta contraseña.
       </p>
 
-      <form onSubmit={enviarLink} className="mt-6 space-y-4">
+      <form onSubmit={pedirCodigo} className="mt-6 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Correo</Label>
           <Input
@@ -74,23 +136,17 @@ export default function LoginPage() {
             autoComplete="email"
             placeholder="vos@tutienda.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={estado.tipo === 'enviando'}
+            onChange={(ev) => setEmail(ev.target.value)}
+            disabled={cargando}
           />
         </div>
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={estado.tipo === 'enviando'}
-        >
-          {estado.tipo === 'enviando' ? 'Enviando…' : 'Enviar link de acceso'}
+        <Button type="submit" className="w-full" disabled={cargando}>
+          {cargando ? 'Enviando…' : 'Enviar código'}
         </Button>
 
-        {estado.tipo === 'error' && (
-          <p role="alert" className="text-sm text-destructive">
-            {estado.mensaje}
-          </p>
+        {error && (
+          <p role="alert" className="text-sm text-destructive">{error}</p>
         )}
       </form>
     </Marco>

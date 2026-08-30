@@ -28,28 +28,43 @@ Abrí cada archivo, copiá todo el contenido, pegalo en el SQL Editor y apretá
 > Si querés ver el panel con datos de mentira antes de conectar tu tienda,
 > ejecutá también `supabase/seed.sql`. Después lo vas a poder borrar.
 
-## Configurar las URLs de acceso
+## Habilitar a quien puede entrar
 
-**Este paso no se puede saltear.** Si lo salteás, el link que te llega por
-correo te va a mandar a la página equivocada y no vas a poder entrar. Y no da
-ningún error: simplemente no funciona.
+Este panel es privado: **nadie se da de alta solo**. Vos decidís qué correos
+pueden entrar, y el resto recibe un "no estás habilitado".
 
-En Supabase, andá a **Authentication → URL Configuration**:
+Para habilitar a alguien, desde la terminal:
 
-- **Site URL**: `http://localhost:3000`
-- **Redirect URLs**: agregá estas tres, una por línea:
-  ```
-  http://localhost:3000/**
-  http://127.0.0.1:3000/**
-  https://TU-PROYECTO.vercel.app/**
-  ```
+```bash
+npm run usuario:crear -- vos@tutienda.com
+```
 
-La tercera la vas a poder completar recién después de la [guía de Vercel](06-vercel.md).
-Volvé a este paso cuando la tengas.
+Para tu proyecto en la nube, pasale las credenciales:
 
-> **Por qué pasa esto:** la app le pide a Supabase "cuando el usuario haga clic
-> en el link, mandalo a esta dirección". Supabase solo obedece si esa dirección
-> está en la lista de arriba. Si no está, usa la Site URL sin avisarte.
+```bash
+SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com
+```
+
+La `service_role key` está en **Project Settings → API**. Usala solo en ese
+comando y **no la guardes en ningún archivo del proyecto**: se saltea todos los
+permisos.
+
+También podés hacerlo con el mouse, en **Authentication → Users → Add user**.
+Marcá *Auto Confirm User*.
+
+## Hacer que el correo mande el código
+
+Por defecto Supabase manda un link, y nosotros queremos un código de 6 dígitos.
+
+En **Authentication → Emails → Magic Link**, reemplazá el contenido por el de
+`supabase/templates/magic_link.html`. Lo único que importa de verdad es que
+diga `{{ .Token }}` en vez de `{{ .ConfirmationURL }}`.
+
+En tu máquina esto ya está configurado en `supabase/config.toml`; el cambio a
+mano es solo para la nube.
+
+> Si te salteás este paso, el correo va a llegar con un link en vez de un
+> código, y la pantalla te va a seguir pidiendo los 6 dígitos.
 
 ## Conectar el MCP
 
@@ -92,6 +107,6 @@ nuevo — son la misma cosa con distinto nombre).
 npm run dev
 ```
 
-Entrá a `http://localhost:3000`, poné tu correo, abrí el link que te llega, y
-tenés que ver el panel. Si ejecutaste el seed vas a ver datos; si no, todo en
+Entrá a `http://localhost:3000`, poné el correo que habilitaste, y escribí el
+código que llega. Tenés que ver el panel. Si ejecutaste el seed vas a ver datos; si no, todo en
 cero. Las dos cosas están bien.

@@ -59,9 +59,15 @@ todo. Los números son inventados, pero el panel es el de verdad.
 > vas a ver la página pero **los botones no van a responder** y no va a
 > aparecer ningún error. Es el problema más confuso de toda la lista.
 
-Para entrar te va a pedir un correo. Escribí cualquiera (por ejemplo
-`vos@tutienda.com`), y después abrí **http://localhost:54324**, que es una
-casilla de correo falsa que corre en tu compu. Ahí va a estar el link de acceso.
+Para entrar necesitás un usuario habilitado. Creá el tuyo:
+
+```bash
+npm run usuario:crear -- vos@tutienda.com
+```
+
+Después poné ese correo en la pantalla de entrada. El código de 6 dígitos va a
+llegar a **http://localhost:54324**, que es una casilla de correo falsa que
+corre en tu compu.
 
 ## El orden de las guías
 
