@@ -16,7 +16,18 @@ export type TipoMetrica = 'money' | 'pct' | 'int' | 'ratio'
 /** Valor tal como puede llegar de Postgres: numero, texto, o nada. */
 export type Valor = number | string | null | undefined
 
-const LOCALE = 'es-UY'
+/**
+ * Como se escriben los numeros y las fechas: coma decimal, punto de miles,
+ * "6 ago." en las graficas.
+ *
+ * Si duplicas el panel para una tienda de otro pais, este es el unico valor de
+ * codigo que vas a querer cambiar. Esta aca solo, y las graficas lo importan de
+ * aca, para que sea un cambio en un lugar y no en cinco.
+ *
+ * Ojo que es independiente de la moneda: la moneda sale de la base
+ * (settings.store_currency, que /sync escribe desde sync.config.json).
+ */
+export const LOCALE = 'es-UY'
 
 /**
  * Convierte a numero, o devuelve null si no hay dato utilizable.

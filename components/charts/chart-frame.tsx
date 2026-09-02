@@ -1,6 +1,7 @@
 'use client'
 
 import { ResponsiveContainer } from 'recharts'
+import { LOCALE } from '@/lib/format'
 
 export function ChartFrame({
   titulo,
@@ -46,7 +47,7 @@ export const GRILLA = {
 /** Fecha corta para el eje X: "12 mar". */
 export function diaCorto(iso: string): string {
   const d = new Date(`${iso}T00:00:00Z`)
-  return new Intl.DateTimeFormat('es-UY', {
+  return new Intl.DateTimeFormat(LOCALE, {
     day: 'numeric',
     month: 'short',
     timeZone: 'UTC',
@@ -56,7 +57,7 @@ export function diaCorto(iso: string): string {
 /** Fecha larga para el tooltip: "jueves, 12 de marzo". */
 export function diaLargo(iso: string): string {
   const d = new Date(`${iso}T00:00:00Z`)
-  return new Intl.DateTimeFormat('es-UY', {
+  return new Intl.DateTimeFormat(LOCALE, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',

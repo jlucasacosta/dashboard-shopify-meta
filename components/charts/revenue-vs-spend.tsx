@@ -6,6 +6,7 @@ import {
 import { ChartFrame, EJE, GRILLA, diaCorto } from './chart-frame'
 import { TooltipGrafica } from './tooltip'
 import type { PuntoSerie } from '@/lib/queries'
+import { LOCALE } from '@/lib/format'
 
 /**
  * Facturación e inversión publicitaria sobre UN SOLO eje.
@@ -50,7 +51,7 @@ export function RevenueVsSpend({
           {...EJE}
           width={52}
           tickFormatter={(v) =>
-            new Intl.NumberFormat('es-UY', { notation: 'compact' }).format(Number(v))
+            new Intl.NumberFormat(LOCALE, { notation: 'compact' }).format(Number(v))
           }
         />
         <Tooltip content={Tip} cursor={{ stroke: 'var(--border)', strokeWidth: 1 }} />

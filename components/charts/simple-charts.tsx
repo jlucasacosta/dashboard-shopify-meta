@@ -6,6 +6,7 @@ import {
 import { ChartFrame, EJE, GRILLA, diaCorto } from './chart-frame'
 import { TooltipGrafica } from './tooltip'
 import type { PuntoSerie } from '@/lib/queries'
+import { LOCALE } from '@/lib/format'
 
 // Una sola serie no lleva leyenda: el título ya dice qué se está mirando.
 
@@ -29,7 +30,7 @@ export function RoasTrend({ datos, currency }: { datos: PuntoSerie[]; currency: 
           {...EJE}
           width={44}
           tickFormatter={(v) =>
-            `${new Intl.NumberFormat('es-UY', { maximumFractionDigits: 2 }).format(Number(v))}x`
+            `${new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 2 }).format(Number(v))}x`
           }
         />
         <Tooltip content={Tip} cursor={{ stroke: 'var(--border)', strokeWidth: 1 }} />
@@ -75,7 +76,7 @@ export function CacTrend({ datos, currency }: { datos: PuntoSerie[]; currency: s
           {...EJE}
           width={48}
           tickFormatter={(v) =>
-            new Intl.NumberFormat('es-UY', { notation: 'compact' }).format(Number(v))
+            new Intl.NumberFormat(LOCALE, { notation: 'compact' }).format(Number(v))
           }
         />
         <Tooltip content={Tip} cursor={{ stroke: 'var(--border)', strokeWidth: 1 }} />

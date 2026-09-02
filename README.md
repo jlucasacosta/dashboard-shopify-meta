@@ -95,14 +95,23 @@ así que **no hace falta instalar psql**.
 ## Duplicar para otra tienda
 
 1. Cloná el repo.
-2. Creá un proyecto nuevo en Supabase y ejecutá las migraciones.
+2. Creá un proyecto nuevo en Supabase y ejecutá las migraciones. **No corras el
+   seed**: son datos de mentira y se mezclan con los reales.
 3. Cambiá tres valores en `sync.config.json`: `shopDomain`, `adAccountId` y
    `storeCurrency`.
 4. Completá `.env.local`.
-5. Deploy a Vercel.
+5. Corré `/sync`. Además de traer los datos, guarda la moneda de la tienda en la
+   base, que es de donde el panel la lee para formatear los montos.
+6. Deploy a Vercel.
 
 Sin tocar una línea de código. Si hace falta tocar código para adaptarlo a otra
 tienda, eso es un error del repo base.
+
+La única excepción es el idioma de los números: las fechas y los separadores
+salen en `es-UY` (coma decimal, punto de miles). Si tu tienda es de otro país,
+cambiá `LOCALE` en `lib/format.ts` — está en un solo lugar y las gráficas lo
+importan de ahí. La moneda **no** se toca desde el código: sale de
+`sync.config.json`.
 
 ## Stack
 

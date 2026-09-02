@@ -37,6 +37,18 @@ incompleto deja el dashboard mostrando números más bajos que la realidad.
 Leé `sync.config.json` de la raíz del proyecto. De ahí salen `shopDomain`,
 `adAccountId`, `storeCurrency`, `diasPorLote` y `diasPrimeraCorrida`.
 
+Lo primero que hacés con eso es dejar la moneda de la tienda guardada en la
+base, porque es de donde el panel la lee para formatear todos los montos:
+
+```sql
+insert into settings (key, value) values ('store_currency', 'STORE_CURRENCY')
+on conflict (key) do update set value = excluded.value, updated_at = now();
+```
+
+Va en cada corrida, no solo la primera. Es una línea y evita el peor error
+callado del proyecto: si esa fila no coincide con `storeCurrency`, los números
+salen bien y el símbolo de moneda sale mal, y nadie mira dos veces un símbolo.
+
 ---
 
 ## Paso 1 — Averiguar qué falta

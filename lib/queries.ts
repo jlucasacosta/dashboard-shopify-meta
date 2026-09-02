@@ -166,5 +166,21 @@ export async function getMonedaTienda(): Promise<string> {
     .eq('key', 'store_currency')
     .maybeSingle()
 
-  return data?.value ?? 'USD'
+  if (data?.value) return data.value
+
+  // Sin la fila en settings, la moneda la dice el propio dato: es la que /sync
+  // escribio en cada venta, sacada de storeCurrency en sync.config.json.
+  //
+  // El fallback existe porque settings solo se llena cuando /sync corre. Antes
+  // de eso, adivinar una moneda fija hacia que una tienda recien clonada viera
+  // sus pesos etiquetados como dolares: los numeros bien y el simbolo mintiendo,
+  // que es la clase de error que nadie mira dos veces.
+  const { data: venta } = await supabase
+    .from('daily_sales')
+    .select('currency')
+    .order('date', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  return venta?.currency ?? 'USD'
 }
