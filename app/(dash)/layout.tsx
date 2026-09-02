@@ -19,7 +19,9 @@ export default async function DashLayout({
 
   return (
     <div className="flex min-h-svh bg-background">
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar p-3 md:flex">
+      {/* sticky + h-svh: la barra queda quieta mientras el contenido scrollea,
+          y si la nav no entra en pantallas bajas, scrollea sola. */}
+      <aside className="hidden w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar p-3 md:sticky md:top-0 md:flex md:h-svh md:overflow-y-auto">
         <div className="mb-6 flex items-center gap-2.5 px-2 pt-2">
           <span
             aria-hidden
