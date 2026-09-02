@@ -10,10 +10,40 @@ Supabase es donde se guardan tus datos. Es gratis para lo que necesitamos.
 4. Elegí la región más cercana a vos.
 5. Esperá unos dos minutos a que termine de crearse.
 
+## Conectar el MCP
+
+El MCP es lo que le permite a Claude escribir en tu base.
+
+1. Copiá el archivo `.mcp.json.example` a `.mcp.json`.
+2. Reemplazá `TU_PROJECT_REF` por el identificador de tu proyecto. Lo encontrás
+   en **Project Settings → General → Reference ID**, o en la URL del panel:
+   `supabase.com/dashboard/project/AQUI_ESTA`.
+3. **Cerrá y volvé a abrir Claude Code.** Los MCP se conectan al arrancar; si lo
+   agregás con Claude abierto, no lo va a ver.
+4. La primera vez te va a pedir autorizar en el navegador. Aceptá.
+
+> **No pongas tu Personal Access Token en un archivo.** El MCP por HTTP se
+> autentica solo, en el navegador. Si ves una guía que te dice que pegues un
+> token `sbp_...` en un archivo de configuración, esa guía es vieja: ese token
+> da acceso a **toda tu cuenta**, no a un proyecto, y queda en texto plano en
+> tu disco.
+
 ## Crear las tablas
 
-En el panel de Supabase, andá a **SQL Editor** y ejecutá los archivos de la
-carpeta `supabase/migrations/` **en orden numérico**:
+Con el MCP conectado no tenés que copiar y pegar nada: pedile a Claude
+
+> aplicá las migraciones de `supabase/migrations/` en mi proyecto de Supabase,
+> en orden numérico
+
+y las ejecuta él, en orden y verificando que cada una haya entrado.
+
+Son siete y el orden importa: cada una asume que la anterior corrió. La última,
+`0007_panel_solo_lectura.sql`, es la que quita los permisos de escritura del
+navegador — si te la salteás, el panel queda escribible desde la consola del
+navegador por cualquiera con una sesión.
+
+**Si preferís hacerlo a mano**, andá a **SQL Editor** en el panel de Supabase y
+ejecutá los archivos de `supabase/migrations/` **en orden numérico**:
 
 1. `0001_schema.sql`
 2. `0002_view_metrics.sql`
@@ -26,8 +56,9 @@ carpeta `supabase/migrations/` **en orden numérico**:
 Abrí cada archivo, copiá todo el contenido, pegalo en el SQL Editor y apretá
 **Run**. Uno por vez, en orden.
 
-> Si querés ver el panel con datos de mentira antes de conectar tu tienda,
-> ejecutá también `supabase/seed.sql`. Después lo vas a poder borrar.
+> **No corras `supabase/seed.sql` en el proyecto de tu tienda.** Son datos de
+> mentira y se mezclan con los reales. El seed es solo para la base de tu
+> máquina, donde `npm run db:reset` lo carga solo.
 
 ## Habilitar a quien puede entrar
 
@@ -72,24 +103,6 @@ mano es solo para la nube.
 > 8, porque `config.toml` no aplica ahí. La pantalla acepta los dos, así que no
 > tenés que configurar nada: copiá el código completo que te llegó, sea del
 > largo que sea.
-
-## Conectar el MCP
-
-El MCP es lo que le permite a Claude escribir en tu base.
-
-1. Copiá el archivo `.mcp.json.example` a `.mcp.json`.
-2. Reemplazá `TU_PROJECT_REF` por el identificador de tu proyecto. Lo encontrás
-   en **Project Settings → General → Reference ID**, o en la URL del panel:
-   `supabase.com/dashboard/project/AQUI_ESTA`.
-3. **Cerrá y volvé a abrir Claude Code.** Los MCP se conectan al arrancar; si lo
-   agregás con Claude abierto, no lo va a ver.
-4. La primera vez te va a pedir autorizar en el navegador. Aceptá.
-
-> **No pongas tu Personal Access Token en un archivo.** El MCP por HTTP se
-> autentica solo, en el navegador. Si ves una guía que te dice que pegues un
-> token `sbp_...` en un archivo de configuración, esa guía es vieja: ese token
-> da acceso a **toda tu cuenta**, no a un proyecto, y queda en texto plano en
-> tu disco.
 
 ## Conectar la app
 
