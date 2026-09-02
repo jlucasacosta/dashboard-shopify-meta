@@ -36,17 +36,35 @@ if (url !== URL_LOCAL && key === KEY_LOCAL) {
   process.exit(1)
 }
 
-const r = await fetch(`${url}/auth/v1/admin/users`, {
-  method: 'POST',
-  headers: {
-    apikey: key,
-    Authorization: `Bearer ${key}`,
-    'Content-Type': 'application/json',
-  },
-  // email_confirm evita que le pidamos confirmar la casilla: el propio código
-  // que va a recibir para entrar ya prueba que el correo es suyo.
-  body: JSON.stringify({ email, email_confirm: true }),
-})
+// Si Supabase no esta levantado, fetch tira y Node imprime un stack trace de
+// veinte lineas terminado en ECONNREFUSED. Es el primer comando que corre
+// alguien que arranca el proyecto, y ese volcado no le dice que hacer.
+let r
+try {
+  r = await fetch(`${url}/auth/v1/admin/users`, {
+    method: 'POST',
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      'Content-Type': 'application/json',
+    },
+    // email_confirm evita que le pidamos confirmar la casilla: el propio código
+    // que va a recibir para entrar ya prueba que el correo es suyo.
+    body: JSON.stringify({ email, email_confirm: true }),
+  })
+} catch {
+  console.error(`No se pudo contactar a Supabase en ${url}.`)
+  console.error('')
+  if (url === URL_LOCAL) {
+    console.error('Es el Supabase de tu máquina. Revisá que Docker Desktop esté')
+    console.error('abierto y corré:')
+    console.error('')
+    console.error('  npx supabase start')
+  } else {
+    console.error('Revisá que la URL sea la de tu proyecto y que tengas internet.')
+  }
+  process.exit(1)
+}
 
 const cuerpo = await r.json().catch(() => ({}))
 

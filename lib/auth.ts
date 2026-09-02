@@ -64,6 +64,14 @@ export function mensajeDeError(original: string): string {
   if (e.includes('invalid email') || e.includes('unable to validate email')) {
     return 'Ese correo no parece válido.'
   }
+  // El navegador tira "Failed to fetch" cuando ni siquiera pudo llegar a
+  // Supabase. En local pasa siempre por lo mismo: Docker apagado. Sin esto el
+  // mensaje queda en inglés y no dice que revisar, que es el peor momento para
+  // dejar a alguien solo: es su primer intento de entrar.
+  if (e.includes('failed to fetch') || e.includes('networkerror') ||
+      e.includes('load failed')) {
+    return 'No se pudo contactar a Supabase. Si estás en tu máquina, fijate que Docker esté abierto y que hayas corrido `npx supabase start`.'
+  }
 
   return `No pudimos continuar: ${original}`
 }

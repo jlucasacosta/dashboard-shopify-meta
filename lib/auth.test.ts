@@ -64,3 +64,14 @@ describe('mensajeDeError', () => {
     expect(m).toContain('algo rarísimo del servidor')
   })
 })
+
+describe('mensajeDeError con la red caida', () => {
+  // Es el primer error que ve alguien que arranca el proyecto con Docker
+  // apagado. Si queda en inglés, no sabe que revisar.
+  it('explica que no se llego a Supabase, en vez de "Failed to fetch"', () => {
+    const m = mensajeDeError('Failed to fetch')
+    expect(m).toContain('Supabase')
+    expect(m).toContain('Docker')
+    expect(m).not.toContain('Failed to fetch')
+  })
+})
