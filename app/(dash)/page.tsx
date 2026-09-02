@@ -40,14 +40,14 @@ export default async function ResumenPage({
       <RealtimeRefresh />
 
       <div>
-        <h1 className="text-xl font-medium tracking-tight">Resumen</h1>
-        <p className="text-sm text-muted-foreground">{etiquetaDe(preset)}</p>
+        <h1 className="text-2xl font-semibold tracking-[-0.02em]">Resumen</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{etiquetaDe(preset)}</p>
       </div>
 
       <AvisoDatos totales={totales} sync={sync} />
 
       {/* Dinero */}
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KpiCard etiqueta="Facturación total" valor={totales?.total_sales} tipo="money" currency={currency}
           delta={delta(totales?.total_sales, anteriores?.total_sales)} />
         <KpiCard etiqueta="Inversión publicitaria" valor={totales?.ad_spend} tipo="money" currency={currency}
@@ -59,7 +59,7 @@ export default async function ResumenPage({
       </section>
 
       {/* Eficiencia */}
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KpiCard etiqueta="CAC promedio" valor={totales?.cac} tipo="money" currency={currency}
           delta={delta(totales?.cac, anteriores?.cac)} bajarEsBueno motivoFalta={motivoAds} />
         <KpiCard etiqueta="Ticket promedio" valor={totales?.aov} tipo="money" currency={currency}
@@ -71,7 +71,7 @@ export default async function ResumenPage({
       </section>
 
       {/* Gente */}
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KpiCard etiqueta="Clientes nuevos" valor={totales?.new_customers} tipo="int" currency={currency}
           delta={delta(totales?.new_customers, anteriores?.new_customers)} />
         <KpiCard etiqueta="Clientes recurrentes" valor={totales?.returning_customers} tipo="int" currency={currency}

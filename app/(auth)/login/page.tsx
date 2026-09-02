@@ -72,8 +72,8 @@ export default function LoginPage() {
   if (paso.en === 'codigo') {
     return (
       <Marco>
-        <h1 className="text-lg font-medium tracking-tight">Escribí tu código</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h1 className="text-lg font-semibold tracking-tight">Escribí tu código</h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">
           Te mandamos {LARGO_CODIGO} dígitos a{' '}
           <span className="text-foreground">{paso.email}</span>. Vence en 15 minutos.
         </p>
@@ -120,8 +120,8 @@ export default function LoginPage() {
 
   return (
     <Marco>
-      <h1 className="text-lg font-medium tracking-tight">Entrar</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <h1 className="text-lg font-semibold tracking-tight">Entrar</h1>
+      <p className="mt-1.5 text-sm text-muted-foreground">
         Te mandamos un código por correo. No hace falta contraseña.
       </p>
 
@@ -155,9 +155,18 @@ export default function LoginPage() {
 
 function Marco({ children }: { children: React.ReactNode }) {
   return (
-    <main className="flex min-h-svh items-center justify-center p-6">
-      <div className="w-full max-w-sm rounded-lg border bg-card p-6">
-        {children}
+    <main className="flex min-h-svh items-center justify-center bg-background p-6">
+      <div className="w-full max-w-sm">
+        <div className="mb-6 flex items-center gap-2.5">
+          <span
+            aria-hidden
+            className="grid size-8 place-items-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground shadow-pill"
+          >
+            D
+          </span>
+          <p className="text-sm font-semibold tracking-tight">Dashboard</p>
+        </div>
+        <div className="rounded-xl bg-card p-6 shadow-pop">{children}</div>
       </div>
     </main>
   )

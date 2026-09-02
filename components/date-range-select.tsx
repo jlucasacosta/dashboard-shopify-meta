@@ -23,7 +23,7 @@ export function DateRangeSelect() {
       <select
         value={actual}
         onChange={(e) => cambiar(e.target.value)}
-        className="rounded-md border bg-background px-2.5 py-1.5 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        className="cursor-pointer rounded-lg bg-card px-3 py-1.5 text-sm font-medium text-foreground shadow-pill outline-none transition-shadow hover:shadow-pop focus-visible:ring-[3px] focus-visible:ring-ring/40"
       >
         {RANGOS.map((r) => (
           <option key={r.valor} value={r.valor}>

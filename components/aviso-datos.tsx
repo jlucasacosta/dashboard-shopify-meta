@@ -80,11 +80,11 @@ export function AvisoDatos({
           <div
             key={i}
             role="status"
-            className="flex items-start gap-2.5 rounded-lg border bg-card px-4 py-3 text-sm"
+            className="flex items-start gap-2.5 rounded-xl bg-card px-4 py-3 text-sm shadow-card"
           >
             <Icono
               className="mt-0.5 size-4 shrink-0"
-              style={{ color: a.tono === 'alerta' ? '#ec835a' : 'var(--muted-foreground)' }}
+              style={{ color: a.tono === 'alerta' ? 'var(--warning)' : 'var(--muted-foreground)' }}
               aria-hidden
             />
             <p className="text-muted-foreground">{a.texto}</p>

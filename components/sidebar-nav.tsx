@@ -19,7 +19,8 @@ export function SidebarNav() {
   const query = params.get('r') ? `?r=${params.get('r')}` : ''
 
   return (
-    <nav className="flex flex-col gap-0.5">
+    // En el sidebar va en columna; en el header de mobile, en fila.
+    <nav className="-mx-1 flex flex-row gap-1 overflow-x-auto px-1 md:mx-0 md:flex-col md:gap-0.5 md:overflow-visible md:px-0">
       {SECCIONES.map(({ href, etiqueta, icono: Icono }) => {
         const activo = ruta === href
         return (
@@ -28,13 +29,18 @@ export function SidebarNav() {
             href={`${href}${query}`}
             aria-current={activo ? 'page' : undefined}
             className={cn(
-              'flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors',
+              'flex shrink-0 items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors',
               activo
-                ? 'bg-accent font-medium text-accent-foreground'
-                : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
+                // La sección activa se levanta del fondo gris: superficie
+                // blanca con un pelo de sombra, como una pestaña encendida.
+                ? 'bg-sidebar-accent text-foreground shadow-pill'
+                : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground',
             )}
           >
-            <Icono className="size-4 shrink-0" aria-hidden />
+            <Icono
+              className={cn('size-4 shrink-0', activo ? 'text-primary' : 'text-muted-foreground')}
+              aria-hidden
+            />
             {etiqueta}
           </Link>
         )

@@ -54,8 +54,8 @@ export function FormGasto({ monedaSugerida }: { monedaSugerida: string }) {
         {estado && (
           <p
             role="status"
-            className="text-sm"
-            style={{ color: estado.ok ? '#0ca30c' : '#d03b3b' }}
+            className="text-sm font-medium"
+            style={{ color: estado.ok ? 'var(--success)' : 'var(--danger)' }}
           >
             {estado.mensaje}
           </p>

@@ -14,11 +14,11 @@ export function ChartFrame({
   alto?: number
 }) {
   return (
-    <figure className="rounded-lg border bg-card p-4">
-      <figcaption className="mb-3">
-        <h2 className="text-sm font-medium tracking-tight">{titulo}</h2>
+    <figure className="rounded-xl bg-card p-5 shadow-card">
+      <figcaption className="mb-4">
+        <h2 className="text-sm font-semibold tracking-tight">{titulo}</h2>
         {descripcion && (
-          <p className="text-xs text-muted-foreground">{descripcion}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{descripcion}</p>
         )}
       </figcaption>
       <div style={{ height: alto }}>

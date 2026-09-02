@@ -58,11 +58,11 @@ export function RealtimeRefresh() {
   }, [router])
 
   return (
-    <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+    <p className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
       <span
         aria-hidden
         className="size-1.5 rounded-full"
-        style={{ background: conectado ? '#0ca30c' : 'var(--muted-foreground)' }}
+        style={{ background: conectado ? 'var(--success)' : 'var(--muted-foreground)' }}
       />
       {conectado ? 'En vivo' : 'Sin conexión en vivo'}
     </p>

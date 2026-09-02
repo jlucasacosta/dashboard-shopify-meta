@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-inter);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,6 +39,11 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -46,75 +51,104 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  /* Elevación al estilo Stripe: el borde es una sombra de 1px, no un border.
+     Así las tarjetas flotan sobre el fondo gris en vez de quedar recortadas. */
+  --shadow-card: var(--elev-card);
+  --shadow-pill: var(--elev-pill);
+  --shadow-pop: var(--elev-pop);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Gris con una pizca de azul (como Stripe), no gris puro: el neutro frío
+     hace que el índigo de la marca se lea como acento y no como error. */
+  --background: oklch(0.9705 0.0045 264);
+  --foreground: oklch(0.2385 0.0325 266);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.2385 0.0325 266);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.2385 0.0325 266);
+  --primary: oklch(0.5385 0.2185 277);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.9685 0.0045 264);
+  --secondary-foreground: oklch(0.2385 0.0325 266);
+  --muted: oklch(0.9685 0.0045 264);
+  --muted-foreground: oklch(0.5485 0.0225 264);
+  --accent: oklch(0.9585 0.0165 277);
+  --accent-foreground: oklch(0.4685 0.2085 277);
+  --destructive: oklch(0.5785 0.2065 26);
+  --border: oklch(0.9245 0.0065 264);
+  --input: oklch(0.9245 0.0065 264);
+  --ring: oklch(0.5385 0.2185 277);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.9705 0.0045 264);
+  --sidebar-foreground: oklch(0.2385 0.0325 266);
+  --sidebar-primary: oklch(0.5385 0.2185 277);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(1 0 0);
+  --sidebar-accent-foreground: oklch(0.2385 0.0325 266);
+  --sidebar-border: oklch(0.9245 0.0065 264);
+  --sidebar-ring: oklch(0.5385 0.2185 277);
+
+  /* Semáforo de variaciones. Verde y rojo desaturados para que un +2% no
+     grite como una alarma; el signo del número sigue llevando el significado. */
+  --success: oklch(0.5185 0.1145 156);
+  --success-soft: oklch(0.9505 0.0345 156);
+  --danger: oklch(0.5385 0.1745 25);
+  --danger-soft: oklch(0.9545 0.0245 25);
+  --warning: oklch(0.6785 0.1465 55);
+
+  --elev-card: 0 0 0 1px oklch(0.2385 0.0325 266 / 0.07), 0 1px 2px 0 oklch(0.2385 0.0325 266 / 0.05);
+  --elev-pill: 0 0 0 1px oklch(0.2385 0.0325 266 / 0.06), 0 1px 2px 0 oklch(0.2385 0.0325 266 / 0.08);
+  --elev-pop: 0 0 0 1px oklch(0.2385 0.0325 266 / 0.07), 0 8px 24px -6px oklch(0.2385 0.0325 266 / 0.16);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --background: oklch(0.1785 0.0165 266);
+  --foreground: oklch(0.9585 0.0045 264);
+  --card: oklch(0.2185 0.0185 266);
+  --card-foreground: oklch(0.9585 0.0045 264);
+  --popover: oklch(0.2385 0.0185 266);
+  --popover-foreground: oklch(0.9585 0.0045 264);
+  --primary: oklch(0.6485 0.1885 277);
+  --primary-foreground: oklch(0.1585 0.0165 266);
+  --secondary: oklch(0.2785 0.0185 266);
+  --secondary-foreground: oklch(0.9585 0.0045 264);
+  --muted: oklch(0.2685 0.0185 266);
+  --muted-foreground: oklch(0.7085 0.0185 264);
+  --accent: oklch(0.3085 0.0425 277);
+  --accent-foreground: oklch(0.8685 0.0765 277);
+  --destructive: oklch(0.6785 0.1885 22);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.6485 0.1885 277);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar: oklch(0.1985 0.0175 266);
+  --sidebar-foreground: oklch(0.9585 0.0045 264);
+  --sidebar-primary: oklch(0.6485 0.1885 277);
+  --sidebar-primary-foreground: oklch(0.1585 0.0165 266);
+  --sidebar-accent: oklch(0.2685 0.0205 266);
+  --sidebar-accent-foreground: oklch(0.9585 0.0045 264);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.6485 0.1885 277);
+
+  --success: oklch(0.7385 0.1445 156);
+  --success-soft: oklch(0.3085 0.0625 156);
+  --danger: oklch(0.7085 0.1545 25);
+  --danger-soft: oklch(0.3185 0.0745 25);
+  --warning: oklch(0.7585 0.1385 60);
+
+  --elev-card: 0 0 0 1px oklch(1 0 0 / 0.08), 0 1px 2px 0 oklch(0 0 0 / 0.4);
+  --elev-pill: 0 0 0 1px oklch(1 0 0 / 0.09), 0 1px 2px 0 oklch(0 0 0 / 0.35);
+  --elev-pop: 0 0 0 1px oklch(1 0 0 / 0.08), 0 8px 24px -6px oklch(0 0 0 / 0.55);
 }
 
 @layer base {
@@ -123,11 +157,35 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Los números de un dashboard tienen que alinearse en columna siempre. */
+    font-feature-settings: "cv11", "ss01";
+    font-variant-numeric: tabular-nums;
   }
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
   }
 }
+
+@layer components {
+  /* Rótulo de métrica: chico, con peso, y un poco de tracking para que a
+     13px no se lea apretado. Es el patrón que repiten KPIs, tablas y ejes. */
+  .etiqueta-dato {
+    @apply text-[0.8125rem] leading-5 font-medium text-muted-foreground;
+  }
+
+  /* Alto de dos lineas reservado: los numeros de una fila arrancan alineados
+     aunque un rotulo sea mas largo que los demas. */
+  .etiqueta-kpi {
+    @apply block min-h-10 text-[0.8125rem] leading-5 font-medium text-muted-foreground;
+  }
+
+  /* Encabezado de tabla: fondo tenue en lugar de una línea más. */
+  .th-dato {
+    @apply bg-muted/60 px-4 py-2.5 text-xs font-medium tracking-wide text-muted-foreground;
+  }
+}
+
 /* Colores de las gráficas.
    Slots 1 y 2 de una paleta categórica validada: azul = facturación/ingreso,
    naranja = costo. La asignación es semántica y fija — el color sigue a la

@@ -18,8 +18,8 @@ export function TooltipGrafica({ filas, currency }: { filas: Fila[]; currency: s
     const punto = payload[0].payload as Record<string, unknown>
 
     return (
-      <div className="rounded-md border bg-popover px-3 py-2 text-xs shadow-sm">
-        <p className="mb-1.5 font-medium text-popover-foreground">
+      <div className="rounded-lg bg-popover px-3 py-2.5 text-xs shadow-pop">
+        <p className="mb-2 font-semibold text-popover-foreground">
           {diaLargo(String(label ?? punto.date))}
         </p>
         <ul className="space-y-1">

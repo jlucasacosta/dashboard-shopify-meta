@@ -25,13 +25,13 @@ export default async function AdsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-medium tracking-tight">Anuncios</h1>
-        <p className="text-sm text-muted-foreground">{etiquetaDe(preset)}</p>
+        <h1 className="text-2xl font-semibold tracking-[-0.02em]">Anuncios</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{etiquetaDe(preset)}</p>
       </div>
 
       <AvisoDatos totales={totales} sync={sync} />
 
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KpiCard etiqueta="Inversión total" valor={totales?.ad_spend} tipo="money" currency={currency} motivoFalta={motivoAds} />
         <KpiCard etiqueta="Impresiones" valor={totales?.impressions} tipo="int" currency={currency} />
         <KpiCard etiqueta="Clics" valor={totales?.clicks} tipo="int" currency={currency} />
@@ -42,37 +42,37 @@ export default async function AdsPage({
         <KpiCard etiqueta="ROAS" valor={totales?.roas} tipo="ratio" currency={currency} motivoFalta={motivoAds} />
       </section>
 
-      <section className="rounded-lg border bg-card">
-        <div className="border-b px-4 py-3">
-          <h2 className="text-sm font-medium tracking-tight">Campañas</h2>
-          <p className="text-xs text-muted-foreground">
+      <section className="overflow-hidden rounded-xl bg-card shadow-card">
+        <div className="border-b px-5 py-4">
+          <h2 className="text-sm font-semibold tracking-tight">Campañas</h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">
             Ordenadas por inversión. Los montos ya están convertidos a {currency}.
           </p>
         </div>
 
         {campanas.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+          <p className="px-5 py-12 text-center text-sm text-muted-foreground">
             No hay campañas con datos en este período.
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-xs text-muted-foreground">
-                  <th className="px-4 py-2 text-left font-normal">Campaña</th>
-                  <th className="px-4 py-2 text-left font-normal">Objetivo</th>
-                  <th className="px-4 py-2 text-right font-normal">Inversión</th>
-                  <th className="px-4 py-2 text-right font-normal">Impresiones</th>
-                  <th className="px-4 py-2 text-right font-normal">Clics</th>
-                  <th className="px-4 py-2 text-right font-normal">CTR</th>
-                  <th className="px-4 py-2 text-right font-normal">CPC</th>
-                  <th className="px-4 py-2 text-right font-normal">CPM</th>
+                <tr className="border-b">
+                  <th className="th-dato text-left">Campaña</th>
+                  <th className="th-dato text-left">Objetivo</th>
+                  <th className="th-dato text-right">Inversión</th>
+                  <th className="th-dato text-right">Impresiones</th>
+                  <th className="th-dato text-right">Clics</th>
+                  <th className="th-dato text-right">CTR</th>
+                  <th className="th-dato text-right">CPC</th>
+                  <th className="th-dato text-right">CPM</th>
                 </tr>
               </thead>
               <tbody>
                 {campanas.map((c) => (
-                  <tr key={c.campaign_id} className="border-b last:border-0">
-                    <td className="px-4 py-2.5">
+                  <tr key={c.campaign_id} className="border-b border-border/60 transition-colors last:border-0 hover:bg-muted/40">
+                    <td className="px-4 py-3">
                       {c.campaign_name}
                       {c.dias_sin_tasa > 0 && (
                         <span
@@ -83,15 +83,15 @@ export default async function AdsPage({
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5 text-muted-foreground">
+                    <td className="px-4 py-3 text-muted-foreground">
                       {c.objective ?? SIN_DATO}
                     </td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">{formatMetric(c.spend, 'money', currency)}</td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">{formatMetric(c.impressions, 'int', currency)}</td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">{formatMetric(c.clicks, 'int', currency)}</td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">{formatMetric(c.ctr, 'pct', currency)}</td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">{formatMetric(c.cpc, 'money', currency)}</td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">{formatMetric(c.cpm, 'money', currency)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{formatMetric(c.spend, 'money', currency)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{formatMetric(c.impressions, 'int', currency)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{formatMetric(c.clicks, 'int', currency)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{formatMetric(c.ctr, 'pct', currency)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{formatMetric(c.cpc, 'money', currency)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{formatMetric(c.cpm, 'money', currency)}</td>
                   </tr>
                 ))}
               </tbody>
