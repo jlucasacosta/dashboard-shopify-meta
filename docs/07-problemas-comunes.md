@@ -43,7 +43,7 @@ nube (ver [la guía de Vercel](06-vercel.md)). Un usuario creado en tu máquina
 
 ## El correo me llega con un link, no con un código
 
-**Síntoma:** la pantalla te pide 6 dígitos pero el correo trae un botón o un link.
+**Síntoma:** la pantalla te pide un código pero el correo trae un botón o un link.
 
 **Causa:** la plantilla del correo en tu proyecto de la nube sigue siendo la de
 Supabase por defecto.

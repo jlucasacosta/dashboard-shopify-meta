@@ -119,7 +119,7 @@ importan de ahí. La moneda **no** se toca desde el código: sale de
 Next.js 16 · TypeScript · Tailwind CSS · shadcn/ui · Recharts · Supabase ·
 Vercel
 
-Se entra con un código de 6 dígitos que llega por correo. Sin contraseñas, sin
+Se entra con un código que llega por correo. Sin contraseñas, sin
 links que abrir, y sin altas automáticas: solo entran los correos que vos
 habilitás.
 

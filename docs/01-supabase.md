@@ -21,6 +21,7 @@ carpeta `supabase/migrations/` **en orden numérico**:
 4. `0004_period_totals.sql`
 5. `0005_breakdowns.sql`
 6. `0006_meta_atribucion_nullable.sql`
+7. `0007_panel_solo_lectura.sql`
 
 Abrí cada archivo, copiá todo el contenido, pegalo en el SQL Editor y apretá
 **Run**. Uno por vez, en orden.
@@ -54,7 +55,7 @@ Marcá *Auto Confirm User*.
 
 ## Hacer que el correo mande el código
 
-Por defecto Supabase manda un link, y nosotros queremos un código de 6 dígitos.
+Por defecto Supabase manda un link, y nosotros queremos un código.
 
 En **Authentication → Emails → Magic Link**, reemplazá el contenido por el de
 `supabase/templates/magic_link.html`. Lo único que importa de verdad es que
@@ -64,7 +65,13 @@ En tu máquina esto ya está configurado en `supabase/config.toml`; el cambio a
 mano es solo para la nube.
 
 > Si te salteás este paso, el correo va a llegar con un link en vez de un
-> código, y la pantalla te va a seguir pidiendo los 6 dígitos.
+> código, y la pantalla te va a seguir pidiendo el código.
+
+> **El largo del código no es el mismo en los dos lados.** Tu Supabase local
+> manda 6 dígitos, porque `config.toml` lo dice. Un proyecto en la nube manda
+> 8, porque `config.toml` no aplica ahí. La pantalla acepta los dos, así que no
+> tenés que configurar nada: copiá el código completo que te llegó, sea del
+> largo que sea.
 
 ## Conectar el MCP
 
