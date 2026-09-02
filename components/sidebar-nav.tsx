@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { BarChart3, Megaphone, Package, PencilLine } from 'lucide-react'
+import { BarChart3, Megaphone, Package } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const SECCIONES = [
-  { href: '/',             etiqueta: 'Resumen',      icono: BarChart3 },
-  { href: '/ads',          etiqueta: 'Anuncios',     icono: Megaphone },
-  { href: '/productos',    etiqueta: 'Productos',    icono: Package },
-  { href: '/gasto-manual', etiqueta: 'Gasto manual', icono: PencilLine },
+  { href: '/',          etiqueta: 'Resumen',   icono: BarChart3 },
+  { href: '/ads',       etiqueta: 'Anuncios',  icono: Megaphone },
+  { href: '/productos', etiqueta: 'Productos', icono: Package },
 ]
 
 export function SidebarNav() {

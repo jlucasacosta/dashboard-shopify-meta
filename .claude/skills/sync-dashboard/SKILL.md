@@ -162,8 +162,10 @@ Buscá tu `adAccountId` en la respuesta y mirá `is_ads_mcp_enabled`:
           'is_ads_mcp_enabled = false: Meta todavía no habilitó el conector en esta cuenta',
           'DESDE', 'HASTA');
   ```
-  Después avisale al usuario que puede cargar la inversión a mano desde la
-  pantalla **Gasto manual**, y que el CAC y el ROAS van a funcionar igual.
+  Después decile al usuario, sin vueltas, que hasta que Meta habilite el
+  conector no va a haber CAC, ROAS, MER ni contribución, porque son las
+  métricas que necesitan la inversión. No hay forma de cargarla por afuera:
+  los datos entran solo por acá.
   **No abandones el sync**: las ventas de Shopify se traen igual.
 
 - **Si es `true`** → seguí. Anotá también el `currency` de la cuenta: lo vas a
@@ -213,8 +215,9 @@ time_range:     {"since":"DESDE","until":"HASTA"}
 `daily_ad_campaigns` (clave: `date` + `campaign_id`): igual, más `campaign_id`,
 `campaign_name`, `status` y `objective`.
 
-**Nunca escribas `source = 'manual'`.** Ese valor está reservado para lo que
-carga una persona a mano, y la app usa esa diferencia para no pisarle los datos.
+**`source` va siempre en `'mcp'`.** El panel es de solo lectura: vos sos lo
+único que escribe en estas tablas. El valor `'manual'` quedó de cuando existía
+una pantalla para cargar el gasto a mano; no lo uses.
 
 ---
 
@@ -310,7 +313,7 @@ Terminá con un resumen corto y concreto:
 - Qué se salteó y por qué
 - Si quedaron días sin tipo de cambio
 
-Si Meta quedó salteado, recordale al usuario la pantalla de **Gasto manual**.
+Si Meta quedó salteado, decí qué métricas quedan sin poder calcularse por eso.
 
 ---
 

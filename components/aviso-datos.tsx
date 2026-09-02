@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { AlertTriangle, Info } from 'lucide-react'
 import type { Totales, EstadoSync } from '@/lib/queries'
 
@@ -25,12 +24,10 @@ export function AvisoDatos({
       tono: 'alerta',
       texto: (
         <>
-          La última sincronización no pudo leer Meta Ads (tu cuenta todavía no
-          tiene habilitado el conector). Mientras tanto podés{' '}
-          <Link href="/gasto-manual" className="underline underline-offset-4">
-            cargar la inversión a mano
-          </Link>
-          .
+          La última sincronización no pudo leer Meta Ads: tu cuenta todavía no
+          tiene habilitado el conector. Hasta que Meta lo habilite, todo lo que
+          necesita la inversión —CAC, ROAS, MER y contribución— va a aparecer
+          como &quot;—&quot;. Las métricas de Shopify no se ven afectadas.
         </>
       ),
     })

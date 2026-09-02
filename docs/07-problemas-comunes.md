@@ -86,8 +86,10 @@ habilitado.
 
 **Causa:** Meta lo está liberando de a poco. No hay nada que configurar.
 
-**Solución:** usá la pantalla **Gasto manual** para cargar la inversión de cada
-día. El CAC y el ROAS funcionan igual. Probá de nuevo cada un par de semanas.
+**Solución:** ninguna de tu lado, y no es una respuesta cómoda. Hasta que Meta
+habilite el conector no vas a tener CAC, ROAS, MER ni contribución: el panel te
+los muestra como "—" y te dice por qué. Las ventas, el tráfico y los productos
+se siguen trayendo normal. Probá de nuevo cada un par de semanas.
 
 ---
 

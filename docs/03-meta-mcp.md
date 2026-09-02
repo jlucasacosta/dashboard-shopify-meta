@@ -27,16 +27,21 @@ En la respuesta, buscá tu cuenta y fijate en `is_ads_mcp_enabled`:
 **No estás haciendo nada mal y no hay nada que puedas configurar.** Meta lo está
 liberando de a poco.
 
-El panel funciona igual:
+El panel funciona a medias, y conviene saber exactamente qué mitad:
 
-- Las ventas, los pedidos, los clientes y el tráfico se traen de Shopify normal.
-- La inversión la cargás a mano desde la pantalla **Gasto manual**, un número
-  por día. Son treinta segundos por semana.
-- Con eso, el **CAC**, el **ROAS** y el **MER** funcionan exactamente igual.
+- **Sí funciona:** ventas, pedidos, clientes, tráfico y productos. Todo eso sale
+  de Shopify y no depende de Meta.
+- **No funciona:** **CAC**, **ROAS**, **MER**, contribución y % de facturación
+  en ads. Son las métricas que necesitan la inversión, y sin el conector no hay
+  de dónde sacarla. El panel las muestra como "—" y te avisa por qué.
 
-Probá de nuevo cada un par de semanas. Cuando Meta lo habilite, `/sync` va a
-empezar a traer la inversión solo, y lo que cargaste a mano no se pierde ni se
-pisa.
+No hay forma de cargar la inversión por afuera: los datos entran solo por
+`/sync`. Es a propósito. Un número escrito a mano no se actualiza cuando cambia
+en Meta, y un dashboard que mezcla datos vivos con datos viejos miente sin que
+se note.
+
+Probá de nuevo cada un par de semanas. Cuando Meta lo habilite, `/sync` empieza
+a traer la inversión solo y las cinco métricas aparecen sin que toques nada.
 
 ## Anotar tu ID de cuenta
 

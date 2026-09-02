@@ -37,16 +37,17 @@ dashboard que muestra un cero falso no falla nunca y miente siempre.
 **3. El panel es privado.** El login usa `shouldCreateUser: false`. Sin eso
 cualquiera con un correo entra. No lo saques ni lo hagas configurable.
 
-**4. `source = 'manual'` está reservado.** Es lo que carga una persona en la
-pantalla de Gasto manual. El sync escribe `'mcp'`. La app usa esa diferencia
-para no pisar lo cargado a mano.
+**4. El panel es de solo lectura.** Los datos entran únicamente por `/sync`, a
+través de los MCP. Ninguna tabla tiene policy de insert ni de update para el
+navegador. Si te piden una pantalla que escriba en la base, eso es un cambio de
+arquitectura: planteálo antes de codearlo, no lo agregues de callado.
 
 ## Cómo se mueve el dato
 
 ```
 MCP Shopify ─┐
-MCP Meta ────┼─ /sync ─→ tablas crudas ─→ daily_metrics (view) ─→ period_totals
-Gasto manual ┘           daily_sales         un renglón             campaign_totals
+             ├─ /sync ─→ tablas crudas ─→ daily_metrics (view) ─→ period_totals
+MCP Meta ────┘           daily_sales         un renglón             campaign_totals
                          daily_traffic       por día                product_totals
                          daily_products                                   │
                          daily_ad_spend                                   ↓
@@ -66,7 +67,7 @@ escribe ahí, el usuario no se entera de que le faltan datos.
 | `supabase/tests/` | Tests SQL de las métricas. Si tocás `daily_metrics` o las funciones, se corren sí o sí. |
 | `lib/queries.ts` | Todas las lecturas a Supabase. |
 | `lib/supabase/{client,server,env}.ts` | Clientes de browser y de servidor, y validación de variables. |
-| `lib/{format,ranges,auth,gasto-manual}.ts` | Lógica pura, con tests al lado (`*.test.ts`). |
+| `lib/{format,ranges,auth}.ts` | Lógica pura, con tests al lado (`*.test.ts`). |
 | `proxy.ts` | Middleware: refresca sesión y manda al login. La protección va acá, no por página. |
 | `components/aviso-datos.tsx` | Los avisos de calidad de datos que lee `sync_log`. |
 | `docs/` | Guías para el usuario, numeradas y en orden. |
@@ -96,6 +97,10 @@ escribe ahí, el usuario no se entera de que le faltan datos.
   `to authenticated`. Para probar de verdad, `npm run test:realtime`.
 - **Filas de producto con `product_id` vacío son el total del día**, no un
   producto. Se descartan.
+- **`npx tsc --noEmit` con `.next` borrado inventa errores.** Tipos como
+  `LayoutProps` los genera Next dentro de `.next/types`. Si vas a correr tsc
+  suelto, corré `npm run build` antes. El build ya tipa igual, así que casi
+  siempre alcanza con el build.
 
 ## Variables de entorno
 

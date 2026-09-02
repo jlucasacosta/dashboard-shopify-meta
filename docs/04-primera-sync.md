@@ -48,8 +48,9 @@ Un resumen con:
 - Qué se salteó y por qué
 - Si quedaron días sin tipo de cambio
 
-Si dice que salteó Meta, andá a la pantalla **Gasto manual**. Es lo esperado si
-tu cuenta todavía no está habilitada.
+Si dice que salteó Meta, es lo esperado cuando tu cuenta todavía no está
+habilitada: las ventas se traen igual, y el CAC, el ROAS y el MER van a
+aparecer como "—" hasta que Meta habilite el conector.
 
 ## Verificar que los números cierran
 
