@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   normalizarEmail, normalizarCodigo, codigoCompleto,
-  mensajeDeError, LARGO_CODIGO,
+  mensajeDeError, LARGO_MAX,
 } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -74,7 +74,7 @@ export default function LoginPage() {
       <Marco>
         <h1 className="text-lg font-semibold tracking-tight">Escribí tu código</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          Te mandamos {LARGO_CODIGO} dígitos a{' '}
+          Te mandamos un código a{' '}
           <span className="text-foreground">{paso.email}</span>. Vence en 15 minutos.
         </p>
 
@@ -87,7 +87,7 @@ export default function LoginPage() {
               autoComplete="one-time-code"
               autoFocus
               placeholder="000000"
-              maxLength={LARGO_CODIGO + 6}
+              maxLength={LARGO_MAX + 6}
               value={codigo}
               onChange={(ev) => setCodigo(normalizarCodigo(ev.target.value))}
               disabled={cargando}

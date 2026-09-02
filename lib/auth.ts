@@ -5,8 +5,24 @@
 // no puede entrar: un código pegado con espacios, y un error en inglés que no
 // explica nada.
 
-/** Largo del código. Tiene que coincidir con `otp_length` de config.toml. */
-export const LARGO_CODIGO = 6
+/**
+ * Largo del código que manda Supabase.
+ *
+ * Acá vivía `LARGO_CODIGO = 6`, "para que coincida con otp_length de
+ * config.toml". El problema es que config.toml SOLO vale para el Supabase de
+ * tu máquina. Un proyecto en la nube emite el largo que tenga configurado, y
+ * por defecto son 8.
+ *
+ * Con el largo fijo en 6, la app recortaba el código de 8 a sus primeros 6
+ * dígitos y Supabase respondía `otp_expired`: un error que miente, porque el
+ * código no venció, llegó cortado. No había forma de entrar y el mensaje te
+ * mandaba a buscar al lugar equivocado.
+ *
+ * Por eso la app ya no impone un largo: acepta lo que llegue, dentro del rango
+ * que Supabase permite configurar.
+ */
+export const LARGO_MIN = 6
+export const LARGO_MAX = 10
 
 export function normalizarEmail(valor: string): string {
   return valor.trim().toLowerCase()
@@ -18,11 +34,11 @@ export function normalizarEmail(valor: string): string {
  * rechazarlo por eso sería un error nuestro, no del usuario.
  */
 export function normalizarCodigo(valor: string): string {
-  return valor.replace(/\D/g, '').slice(0, LARGO_CODIGO)
+  return valor.replace(/\D/g, '').slice(0, LARGO_MAX)
 }
 
 export function codigoCompleto(valor: string): boolean {
-  return normalizarCodigo(valor).length === LARGO_CODIGO
+  return normalizarCodigo(valor).length >= LARGO_MIN
 }
 
 /**

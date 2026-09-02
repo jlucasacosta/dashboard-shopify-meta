@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { normalizarEmail, normalizarCodigo, LARGO_CODIGO, mensajeDeError } from './auth'
+import { normalizarEmail, normalizarCodigo, codigoCompleto, LARGO_MAX, mensajeDeError } from './auth'
 
 describe('normalizarEmail', () => {
   it('saca espacios y pasa a minusculas', () => {
@@ -25,7 +25,20 @@ describe('normalizarCodigo', () => {
   })
 
   it('nunca devuelve mas digitos de los que tiene el codigo', () => {
-    expect(normalizarCodigo('12345678901')).toHaveLength(LARGO_CODIGO)
+    expect(normalizarCodigo('123456789012345')).toHaveLength(LARGO_MAX)
+  })
+
+  // Un proyecto de Supabase en la nube manda 8 digitos por defecto, no 6.
+  // Cuando la app recortaba a 6, Supabase respondia "otp_expired" y no habia
+  // forma de entrar. Estos dos casos son ese bug, congelado.
+  it('no recorta un codigo de 8 digitos, como el que manda la nube', () => {
+    expect(normalizarCodigo('63075525')).toBe('63075525')
+  })
+
+  it('acepta como completo tanto 6 digitos como 8', () => {
+    expect(codigoCompleto('123456')).toBe(true)
+    expect(codigoCompleto('63075525')).toBe(true)
+    expect(codigoCompleto('12345')).toBe(false)
   })
 })
 
