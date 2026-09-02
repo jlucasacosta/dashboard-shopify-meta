@@ -150,6 +150,24 @@ permisos sobre la fila que cambió.
 
 ---
 
+## Después de `npm run build`, todas las páginas dan 404
+
+**Síntoma:** corriste `npm run build` y ahora `npm run dev` responde
+**404 This page could not be found** en todas las rutas, incluso en `/login`.
+
+**Causa:** `build` y `dev` escriben en la misma carpeta `.next`, y la que dejó
+el build no le sirve al servidor de desarrollo.
+
+**Solución:** borrá esa carpeta y arrancá de nuevo.
+
+```bash
+rm -rf .next && npm run dev
+```
+
+En Windows, si `rm` no existe: `rmdir /s /q .next`.
+
+---
+
 ## Claude dice que le falta un MCP
 
 **Síntoma:** al correr `/sync`, Claude avisa que no tiene Shopify, Meta o

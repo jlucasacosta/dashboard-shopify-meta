@@ -97,6 +97,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGci...
 La clave que necesitás es la **anon** (o **publishable**, si tu proyecto es
 nuevo — son la misma cosa con distinto nombre).
 
+`.env.local` le gana a `.env.development`, así que desde que lo creás la app
+deja de mirar la base de tu máquina y empieza a mirar la de la nube. Para volver
+a la local, borrá `.env.local` (o renombralo).
+
 > **Nunca pongas acá la clave `service_role`.** Esa clave se saltea todos los
 > permisos. En este archivo termina en el navegador de cualquiera que abra tu
 > panel.

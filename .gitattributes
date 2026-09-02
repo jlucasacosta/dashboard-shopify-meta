@@ -1,0 +1,14 @@
+# Normaliza los finales de linea: en el repo siempre LF, en tu disco lo que use
+# tu sistema. Sin esto, un mismo archivo aparece como "modificado" solo por
+# haberlo abierto en Windows.
+* text=auto eol=lf
+
+# Binarios: no tocar.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary

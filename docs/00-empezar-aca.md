@@ -53,6 +53,11 @@ npm run dev
 Abrí **http://localhost:3000** y vas a ver el panel completo, con gráficas y
 todo. Los números son inventados, pero el panel es el de verdad.
 
+No configuraste nada y funciona: eso es a propósito. El archivo
+`.env.development` viene en el repo con las claves de Supabase local, que son
+públicas e iguales para todo el mundo. Cuando pases a la nube vas a crear tu
+propio `.env.local` (guía [01 — Supabase](01-supabase.md)).
+
 > **Importante:** entrá por `localhost`, no por `127.0.0.1`. Son la misma
 > computadora pero para el navegador son sitios distintos, y por seguridad
 > Next.js bloquea archivos entre sitios distintos. Si entrás por `127.0.0.1`

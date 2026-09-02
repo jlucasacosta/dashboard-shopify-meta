@@ -43,6 +43,12 @@ next-env.d.ts
 # .env.example SI va al repo: es la plantilla que copia cada alumno.
 !.env.example
 
+# .env.development TAMBIEN va al repo: son las claves de Supabase local, que
+# son publicas e iguales para todo el mundo. Estan para que el proyecto arranque
+# recien clonado sin configurar nada. Tus claves de la nube van en .env.local,
+# que sigue ignorado.
+!.env.development
+
 # Configuracion de los conectores MCP: lleva el identificador de TU proyecto
 # de Supabase. Cada persona arma el suyo copiando .mcp.json.example
 .mcp.json

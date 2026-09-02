@@ -40,6 +40,10 @@ npm run dev
 Abrí **http://localhost:3000** (por `localhost`, no por `127.0.0.1`) y vas a ver
 el panel con **12 meses de datos de ejemplo**, antes de conectar nada.
 
+No hay que copiar ni completar ningún archivo de configuración: `.env.development`
+ya viene en el repo con las claves de Supabase local, que son públicas e iguales
+para todo el mundo. Las tuyas de la nube van después en `.env.local`.
+
 Habilitá tu correo con `npm run usuario:crear -- vos@tutienda.com`. El código
 de acceso llega a la casilla falsa en **http://localhost:54324**.
 

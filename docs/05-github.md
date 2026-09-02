@@ -49,6 +49,9 @@ git status
 Si ves `.env.local` en la lista, **pará**. Algo está mal configurado y estarías
 publicando tus claves.
 
+> `.env.development` sí aparece y sí se sube: son las claves de Supabase local,
+> que son públicas e iguales para todo el mundo. No hay nada tuyo ahí.
+
 ## Cómo saber que funcionó
 
 Entrás a tu repositorio en GitHub y ves los archivos. Buscá `.env.local`: no
