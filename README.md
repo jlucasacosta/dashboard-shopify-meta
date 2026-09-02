@@ -87,6 +87,7 @@ miente siempre.
 | `npm run db:reset` | Recrea la base y carga los datos de ejemplo |
 | `npm run db:sql -- -c "..."` | Ejecuta SQL contra la base local |
 | `npm run test:realtime` | Diagnostica si Realtime entrega eventos |
+| `npm run nube:verificar` | Revisa que tu proyecto de Supabase esté bien armado |
 | `npm run usuario:crear -- mail@x.com` | Habilita a alguien para entrar al panel |
 
 `db:sql` y `db:test` usan el psql que viene adentro del contenedor de Docker,

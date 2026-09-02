@@ -12,6 +12,7 @@
     "db:reset": "supabase db reset",
     "test": "vitest run",
     "test:realtime": "node scripts/probar-realtime-auth.mjs",
+    "nube:verificar": "node scripts/verificar-nube.mjs",
     "usuario:crear": "node scripts/crear-usuario.mjs"
   },
   "dependencies": {
