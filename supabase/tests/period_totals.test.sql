@@ -1,5 +1,6 @@
 -- Test de period_totals(desde, hasta).
--- Correr con:  npm run db:test
+-- Correr pidiendoselo a Claude:  "corre supabase/tests/period_totals.test.sql
+-- en mi proyecto de Supabase" (lo ejecuta por el MCP, en una sola llamada).
 --
 -- Lo que se protege aca: agregar un periodo NO es promediar los valores
 -- diarios. El CAC del mes es (todo lo gastado) / (todos los clientes nuevos),

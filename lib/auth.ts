@@ -8,10 +8,9 @@
 /**
  * Largo del código que manda Supabase.
  *
- * Acá vivía `LARGO_CODIGO = 6`, "para que coincida con otp_length de
- * config.toml". El problema es que config.toml SOLO vale para el Supabase de
- * tu máquina. Un proyecto en la nube emite el largo que tenga configurado, y
- * por defecto son 8.
+ * Acá vivía `LARGO_CODIGO = 6`, heredado de la configuración de un Supabase
+ * local. Un proyecto en la nube emite el largo que tenga configurado en
+ * Authentication > Emails, y por defecto son 8.
  *
  * Con el largo fijo en 6, la app recortaba el código de 8 a sus primeros 6
  * dígitos y Supabase respondía `otp_expired`: un error que miente, porque el
@@ -65,12 +64,13 @@ export function mensajeDeError(original: string): string {
     return 'Ese correo no parece válido.'
   }
   // El navegador tira "Failed to fetch" cuando ni siquiera pudo llegar a
-  // Supabase. En local pasa siempre por lo mismo: Docker apagado. Sin esto el
-  // mensaje queda en inglés y no dice que revisar, que es el peor momento para
-  // dejar a alguien solo: es su primer intento de entrar.
+  // Supabase. Casi siempre es una de dos: falta `.env.local` (o quedó con la
+  // URL equivocada) o el proyecto está pausado. Sin esto el mensaje queda en
+  // inglés y no dice qué revisar, que es el peor momento para dejar a alguien
+  // solo: es su primer intento de entrar.
   if (e.includes('failed to fetch') || e.includes('networkerror') ||
       e.includes('load failed')) {
-    return 'No se pudo contactar a Supabase. Si estás en tu máquina, fijate que Docker esté abierto y que hayas corrido `npx supabase start`.'
+    return 'No se pudo contactar a Supabase. Revisá que `.env.local` tenga la URL de tu proyecto y que el proyecto no esté pausado.'
   }
 
   return `No pudimos continuar: ${original}`

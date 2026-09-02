@@ -128,10 +128,11 @@ un número inventado. Debajo del guion está la explicación de qué falta.
 **Causa:** hay dos requisitos que fallan en silencio. El canal reporta que se
 conectó igual, y no aparece ningún error en ningún lado.
 
-**Solución:** corré el diagnóstico:
+**Solución:** corré el diagnóstico, con las credenciales de tu proyecto en la
+misma línea:
 
 ```bash
-npm run test:realtime
+SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_ANON_KEY=eyJ... SUPABASE_SERVICE_KEY=eyJ... npm run test:realtime
 ```
 
 Te dice si el problema está en la base o en el navegador. Si falla, revisá que
@@ -141,14 +142,30 @@ permisos sobre la fila que cambió.
 
 ---
 
-## `npx supabase start` falla la primera vez
+## Claude dice que no tiene el MCP de Supabase
 
-**Síntoma:** un error que dice `LegacyImagePrepullError` o
-`failed to inspect docker image`.
+**Síntoma:** le pedís que aplique las migraciones y responde que no puede, o no
+encuentra ninguna herramienta de Supabase.
 
-**Causa:** Docker todavía está descargando las imágenes.
+**Causa:** los MCP se conectan cuando arranca Claude Code. Si armaste
+`.mcp.json` con la sesión abierta, esa sesión no lo ve.
 
-**Solución:** volvé a correr el mismo comando. La segunda vez funciona.
+**Solución:** cerrá Claude Code y volvé a abrirlo. Si sigue igual, revisá que
+`.mcp.json` tenga tu `project_ref` de verdad y no `TU_PROJECT_REF`, y
+autenticá el servidor desde una terminal normal con `claude /mcp`.
+
+---
+
+## Las tablas no existen
+
+**Síntoma:** el panel no muestra nada, o `npm run nube:verificar` dice que
+faltan tablas.
+
+**Causa:** las migraciones no se aplicaron, o se aplicaron a medias.
+
+**Solución:** pedile a Claude *aplicá las migraciones de
+`supabase/migrations/` en orden numérico y mostrame cuáles ya estaban*. El
+orden importa: cada una asume que la anterior corrió.
 
 ---
 

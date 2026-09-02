@@ -1,9 +1,12 @@
 -- seed.sql
 --
 -- 12 meses de datos demo. Sirve para que puedas ver el dashboard funcionando
--- ANTES de conectar tu tienda real. Cuando corras /sync por primera vez,
--- estos datos se van a mezclar con los reales: borralos con
---   npm run db:sql -- -c "truncate daily_sales, daily_traffic, daily_ad_spend, daily_ad_campaigns, daily_products, fx_rates cascade;"
+-- ANTES de conectar tu tienda real. Se carga pidiendoselo a Claude:
+--   "carga supabase/seed.sql en mi proyecto de Supabase"
+--
+-- Cuando corras /sync por primera vez, estos datos se van a mezclar con los
+-- reales. Borralos antes, tambien por el MCP:
+--   truncate daily_sales, daily_traffic, daily_ad_spend, daily_ad_campaigns, daily_products, fx_rates cascade;
 --
 -- El gasto va en USD y las ventas en UYU a proposito: asi el demo ejercita
 -- la conversion de moneda, que es donde mas facil se rompe un dashboard.

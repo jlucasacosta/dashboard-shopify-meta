@@ -33,7 +33,7 @@ function leerEnv(archivo) {
   return out
 }
 
-const env = { ...leerEnv('.env.development'), ...leerEnv('.env.local'), ...process.env }
+const env = { ...leerEnv('.env.local'), ...process.env }
 const URL = env.NEXT_PUBLIC_SUPABASE_URL
 const ANON = env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 const SERVICE = process.env.SUPABASE_SERVICE_KEY
@@ -80,7 +80,7 @@ const ESPERADAS = [
 
 for (const t of ESPERADAS) {
   const r = await rest(`${t}?select=*&limit=1`)
-  if (r.status === 404) falla(`${t} no existe`, 'faltan migraciones: corré supabase db push o pegá los .sql en el SQL Editor')
+  if (r.status === 404) falla(`${t} no existe`, 'faltan migraciones: pedile a Claude que las aplique por el MCP de Supabase, o pegá los .sql en el SQL Editor')
   else if (r.ok || r.status === 401 || r.status === 403) ok(t)
   else falla(`${t} respondió ${r.status}`, (await r.text()).slice(0, 120))
 }

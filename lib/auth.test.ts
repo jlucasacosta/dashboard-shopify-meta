@@ -66,12 +66,12 @@ describe('mensajeDeError', () => {
 })
 
 describe('mensajeDeError con la red caida', () => {
-  // Es el primer error que ve alguien que arranca el proyecto con Docker
-  // apagado. Si queda en inglés, no sabe que revisar.
+  // Es el primer error que ve alguien que arranca el proyecto sin `.env.local`
+  // o con la URL equivocada. Si queda en inglés, no sabe qué revisar.
   it('explica que no se llego a Supabase, en vez de "Failed to fetch"', () => {
     const m = mensajeDeError('Failed to fetch')
     expect(m).toContain('Supabase')
-    expect(m).toContain('Docker')
+    expect(m).toContain('.env.local')
     expect(m).not.toContain('Failed to fetch')
   })
 })

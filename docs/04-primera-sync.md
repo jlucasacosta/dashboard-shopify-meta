@@ -16,11 +16,17 @@ Revisá que `sync.config.json` tenga tus datos:
 }
 ```
 
-Si ejecutaste el seed de datos de mentira, borralos ahora para que no se mezclen:
+Si cargaste el seed de datos de mentira, borralos ahora para que no se mezclen.
+En Claude Code:
 
-```bash
-npm run db:sql -- -c "truncate daily_sales, daily_traffic, daily_ad_spend, daily_ad_campaigns, daily_products, fx_rates cascade;"
 ```
+borrá los datos demo de mi Supabase:
+truncate daily_sales, daily_traffic, daily_ad_spend, daily_ad_campaigns, daily_products, fx_rates cascade;
+```
+
+Es la única vez que se borra algo de la base, y conviene mirar la respuesta
+antes de seguir: si Claude te dice que las tablas ya estaban vacías, no había
+seed cargado y está todo bien.
 
 ## Sincronizar
 

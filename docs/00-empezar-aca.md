@@ -31,19 +31,31 @@ listo.
 | Cuenta de Supabase | Guardar los datos | Sí |
 | Cuenta de Vercel | Publicar el panel | Sí |
 | Cuenta de GitHub | Guardar el código | Sí |
-| Docker Desktop | Solo para probar en tu compu | Sí |
 
-## Probalo antes de conectar nada
+No necesitás Docker ni instalar la CLI de Supabase. **Todo lo que toca la base
+de datos lo hace Claude por el MCP de Supabase**: aplicar las migraciones,
+cargar datos de ejemplo, correr una consulta. Vos no escribís SQL en ninguna
+terminal.
 
-Esto es a propósito: el proyecto viene con **12 meses de datos de mentira** para
-que veas el panel funcionando antes de configurar nada.
+## Probalo antes de conectar tu tienda
+
+El proyecto viene con **12 meses de datos de mentira** para que veas el panel
+funcionando antes de conectar Shopify y Meta.
+
+Primero hacé la guía [01 — Supabase](01-supabase.md): creás el proyecto,
+conectás el MCP y aplicás las migraciones. Son diez minutos y es el único paso
+previo, porque la base vive en la nube desde el principio.
+
+Después, en Claude Code:
+
+```
+cargá supabase/seed.sql en mi proyecto de Supabase
+```
+
+Y en la terminal:
 
 ```bash
 npm install
-```
-
-```bash
-npx supabase start
 ```
 
 ```bash
@@ -53,10 +65,8 @@ npm run dev
 Abrí **http://localhost:3000** y vas a ver el panel completo, con gráficas y
 todo. Los números son inventados, pero el panel es el de verdad.
 
-No configuraste nada y funciona: eso es a propósito. El archivo
-`.env.development` viene en el repo con las claves de Supabase local, que son
-públicas e iguales para todo el mundo. Cuando pases a la nube vas a crear tu
-propio `.env.local` (guía [01 — Supabase](01-supabase.md)).
+Antes de traer tus datos reales, pedile a Claude que borre los de ejemplo:
+están explicados en [04 — Primera sync](04-primera-sync.md).
 
 > **Importante:** entrá por `localhost`, no por `127.0.0.1`. Son la misma
 > computadora pero para el navegador son sitios distintos, y por seguridad
@@ -64,15 +74,15 @@ propio `.env.local` (guía [01 — Supabase](01-supabase.md)).
 > vas a ver la página pero **los botones no van a responder** y no va a
 > aparecer ningún error. Es el problema más confuso de toda la lista.
 
-Para entrar necesitás un usuario habilitado. Creá el tuyo:
+Para entrar necesitás un usuario habilitado. Creá el tuyo (en una sola línea,
+con las credenciales de tu proyecto):
 
 ```bash
-npm run usuario:crear -- vos@tutienda.com
+SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com
 ```
 
-Después poné ese correo en la pantalla de entrada. El código de 6 dígitos va a
-llegar a **http://localhost:54324**, que es una casilla de correo falsa que
-corre en tu compu.
+Después poné ese correo en la pantalla de entrada. El código llega a tu casilla
+de verdad, mandado por Supabase.
 
 ## El orden de las guías
 

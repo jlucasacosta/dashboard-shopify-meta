@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-// Igual que probar-realtime.mjs, pero como usuario AUTENTICADO, que es el caso
-// real del dashboard.
+// Prueba Realtime como usuario AUTENTICADO, que es el caso real del dashboard.
 //
 //   node scripts/probar-realtime-auth.mjs
 //
@@ -9,19 +8,19 @@
 // llega nunca nada: el fallo más silencioso de todos.
 
 import { createClient } from '@supabase/supabase-js'
-import { execFileSync } from 'node:child_process'
 
-// Valores de Supabase corriendo en tu maquina. Son publicos e iguales para todo
-// el mundo, asi que el script anda recien clonado, sin exportar nada.
-const URL_LOCAL = 'http://127.0.0.1:54321'
-const ANON_LOCAL =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
-const SERVICE_LOCAL =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+// Corré el script con las credenciales de tu proyecto:
+//   SUPABASE_URL=https://xxx.supabase.co SUPABASE_ANON_KEY=eyJ... SUPABASE_SERVICE_KEY=eyJ... npm run test:realtime
+const URL = process.env.SUPABASE_URL
+const ANON = process.env.SUPABASE_ANON_KEY
+const SERVICE = process.env.SUPABASE_SERVICE_KEY
 
-const URL = process.env.SUPABASE_URL ?? URL_LOCAL
-const ANON = process.env.SUPABASE_ANON_KEY ?? ANON_LOCAL
-const SERVICE = process.env.SUPABASE_SERVICE_KEY ?? SERVICE_LOCAL
+if (!URL || !ANON || !SERVICE) {
+  console.error('Faltan SUPABASE_URL, SUPABASE_ANON_KEY o SUPABASE_SERVICE_KEY.')
+  console.error('Las dos primeras están en tu .env.local; la service key sale de')
+  console.error('Project Settings > API Keys y no se guarda en ningún archivo.')
+  process.exit(1)
+}
 
 // 1. Crear sesión real para un usuario de prueba, usando la API de admin.
 const admin = createClient(URL, SERVICE, { auth: { persistSession: false } })
@@ -70,9 +69,30 @@ if (estado !== 'SUBSCRIBED') process.exit(1)
 
 await new Promise((r) => setTimeout(r, 1500))
 console.log('4) provocando un UPDATE...')
-execFileSync('node', ['scripts/psql.mjs', '-c',
-  'update daily_sales set updated_at = now() where date = current_date;'],
-  { stdio: 'ignore' })
+// Con la service key el UPDATE se saltea RLS, que es justo lo que queremos:
+// probamos si el evento LLEGA, no si el escritor tenía permiso. Tocamos una
+// sola fila, la más reciente, y solo su updated_at: ninguna métrica cambia.
+const { data: fila } = await admin
+  .from('daily_sales')
+  .select('date')
+  .order('date', { ascending: false })
+  .limit(1)
+  .maybeSingle()
+
+if (!fila) {
+  console.error('daily_sales está vacía: no hay ninguna fila para tocar.')
+  console.error('Cargá datos (seed o /sync) y volvé a correr esto.')
+  process.exit(1)
+}
+
+const { error: errUpdate } = await admin
+  .from('daily_sales')
+  .update({ updated_at: new Date().toISOString() })
+  .eq('date', fila.date)
+if (errUpdate) {
+  console.error('No se pudo tocar daily_sales:', errUpdate.message)
+  process.exit(1)
+}
 
 await new Promise((r) => setTimeout(r, 5000))
 console.log('5) eventos recibidos:', recibidos.length, recibidos)

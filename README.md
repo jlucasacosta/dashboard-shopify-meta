@@ -19,33 +19,35 @@ la base y se actualiza solo, en vivo, mientras la sincronización corre.
        →  el panel abierto se actualiza en vivo
 ```
 
-## Arrancar en 5 pasos
+## Arrancar
+
+No hace falta instalar Docker ni la CLI de Supabase. **Todo lo que toca la base
+de datos lo hace Claude por el MCP de Supabase.**
+
+1. Creá un proyecto gratis en [supabase.com](https://supabase.com).
+2. Conectá el MCP de Supabase apuntándolo a ese proyecto
+   (copiá `.mcp.json.example` a `.mcp.json` y poné tu `project_ref`).
+3. Pedile a Claude: *aplicá las migraciones de `supabase/migrations/` en mi
+   proyecto de Supabase*.
+4. Copiá `.env.example` a `.env.local` y completá la URL y la anon key.
 
 ```bash
 npm install
 ```
 
 ```bash
-npx supabase start
-```
-
-```bash
-npm run db:reset
-```
-
-```bash
 npm run dev
 ```
 
-Abrí **http://localhost:3000** (por `localhost`, no por `127.0.0.1`) y vas a ver
-el panel con **12 meses de datos de ejemplo**, antes de conectar nada.
+Abrí **http://localhost:3000** (por `localhost`, no por `127.0.0.1`).
 
-No hay que copiar ni completar ningún archivo de configuración: `.env.development`
-ya viene en el repo con las claves de Supabase local, que son públicas e iguales
-para todo el mundo. Las tuyas de la nube van después en `.env.local`.
+Si querés ver el panel con datos antes de conectar tu tienda, pedile a Claude
+que cargue `supabase/seed.sql`: son **12 meses de datos de ejemplo**. Acordate
+de borrarlos antes de la primera sync real.
 
-Habilitá tu correo con `npm run usuario:crear -- vos@tutienda.com`. El código
-de acceso llega a la casilla falsa en **http://localhost:54324**.
+Habilitá tu correo con
+`SUPABASE_URL=... SUPABASE_SERVICE_KEY=... npm run usuario:crear -- vos@tutienda.com`.
+El código de acceso llega a tu casilla de verdad.
 
 Después seguí **[docs/00-empezar-aca.md](docs/00-empezar-aca.md)**.
 
@@ -83,21 +85,24 @@ miente siempre.
 | `npm run dev` | Servidor de desarrollo |
 | `npm run build` | Compila para producción |
 | `npm test` | Tests unitarios |
-| `npm run db:test` | Tests de las métricas en SQL |
-| `npm run db:reset` | Recrea la base y carga los datos de ejemplo |
-| `npm run db:sql -- -c "..."` | Ejecuta SQL contra la base local |
 | `npm run test:realtime` | Diagnostica si Realtime entrega eventos |
 | `npm run nube:verificar` | Revisa que tu proyecto de Supabase esté bien armado |
 | `npm run usuario:crear -- mail@x.com` | Habilita a alguien para entrar al panel |
 
-`db:sql` y `db:test` usan el psql que viene adentro del contenedor de Docker,
-así que **no hace falta instalar psql**.
+Los últimos tres necesitan las credenciales del proyecto por variable de
+entorno (`SUPABASE_URL`, `SUPABASE_SERVICE_KEY`). Nunca van en un archivo.
+
+**Todo lo que sea SQL se lo pedís a Claude**, que lo ejecuta por el MCP de
+Supabase: aplicar migraciones, cargar `supabase/seed.sql`, borrar los datos
+demo, o correr los tests de métricas de `supabase/tests/`. No hay comandos de
+base de datos en este repo porque no hay base de datos local.
 
 ## Duplicar para otra tienda
 
 1. Cloná el repo.
-2. Creá un proyecto nuevo en Supabase y ejecutá las migraciones. **No corras el
-   seed**: son datos de mentira y se mezclan con los reales.
+2. Creá un proyecto nuevo en Supabase, apuntá el MCP ahí y pedile a Claude que
+   aplique las migraciones. **No cargues el seed**: son datos de mentira y se
+   mezclan con los reales.
 3. Cambiá tres valores en `sync.config.json`: `shopDomain`, `adAccountId` y
    `storeCurrency`.
 4. Completá `.env.local`.

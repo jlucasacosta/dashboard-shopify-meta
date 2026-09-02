@@ -1,8 +1,9 @@
 -- Test de la vista daily_metrics.
--- Correr con:  npm run db:test
+-- Correr pidiendoselo a Claude:  "corre supabase/tests/daily_metrics.test.sql
+-- en mi proyecto de Supabase" (lo ejecuta por el MCP, en una sola llamada).
 --
 -- Todo corre dentro de una transaccion que termina en rollback, asi que
--- no ensucia la base. Si una asercion falla, psql corta con codigo != 0.
+-- no ensucia la base. Si una asercion falla, la consulta corta con error.
 
 begin;
 

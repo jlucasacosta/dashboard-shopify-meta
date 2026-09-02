@@ -56,22 +56,19 @@ ejecutá los archivos de `supabase/migrations/` **en orden numérico**:
 Abrí cada archivo, copiá todo el contenido, pegalo en el SQL Editor y apretá
 **Run**. Uno por vez, en orden.
 
-> **No corras `supabase/seed.sql` en el proyecto de tu tienda.** Son datos de
-> mentira y se mezclan con los reales. El seed es solo para la base de tu
-> máquina, donde `npm run db:reset` lo carga solo.
+> **Cuidado con `supabase/seed.sql`.** Son 12 meses de datos de mentira, útiles
+> para ver el panel andando antes de conectar la tienda. Si los cargás, pedile
+> a Claude que los borre **antes** de la primera sync real: mezclados con los
+> datos de verdad no hay forma de distinguirlos. Cómo borrarlos está en
+> [04 — Primera sync](04-primera-sync.md).
 
 ## Habilitar a quien puede entrar
 
 Este panel es privado: **nadie se da de alta solo**. Vos decidís qué correos
 pueden entrar, y el resto recibe un "no estás habilitado".
 
-Para habilitar a alguien, desde la terminal:
-
-```bash
-npm run usuario:crear -- vos@tutienda.com
-```
-
-Para tu proyecto en la nube, pasale las credenciales:
+Para habilitar a alguien, desde la terminal, con las credenciales del proyecto
+en la misma línea:
 
 ```bash
 SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com
@@ -92,17 +89,12 @@ En **Authentication → Emails → Magic Link**, reemplazá el contenido por el 
 `supabase/templates/magic_link.html`. Lo único que importa de verdad es que
 diga `{{ .Token }}` en vez de `{{ .ConfirmationURL }}`.
 
-En tu máquina esto ya está configurado en `supabase/config.toml`; el cambio a
-mano es solo para la nube.
-
 > Si te salteás este paso, el correo va a llegar con un link en vez de un
 > código, y la pantalla te va a seguir pidiendo el código.
 
-> **El largo del código no es el mismo en los dos lados.** Tu Supabase local
-> manda 6 dígitos, porque `config.toml` lo dice. Un proyecto en la nube manda
-> 8, porque `config.toml` no aplica ahí. La pantalla acepta los dos, así que no
-> tenés que configurar nada: copiá el código completo que te llegó, sea del
-> largo que sea.
+> **El largo del código lo decide tu proyecto**, y por defecto son 8 dígitos.
+> La pantalla acepta entre 6 y 10, así que no tenés que configurar nada: copiá
+> el código completo que te llegó, sea del largo que sea.
 
 ## Conectar la app
 
@@ -117,9 +109,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGci...
 La clave que necesitás es la **anon** (o **publishable**, si tu proyecto es
 nuevo — son la misma cosa con distinto nombre).
 
-`.env.local` le gana a `.env.development`, así que desde que lo creás la app
-deja de mirar la base de tu máquina y empieza a mirar la de la nube. Para volver
-a la local, borrá `.env.local` (o renombralo).
+`.env.local` está en `.gitignore`: es tuyo y no se sube. Sin él la app no
+arranca, porque no hay ninguna base por defecto a la que caer.
 
 > **Nunca pongas acá la clave `service_role`.** Esa clave se saltea todos los
 > permisos. En este archivo termina en el navegador de cualquiera que abra tu

@@ -78,13 +78,17 @@ escribe ahí, el usuario no se entera de que le faltan datos.
 |---|---|
 | `npm run dev` | Servidor. Entrá por `localhost`, **no** por `127.0.0.1`. |
 | `npm test` | Tests unitarios (vitest). |
-| `npm run db:test` | Tests SQL de las métricas. |
-| `npm run db:reset` | Recrea la base y carga los 12 meses de ejemplo. |
-| `npm run db:sql -- -c "..."` | SQL contra la base local. Acepta también un archivo `.sql`. |
 | `npm run test:realtime` | Realtime como usuario logueado — el caso real del panel. |
 | `npm run usuario:crear -- mail@x.com` | Habilita a alguien a entrar. |
+| `npm run nube:verificar` | Chequea que el proyecto de Supabase esté completo. |
 
-`db:sql` usa el psql de adentro del contenedor: no hace falta instalarlo.
+**No hay base de datos local ni CLI de Supabase.** Todo el SQL se ejecuta por el
+MCP de Supabase, contra el proyecto en la nube: aplicar `supabase/migrations/`,
+cargar `supabase/seed.sql`, correr los tests de `supabase/tests/` (cada archivo
+en una sola llamada: son un `begin ... rollback`), o consultar cualquier tabla.
+
+Los tres scripts de arriba (menos `npm test`) necesitan `SUPABASE_URL`,
+`SUPABASE_ANON_KEY` y/o `SUPABASE_SERVICE_KEY` por variable de entorno.
 
 ## Trampas ya pisadas
 
@@ -104,17 +108,21 @@ escribe ahí, el usuario no se entera de que le faltan datos.
 
 ## Variables de entorno
 
-`.env.development` **va versionado**: son las claves de Supabase local, públicas
-e iguales para todo el mundo, y hacen que el proyecto arranque recién clonado.
+`.env.local` está ignorado y es el único archivo de configuración: sin él la app
+no arranca, porque no hay claves por defecto ni base local a la que caer. La
+plantilla versionada es `.env.example`.
 
-`.env.local` está ignorado, es donde van las claves de la nube, y le gana a
-`.env.development`.
+`.mcp.json` también está ignorado: lleva el `project_ref` de quien clona. Lo
+versionado es `.mcp.json.example`.
 
 La `service_role` no va en ningún archivo del repo. Los scripts que la necesitan
-la traen por variable de entorno o usan la de local, que no es un secreto.
+la exigen por variable de entorno y fallan con un mensaje si no está.
+
+Este repo es público: nada de URLs, `project_ref`, claves ni dominios de tienda
+reales en archivos versionados.
 
 ## Antes de decir que algo funciona
 
-Corré lo que corresponda y mirá la salida: `npm test`, `npm run db:test`,
-`npm run build`. Si cambiaste algo que se ve, abrilo en el navegador. "Debería
+Corré lo que corresponda y mirá la salida: `npm test`, `npm run build`, y los
+tests SQL de `supabase/tests/` por el MCP. Si cambiaste algo que se ve, abrilo en el navegador. "Debería
 andar" no es una verificación.

@@ -49,8 +49,9 @@ git status
 Si ves `.env.local` en la lista, **pará**. Algo está mal configurado y estarías
 publicando tus claves.
 
-> `.env.development` sí aparece y sí se sube: son las claves de Supabase local,
-> que son públicas e iguales para todo el mundo. No hay nada tuyo ahí.
+> `.mcp.json` tampoco se sube: lleva el identificador de **tu** proyecto de
+> Supabase. Lo que va al repo es `.mcp.json.example`, con un `TU_PROJECT_REF`
+> de mentira que cada uno reemplaza por el suyo.
 
 ## Cómo saber que funcionó
 

@@ -7,9 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:sql": "node scripts/psql.mjs",
-    "db:test": "node scripts/psql.mjs supabase/tests/daily_metrics.test.sql && node scripts/psql.mjs supabase/tests/period_totals.test.sql",
-    "db:reset": "supabase db reset",
     "test": "vitest run",
     "test:realtime": "node scripts/probar-realtime-auth.mjs",
     "nube:verificar": "node scripts/verificar-nube.mjs",
@@ -39,7 +36,6 @@
     "@vitejs/plugin-react": "^6.1.1",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
-    "supabase": "^2.116.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.11"
