@@ -11,13 +11,17 @@
 import { createClient } from '@supabase/supabase-js'
 import { execFileSync } from 'node:child_process'
 
-const URL = 'http://127.0.0.1:54321'
-const ANON = process.env.SUPABASE_ANON_KEY
-const SERVICE = process.env.SUPABASE_SERVICE_KEY
-if (!ANON || !SERVICE) {
-  console.error('Faltan SUPABASE_ANON_KEY y SUPABASE_SERVICE_KEY.')
-  process.exit(1)
-}
+// Valores de Supabase corriendo en tu maquina. Son publicos e iguales para todo
+// el mundo, asi que el script anda recien clonado, sin exportar nada.
+const URL_LOCAL = 'http://127.0.0.1:54321'
+const ANON_LOCAL =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+const SERVICE_LOCAL =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+
+const URL = process.env.SUPABASE_URL ?? URL_LOCAL
+const ANON = process.env.SUPABASE_ANON_KEY ?? ANON_LOCAL
+const SERVICE = process.env.SUPABASE_SERVICE_KEY ?? SERVICE_LOCAL
 
 // 1. Crear sesión real para un usuario de prueba, usando la API de admin.
 const admin = createClient(URL, SERVICE, { auth: { persistSession: false } })

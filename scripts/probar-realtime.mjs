@@ -11,12 +11,21 @@
 import { createClient } from '@supabase/supabase-js'
 import { execFileSync } from 'node:child_process'
 
+// Service key de Supabase local: publica e igual para todo el mundo, asi que el
+// script anda recien clonado. Para tu proyecto de la nube, pasa las dos:
+//   NEXT_PUBLIC_SUPABASE_URL=... SUPABASE_KEY_PRUEBA=... node scripts/probar-realtime.mjs
+//
+// Va la service key y no la anon a proposito: las policies de RLS son
+// "to authenticated", asi que con la anon este script da 0 eventos SIEMPRE,
+// incluso con todo bien configurado. Con la service key, 0 eventos significa
+// que el problema esta de verdad en la plomeria de Realtime, que es lo que este
+// script existe para responder. Para probar el caso real del panel (usuario
+// logueado, con RLS), usa `npm run test:realtime`.
+const KEY_LOCAL =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://127.0.0.1:54321'
-const KEY = process.env.SUPABASE_KEY_PRUEBA
-if (!KEY) {
-  console.error('Falta SUPABASE_KEY_PRUEBA. Pasá la anon key o la service_role key.')
-  process.exit(1)
-}
+const KEY = process.env.SUPABASE_KEY_PRUEBA ?? KEY_LOCAL
 
 const supabase = createClient(URL, KEY, { realtime: { params: { eventsPerSecond: 10 } } })
 const recibidos = []
@@ -51,6 +60,9 @@ if (recibidos.length === 0) {
   console.error('FALLA: el canal quedó suscrito pero no llegó ningún evento.')
   console.error('Revisá: la tabla en la publicación supabase_realtime, REPLICA IDENTITY FULL,')
   console.error('y que el rol de esta clave pase las policies de RLS.')
+  console.error('')
+  console.error('Si pasaste la anon key en SUPABASE_KEY_PRUEBA, 0 eventos es lo esperado:')
+  console.error('las policies son "to authenticated". Probá con `npm run test:realtime`.')
   process.exit(1)
 }
 console.log('OK: Realtime entrega eventos.')
