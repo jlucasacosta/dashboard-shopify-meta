@@ -49,3 +49,6 @@ next-env.d.ts
 
 # Respuestas crudas de los MCP durante una sincronizacion
 .sync-cache/
+
+.vercel
+.env*

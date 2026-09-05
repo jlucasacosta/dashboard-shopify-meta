@@ -63,18 +63,67 @@ y cuál no. **Nunca necesitás el token de nadie.**
 
 ## Paso 0 — La URL de producción
 
-Pedí **una sola cosa**: la URL del panel en Vercel.
+Antes de preguntar nada, **fijate vos** si el proyecto existe: con el MCP de
+Vercel, `list_teams` y después `list_projects`. Si no está, no está desplegado:
+guiala por `docs/06-vercel.md` y volvé acá cuando termine.
 
-> ¿Cuál es la URL de tu panel? Es la que te dio Vercel al publicar, algo como
-> `https://mi-panel.vercel.app`.
+Si está, confirmá la URL con ella en vez de pedírsela a ciegas:
 
-Normalizala: sin barra al final, con `https://`. Anotala, la vas a usar en casi
-todos los pasos.
+> Encontré tu panel en `https://mi-panel.vercel.app`. ¿Es esa?
 
-**Verificación.** Pedile que la abra en el navegador. Tiene que ver la pantalla
-de entrada pidiendo un correo. Si ve un error de variable de entorno faltante,
-las de Supabase no están cargadas en Vercel: mandala a `docs/06-vercel.md` y no
-sigas.
+Usá el alias **canónico** (`proyecto.vercel.app`), no el largo que lleva el
+nombre de usuario. Sin barra al final. Es el valor que va a terminar en
+`APP_URL`, en el redirect de Mercado Libre y en los webhooks de Shopify: si
+después cambia, hay que rehacer los tres.
+
+### 0.1 La protección de Vercel — esto rompe todo y es el default
+
+**Verificá esto antes que cualquier otra cosa.** Con el MCP de Vercel:
+`get_project_deployment_protection`.
+
+Si `ssoProtection.enabled` es `true`, **el producto no funciona y no hay forma
+de darse cuenta mirando el panel.** Vercel intercepta cada pedido antes de que
+llegue al código: el webhook de Shopify y el cron de Supabase reciben un 401 de
+Vercel, no del panel. Shopify termina desactivando la suscripción y el sync no
+corre nunca.
+
+Los proyectos nuevos vienen con esto **encendido**, en modo
+`all_except_custom_domains`, así que afecta a todos los `.vercel.app`.
+
+Apagalo con `update_project_deployment_protection` y
+`ssoProtection: {"enabled": false}`.
+
+> Tranquilizala si pregunta: el panel no queda abierto. Sigue teniendo su propio
+> login por correo, y solo entran las direcciones dadas de alta. Lo que se apaga
+> es una segunda puerta de Vercel que además bloquea a las máquinas.
+
+**Verificación.** Golpeá el endpoint del cron **sin** el secreto, desde Postgres:
+
+```sql
+select net.http_post(
+  url := 'https://SU-PANEL.vercel.app/api/cron/sync?job=hoy',
+  headers := jsonb_build_object('Content-Type','application/json'),
+  body := '{}'::jsonb
+);
+-- unos segundos despues
+select id, status_code, left(content, 200) from net._http_response order by id desc limit 1;
+```
+
+Lo que tiene que pasar: la respuesta es **JSON nuestro** (un 401 `no autorizado`
+o un 500 diciendo qué variable falta). Si viene HTML de login de Vercel, la
+protección sigue puesta.
+
+Esto además prueba dos cosas de un saque: que Postgres llega a Vercel, y que el
+middleware no está mandando `/api/*` al login.
+
+### 0.2 Que el panel cargue
+
+Pedile que abra la URL. Tiene que ver la pantalla de entrada pidiendo un correo.
+Si ve un error de variable faltante, las de Supabase no están en Vercel.
+
+> **Acordate del redeploy.** Vercel no aplica variables a un deploy ya hecho.
+> Cada vez que se agrega una, hay que volver a desplegar. Es la causa número uno
+> de "ya la cargué y sigue fallando".
 
 ---
 
@@ -190,6 +239,16 @@ Que copie de **API credentials** y pegue en
 
 Para `CRON_SECRET`, que genere uno: `openssl rand -hex 32`. Si no tiene
 terminal a mano, cualquier cadena larga y al azar sirve.
+
+> **El atajo, y conviene usarlo:** en vez de cargar doce variables a mano en la
+> interfaz de Vercel, que complete `.env.local` (copiando `.env.example`) y
+> corra `npm run env:subir`. Las sube todas de una, saltea las que están
+> vacías, y le marca con `!` las que son obligatorias y le faltan. Cargarlas a
+> mano es donde la gente pega una con un espacio de más o se saltea una, y
+> después el panel falla con un error que no apunta a eso.
+>
+> Ese archivo no se sube al repo, así que los secretos siguen sin pasar por
+> ningún lado que no sea su máquina y Vercel.
 
 > El token de Shopify **se muestra una sola vez**. Avisale antes de que cierre
 > la pantalla.

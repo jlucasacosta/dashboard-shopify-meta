@@ -12,6 +12,7 @@
     "nube:verificar": "node scripts/verificar-nube.mjs",
     "usuario:crear": "node scripts/crear-usuario.mjs",
     "webhooks:registrar": "node scripts/registrar-webhooks.mjs",
+    "env:subir": "node scripts/subir-env.mjs",
     "tipos:filtrar": "node scripts/filtrar-tipos.js"
   },
   "dependencies": {
