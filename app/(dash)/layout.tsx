@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { SidebarNav } from '@/components/sidebar-nav'
 import { DateRangeSelect } from '@/components/date-range-select'
+import { ChannelSelect } from '@/components/channel-select'
 import { cerrarSesion } from './actions'
 
 export default async function DashLayout({
@@ -70,7 +71,10 @@ export default async function DashLayout({
               <SidebarNav />
             </Suspense>
           </div>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <Suspense>
+              <ChannelSelect />
+            </Suspense>
             <Suspense>
               <DateRangeSelect />
             </Suspense>

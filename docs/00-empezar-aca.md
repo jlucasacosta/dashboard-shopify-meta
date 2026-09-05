@@ -15,12 +15,14 @@ puede dar sola:
 
 ## Cómo se actualiza
 
-No hay un robot corriendo en un servidor. **Vos escribís `/sync` en Claude Code**
-y Claude va a buscar los datos a Shopify y a Meta y los guarda en tu base.
+Solo. Una vez instalado no tenés que hacer nada más.
 
-Suena raro al principio, pero tiene una ventaja grande: **no tenés que generar
-ni una sola clave de API**. Conectás los tres MCP (que es apretar botones) y
-listo.
+Tu base de datos tiene un reloj adentro que cada 5 minutos le pide al panel que
+vaya a buscar novedades a Shopify y a Mercado Libre. Además, cuando entra una
+venta, Shopify avisa en el momento.
+
+No hay ningún servidor extra que mantener ni pagar: el reloj es de Supabase y el
+trabajo lo hace tu propio panel.
 
 ## Qué vas a necesitar
 
@@ -28,6 +30,7 @@ listo.
 |---|---|---|
 | Cuenta de Shopify | Tus ventas | Ya la tenés |
 | Cuenta de Meta Ads | Tu inversión | Ya la tenés |
+| Cuenta de Mercado Libre | Tus ventas ahí (opcional) | Ya la tenés |
 | Cuenta de Supabase | Guardar los datos | Sí |
 | Cuenta de Vercel | Publicar el panel | Sí |
 | Cuenta de GitHub | Guardar el código | Sí |
@@ -66,7 +69,7 @@ Abrí **http://localhost:3000** y vas a ver el panel completo, con gráficas y
 todo. Los números son inventados, pero el panel es el de verdad.
 
 Antes de traer tus datos reales, pedile a Claude que borre los de ejemplo:
-están explicados en [04 — Primera sync](04-primera-sync.md).
+están explicados en [07 — Encender el sync](07-encender-el-sync.md).
 
 > **Importante:** entrá por `localhost`, no por `127.0.0.1`. Son la misma
 > computadora pero para el navegador son sitios distintos, y por seguridad
@@ -87,12 +90,13 @@ de verdad, mandado por Supabase.
 ## El orden de las guías
 
 1. [Supabase](01-supabase.md) — creás la base de datos
-2. [Shopify](02-shopify-mcp.md) — conectás tu tienda
-3. [Meta Ads](03-meta-mcp.md) — conectás tu cuenta de anuncios
-4. [Primera sincronización](04-primera-sync.md) — traés tus datos reales
+2. [Shopify](02-shopify.md) — creás la app y sacás el token
+3. [Meta Ads](03-meta-ads.md) — el token del gasto (opcional)
+4. [Mercado Libre](04-mercado-libre.md) — el segundo canal (opcional)
 5. [GitHub](05-github.md) — guardás el código
 6. [Vercel](06-vercel.md) — lo ponés online
-7. [Problemas comunes](07-problemas-comunes.md) — cuando algo no anda
+7. [Encender el sync](07-encender-el-sync.md) — que se actualice solo
+8. [Problemas comunes](08-problemas-comunes.md) — cuando algo no anda
 
 Hacelas en orden. Cada una arranca donde termina la anterior.
 

@@ -1,4 +1,4 @@
-# 7. Problemas comunes
+# 8. Problemas comunes
 
 Ordenados por probabilidad de que te pasen.
 
@@ -79,17 +79,25 @@ proyecto para spamear.
 
 ---
 
-## `is_ads_mcp_enabled: false`
+## No aparece el gasto de anuncios
 
-**Síntoma:** Claude dice que tu cuenta publicitaria no tiene el conector
-habilitado.
+**Síntoma:** el panel muestra ventas pero CAC, ROAS, MER y contribución están
+en "—".
 
-**Causa:** Meta lo está liberando de a poco. No hay nada que configurar.
+**Causa:** las cuatro necesitan saber cuánto invertiste. Mirá `sync_log`:
 
-**Solución:** ninguna de tu lado, y no es una respuesta cómoda. Hasta que Meta
-habilite el conector no vas a tener CAC, ROAS, MER ni contribución: el panel te
-los muestra como "—" y te dice por qué. Las ventas, el tráfico y los productos
-se siguen trayendo normal. Probá de nuevo cada un par de semanas.
+```sql
+select * from sync_log where source = 'meta' order by started_at desc limit 5;
+```
+
+- `status = 'skipped'` → falta `META_ACCESS_TOKEN` o `META_AD_ACCOUNT_ID` en
+  Vercel. Es opcional a propósito: el resto del panel anda igual.
+- `status = 'error'` con código 190 → el token venció o lo revocaron. Pasa
+  cuando se usó uno del Graph API Explorer (dura 2 horas) o uno de larga
+  duración (60 días) en vez de uno **de usuario del sistema**, que no vence.
+  Ver [03 — Meta Ads](03-meta-ads.md).
+- `status = 'error'` con "permiso" → al usuario del sistema le falta `ads_read`
+  o el acceso a esa cuenta publicitaria.
 
 ---
 
@@ -100,9 +108,9 @@ se siguen trayendo normal. Probá de nuevo cada un par de semanas.
 **Causa:** casi siempre, monedas mezcladas. Tu tienda factura en pesos y tu
 cuenta de Meta gasta en dólares.
 
-**Solución:** revisá que `storeCurrency` en `sync.config.json` sea la moneda de
-**tu tienda**. Después corré `/sync` de nuevo para que traiga los tipos de
-cambio.
+**Solución:** revisá que `STORE_CURRENCY` en Vercel sea la moneda de **tu
+tienda**. Si la cambiás, volvé a desplegar y esperá a que corra `sync-diario`
+(o dispará el trabajo a mano) para que traiga los tipos de cambio.
 
 Si el panel te avisa *"X días no tienen tipo de cambio guardado"*, es eso: la
 inversión real fue mayor que la que ves.
@@ -123,7 +131,7 @@ un número inventado. Debajo del guion está la explicación de qué falta.
 
 ## Realtime dice "En vivo" pero no se actualiza nada
 
-**Síntoma:** el puntito está verde, corrés `/sync`, y el panel no se mueve.
+**Síntoma:** el puntito está verde, entra una venta, y el panel no se mueve.
 
 **Causa:** hay dos requisitos que fallan en silencio. El canal reporta que se
 conectó igual, y no aparece ningún error en ningún lado.
@@ -136,9 +144,13 @@ SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_ANON_KEY=eyJ... SUPABASE_SERVICE
 ```
 
 Te dice si el problema está en la base o en el navegador. Si falla, revisá que
-las migraciones `0003` se hayan ejecutado completas: incluyen
+las migraciones `0003` y `0008` se hayan ejecutado completas: incluyen
 `REPLICA IDENTITY FULL`, que es lo que le permite a Supabase evaluar los
 permisos sobre la fila que cambió.
+
+Antes de culpar a Realtime, confirmá que el sync esté escribiendo algo:
+`select * from sync_log order by started_at desc limit 5;`. Si no hay filas
+nuevas, el problema es el cron, no el navegador — mirá el caso de abajo.
 
 ---
 
@@ -187,26 +199,75 @@ En Windows, si `rm` no existe: `rmdir /s /q .next`.
 
 ---
 
-## Claude dice que le falta un MCP
+## El panel no se actualiza nunca
 
-**Síntoma:** al correr `/sync`, Claude avisa que no tiene Shopify, Meta o
-Supabase conectado.
+**Síntoma:** los datos quedaron congelados y `sync_log` no tiene filas nuevas.
 
-**Causa:** los MCP se conectan cuando Claude Code arranca.
+**Causa:** el reloj no está corriendo, o no llega al panel.
 
-**Solución:** cerrá Claude Code y volvé a abrirlo. Si lo agregaste con Claude ya
-abierto, no lo va a ver hasta reiniciar.
+**Solución:** revisá en este orden.
+
+**1. ¿Están agendados los trabajos?**
+
+```sql
+select jobname, schedule, active from cron.job;
+```
+
+Si está vacío, faltó `select programar_sync();` — ver
+[07 — Encender el sync](07-encender-el-sync.md).
+
+**2. ¿Llega el pedido al panel?**
+
+```sql
+select id, status_code, error_msg from net._http_response order by id desc limit 5;
+```
+
+- `401` → el `cron_secret` de `config_servidor` no coincide con el `CRON_SECRET`
+  de Vercel. Tienen que ser idénticos.
+- `404` → la `app_url` de `config_servidor` está mal escrita.
+- `error_msg` con timeout → el panel tardó demasiado; suele arreglarse solo en
+  la vuelta siguiente.
+
+**3. ¿Está cargado todo en Vercel?** Si falta `SUPABASE_SERVICE_KEY` o una
+variable de Shopify, el endpoint devuelve 500 con el nombre de la que falta.
+Acordate de **volver a desplegar** después de agregarlas.
 
 ---
 
-## `/sync` se corta por la mitad
+## Shopify dejó de avisar cuando entra una venta
 
-**Síntoma:** empieza a traer datos y se detiene sin terminar.
+**Síntoma:** las ventas aparecen recién en la pasada de la hora, no en 5 minutos.
 
-**Causa:** el rango de fechas es muy grande para una sola corrida.
+**Causa:** el webhook no está registrado, o apunta a una URL vieja.
 
-**Solución:** bajá `diasPorLote` en `sync.config.json` de 90 a 30, y volvé a
-correr `/sync`. Lo que ya se trajo no se pierde: continúa desde donde quedó.
+**Solución:** volvé a correr `npm run webhooks:registrar` con tu `APP_URL`
+actual. Es seguro correrlo las veces que quieras: consulta lo que hay antes de
+crear nada, y borra los duplicados.
+
+Si el panel devuelve **401** a Shopify, el `SHOPIFY_API_SECRET` de Vercel no es
+el client secret de la app. Y si acabás de regenerarlo, esperá una hora: Shopify
+sigue firmando un rato con el viejo.
+
+---
+
+## Mercado Libre dejó de traer ventas
+
+**Síntoma:** las ventas de Shopify se actualizan, las de MeLi no.
+
+**Causa:** casi siempre, la conexión se rompió.
+
+**Solución:**
+
+```sql
+select expires_at, ultimo_error from conexiones where fuente = 'meli';
+```
+
+Si `ultimo_error` dice algo con `invalid_grant`, el permiso se invalidó y hay
+que reconectar: entrá a `https://tu-panel.vercel.app/api/meli/conectar`.
+
+Pasa porque el permiso que da Mercado Libre es **de un solo uso y rota** en cada
+renovación. El panel lo renueva bajo llave para que dos procesos no se pisen,
+pero si algo interrumpe la renovación no hay vuelta atrás automática.
 
 ---
 
@@ -217,7 +278,11 @@ correr `/sync`. Lo que ya se trajo no se pierde: continúa desde donde quedó.
 **Causa:** el mapeo de columnas está mal.
 
 **Solución:** decíselo a Claude, con los dos números concretos, y pedile que
-revise el mapeo de la skill `sync-dashboard`.
+revise el mapeo en `lib/sync/shopify.ts`.
+
+Ojo con una diferencia que **no** es un error: el panel filtra bots
+(`human_or_bot_session = 'human'`), así que sus sesiones van a ser menos que las
+de un informe de Shopify que no las filtre.
 
 **No cambies la vista `daily_metrics` para que "dé bien".** Esa vista define qué
 significa cada métrica. Si la retocás, vas a romper el resto sin enterarte.

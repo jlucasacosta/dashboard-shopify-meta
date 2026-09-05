@@ -1,26 +1,31 @@
 import { resolveRange, etiquetaDe, PRESET_POR_DEFECTO, esPreset } from '@/lib/ranges'
 import { getProductos, getMonedaTienda } from '@/lib/queries'
 import { formatMetric } from '@/lib/format'
+import { CANAL_POR_DEFECTO, esCanal, etiquetaCanal } from '@/lib/canales'
 
 export default async function ProductosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ r?: string }>
+  searchParams: Promise<{ r?: string; ch?: string }>
 }) {
-  const { r } = await searchParams
+  const { r, ch } = await searchParams
   const preset = r && esPreset(r) ? r : PRESET_POR_DEFECTO
+  const canal = ch && esCanal(ch) ? ch : CANAL_POR_DEFECTO
   const rango = resolveRange(preset)
 
   const [currency, productos] = await Promise.all([
     getMonedaTienda(),
-    getProductos(rango, 20),
+    getProductos(rango, 20, canal),
   ])
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-[-0.02em]">Productos</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{etiquetaDe(preset)}</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {etiquetaDe(preset)}
+          {canal !== CANAL_POR_DEFECTO && ` · ${etiquetaCanal(canal)}`}
+        </p>
       </div>
 
       <section className="overflow-hidden rounded-xl bg-card shadow-card">

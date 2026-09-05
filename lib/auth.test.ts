@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { normalizarEmail, normalizarCodigo, codigoCompleto, LARGO_MAX, mensajeDeError } from './auth'
+import { normalizarEmail, normalizarCodigo, codigoCompleto, LARGO_MAX, mensajeDeError , esRutaDeMaquina } from './auth'
 
 describe('normalizarEmail', () => {
   it('saca espacios y pasa a minusculas', () => {
@@ -73,5 +73,34 @@ describe('mensajeDeError con la red caida', () => {
     expect(m).toContain('Supabase')
     expect(m).toContain('.env.local')
     expect(m).not.toContain('Failed to fetch')
+  })
+})
+
+describe('esRutaDeMaquina', () => {
+  it('deja pasar el webhook de Shopify', () => {
+    // Si esto se rompe, Shopify recibe un 302 al login en vez de un 200 y
+    // termina desactivando la suscripcion.
+    expect(esRutaDeMaquina('/api/webhooks/shopify')).toBe(true)
+  })
+
+  it('deja pasar el cron', () => {
+    expect(esRutaDeMaquina('/api/cron/sync')).toBe(true)
+  })
+
+  it('NO deja pasar el OAuth de Mercado Libre', () => {
+    // Ese flujo lo arranca una persona desde el panel: tiene que exigir sesion.
+    expect(esRutaDeMaquina('/api/meli/conectar')).toBe(false)
+    expect(esRutaDeMaquina('/api/meli/callback')).toBe(false)
+  })
+
+  it('NO deja pasar las paginas del panel', () => {
+    expect(esRutaDeMaquina('/')).toBe(false)
+    expect(esRutaDeMaquina('/productos')).toBe(false)
+    expect(esRutaDeMaquina('/embudo')).toBe(false)
+  })
+
+  it('no se deja enganar por un prefijo parecido', () => {
+    expect(esRutaDeMaquina('/api/cronica')).toBe(false)
+    expect(esRutaDeMaquina('/falso/api/cron/sync')).toBe(false)
   })
 })

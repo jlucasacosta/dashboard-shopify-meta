@@ -45,6 +45,9 @@ export function RealtimeRefresh() {
         .channel('cambios-dashboard')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_sales' }, refrescarPronto)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_ad_spend' }, refrescarPronto)
+        // daily_traffic alimenta el embudo. Se agrego a la publicacion en la
+        // migracion 0008; sin eso el canal no recibe nada y no avisa por que.
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_traffic' }, refrescarPronto)
         .subscribe((estado) => setConectado(estado === 'SUBSCRIBED'))
     }
 

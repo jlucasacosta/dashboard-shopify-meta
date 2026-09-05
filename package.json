@@ -10,7 +10,9 @@
     "test": "vitest run",
     "test:realtime": "node scripts/probar-realtime-auth.mjs",
     "nube:verificar": "node scripts/verificar-nube.mjs",
-    "usuario:crear": "node scripts/crear-usuario.mjs"
+    "usuario:crear": "node scripts/crear-usuario.mjs",
+    "webhooks:registrar": "node scripts/registrar-webhooks.mjs",
+    "tipos:filtrar": "node scripts/filtrar-tipos.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

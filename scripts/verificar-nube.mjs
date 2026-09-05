@@ -75,7 +75,7 @@ titulo('Tablas y vistas')
 const ESPERADAS = [
   'settings', 'daily_sales', 'daily_traffic', 'daily_products',
   'daily_ad_spend', 'daily_ad_campaigns', 'fx_rates', 'sync_log',
-  'daily_metrics',
+  'daily_metrics', 'daily_sales_total', 'sync_state', 'dias_sucios',
 ]
 
 for (const t of ESPERADAS) {
@@ -85,13 +85,55 @@ for (const t of ESPERADAS) {
   else falla(`${t} respondió ${r.status}`, (await r.text()).slice(0, 120))
 }
 
-// period_totals es una funcion, no una tabla: se prueba llamandola.
-const rpc = await rest('rpc/period_totals', {
-  method: 'POST',
-  body: JSON.stringify({ desde: '2020-01-01', hasta: '2020-01-02' }),
-})
-if (rpc.status === 404) falla('period_totals no existe', 'falta la migración 0004')
-else ok('period_totals')
+// Las funciones no son tablas: se prueban llamandolas.
+const FUNCIONES = [
+  ['period_totals', '0004'],
+  ['campaign_totals', '0005'],
+  ['channel_totals', '0008'],
+  ['funnel_totals', '0009'],
+]
+for (const [nombre, migracion] of FUNCIONES) {
+  const rpc = await rest(`rpc/${nombre}`, {
+    method: 'POST',
+    body: JSON.stringify({ desde: '2020-01-01', hasta: '2020-01-02' }),
+  })
+  if (rpc.status === 404) falla(`${nombre} no existe`, `falta la migración ${migracion}`)
+  else ok(nombre)
+}
+
+// --- 1b. los secretos no se leen desde el navegador ------------------------
+//
+// Estas tres tablas guardan el token de Mercado Libre, el secreto del cron y
+// datos de compradores. Tienen RLS activo y NINGUNA policy, asi que PostgREST
+// tiene que devolver una lista vacia con la anon key. Si alguna vez devuelve
+// filas, alguien le agrego una policy de select y esos secretos quedaron
+// publicos para cualquiera que abra el panel.
+for (const t of ['config_servidor', 'conexiones', 'meli_compradores']) {
+  const r = await rest(`${t}?select=*&limit=1`)
+  if (r.status === 404) {
+    falla(`${t} no existe`, 'falta la migración 0010')
+  } else if (!r.ok) {
+    falla(`${t} respondió ${r.status}`, (await r.text()).slice(0, 120))
+  } else {
+    const filas = await r.json()
+    if (Array.isArray(filas) && filas.length === 0) {
+      ok(`${t} no es legible sin la service key`)
+    } else {
+      falla(`${t} DEVOLVIÓ DATOS con la clave anónima`,
+            'tiene una policy de select que no debería existir: revisá la migración 0010')
+    }
+  }
+}
+
+// Las funciones del cron tampoco pueden llamarse desde el navegador: una de
+// ellas apaga la sincronización.
+const apagar = await rest('rpc/apagar_sync', { method: 'POST', body: '{}' })
+if (apagar.ok) {
+  falla('una clave anónima pudo llamar a apagar_sync()',
+        'falta la migración 0012, que revoca el permiso de ejecución')
+} else {
+  ok(`funciones del cron fuera del alcance del navegador (${apagar.status})`)
+}
 
 // --- 2. nadie escribe sin permiso ------------------------------------------
 

@@ -60,7 +60,7 @@ Abrí cada archivo, copiá todo el contenido, pegalo en el SQL Editor y apretá
 > para ver el panel andando antes de conectar la tienda. Si los cargás, pedile
 > a Claude que los borre **antes** de la primera sync real: mezclados con los
 > datos de verdad no hay forma de distinguirlos. Cómo borrarlos está en
-> [04 — Primera sync](04-primera-sync.md).
+> [07 — Encender el sync](07-encender-el-sync.md).
 
 ## Habilitar a quien puede entrar
 

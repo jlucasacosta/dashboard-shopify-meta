@@ -7,6 +7,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import type { Rango } from '@/lib/ranges'
+import { filtroCanal, type Canal } from '@/lib/canales'
 
 /** Los `numeric` de Postgres llegan como string por JSON. */
 type Num = number | string | null
@@ -79,11 +80,38 @@ export type Campana = {
 export type Producto = {
   product_id: string
   product_title: string
+  canal: string
   gross_sales: Num
   net_sales: Num
   orders: Num
   units: Num
   pct_del_total: Num
+}
+
+/** Los cuatro pasos del embudo y las tasas de uno al siguiente. */
+export type Embudo = {
+  dias: number
+  visitantes: Num
+  visitas: Num
+  carritos: Num
+  checkouts_iniciados: Num
+  ventas: Num
+  tasa_carrito: Num
+  tasa_checkout: Num
+  tasa_venta: Num
+  conversion_total: Num
+}
+
+/** Ventas de un canal, en su moneda original. */
+export type VentasCanal = {
+  canal: string
+  currency: string | null
+  orders: Num
+  gross_sales: Num
+  net_sales: Num
+  total_sales: Num
+  aov: Num
+  customers: Num
 }
 
 export type EstadoSync = {
@@ -126,13 +154,45 @@ export async function getCampanas(rango: Rango): Promise<Campana[]> {
   return (data ?? []) as Campana[]
 }
 
-export async function getProductos(rango: Rango, tope = 20): Promise<Producto[]> {
+export async function getProductos(
+  rango: Rango,
+  tope = 20,
+  canal: Canal = 'todos',
+): Promise<Producto[]> {
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .rpc('product_totals', { desde: rango.from, hasta: rango.to, tope })
+  const { data, error } = await supabase.rpc('product_totals', {
+    desde: rango.from,
+    hasta: rango.to,
+    tope,
+    canal_filtro: filtroCanal(canal),
+  })
 
   if (error) throw new Error(`No se pudieron leer los productos: ${error.message}`)
   return (data ?? []) as Producto[]
+}
+
+/**
+ * El embudo del periodo. Es de Shopify: Mercado Libre no expone "agregado al
+ * carrito" ni "pago iniciado", asi que no hay filtro por canal aca.
+ */
+export async function getEmbudo(rango: Rango): Promise<Embudo | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .rpc('funnel_totals', { desde: rango.from, hasta: rango.to })
+    .single()
+
+  if (error) throw new Error(`No se pudo leer el embudo: ${error.message}`)
+  return data as Embudo | null
+}
+
+/** Ventas por canal, para el selector y la comparacion. */
+export async function getCanales(rango: Rango): Promise<VentasCanal[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .rpc('channel_totals', { desde: rango.from, hasta: rango.to })
+
+  if (error) throw new Error(`No se pudieron leer los canales: ${error.message}`)
+  return (data ?? []) as VentasCanal[]
 }
 
 /**

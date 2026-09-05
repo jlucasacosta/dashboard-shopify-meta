@@ -7,6 +7,7 @@
 
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { esRutaDeMaquina } from '@/lib/auth'
 import { supabaseKey, supabaseUrl } from '@/lib/supabase/env'
 
 // Rutas que se pueden ver sin estar logueado.
@@ -15,6 +16,13 @@ import { supabaseKey, supabaseUrl } from '@/lib/supabase/env'
 const RUTAS_PUBLICAS = ['/login']
 
 export async function proxy(request: NextRequest) {
+  // Las rutas de maquina (webhook de Shopify, cron de pg_cron) se saltean el
+  // middleware entero: se autentican solas y no tienen sesion. Ver
+  // esRutaDeMaquina en lib/auth.ts para el porque completo.
+  if (esRutaDeMaquina(request.nextUrl.pathname)) {
+    return NextResponse.next()
+  }
+
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(supabaseUrl(), supabaseKey(), {

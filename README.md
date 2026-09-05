@@ -1,23 +1,36 @@
-# Dashboard Ecommerce — Shopify + Meta Ads
+# Dashboard Ecommerce — Shopify + Mercado Libre + Meta Ads
 
-Panel de métricas que junta las ventas de tu tienda Shopify con la inversión de
-tus anuncios de Meta, y calcula lo que ninguna de las dos te da sola: **CAC**,
-**ROAS**, **MER** y contribución.
+Panel de métricas que junta las ventas de tus canales con la inversión de tus
+anuncios de Meta, y calcula lo que ninguna de las plataformas te da sola:
+**CAC**, **ROAS**, **MER** y contribución.
 
-Pensado para clonarse y usarse por tienda. **No necesitás generar ni una clave
-de API.**
+Pensado para clonarse y usarse por tienda.
 
 ## Cómo se actualiza
 
-No hay servidor corriendo tareas. Escribís `/sync` en Claude Code y Claude va a
-buscar los datos a Shopify y Meta y los guarda en tu Supabase. El panel escucha
-la base y se actualiza solo, en vivo, mientras la sincronización corre.
+Solo. Una vez instalado, nadie tiene que apretar nada.
 
 ```
-/sync  →  Claude lee los MCP de Shopify y Meta
-       →  escribe en Supabase por el MCP de Supabase
-       →  el panel abierto se actualiza en vivo
+pg_cron (en tu Supabase)  ──cada 5 min──►  /api/cron/sync
+Shopify, cuando hay venta ──webhook────►  /api/webhooks/shopify
+                                              │
+                                              ▼
+                          lee ShopifyQL, Mercado Libre y Meta Ads
+                                              │
+                                              ▼
+                                  escribe en tu Supabase
+                                              │
+                                              ▼
+                              el panel abierto se actualiza en vivo
 ```
+
+El reloj vive en Postgres y no en Vercel por un motivo concreto: el plan gratis
+de Vercel permite una tarea programada **por día**, y ni siquiera a una hora
+exacta. `pg_cron` corre cada minuto y no cuesta nada.
+
+El webhook de Shopify no trae números: solo avisa que un día cambió, y el panel
+se lo vuelve a preguntar a Shopify. Así los totales siempre coinciden con los
+del admin.
 
 ## Arrancar
 
@@ -60,13 +73,25 @@ Después seguí **[docs/00-empezar-aca.md](docs/00-empezar-aca.md)**.
 | **Cruce** | CAC, ROAS, MER, % de facturación en ads, contribución |
 | **Clientes** | Nuevos vs recurrentes |
 | **Tráfico** | Sesiones, visitantes, tasa de conversión |
-| **Productos** | Top 20 por facturación |
+| **Embudo** | Visitas → agregados al carrito → pagos iniciados → ventas |
+| **Productos** | Top 20 por facturación, filtrable por canal |
 
 ## Tres decisiones que definen este proyecto
 
-**Shopify es la única verdad de ventas.** De Meta sale solo el gasto. Meta
-atribuye conversiones con su propio modelo y siempre reporta más: los números de
-acá son conservadores y cierran con lo que ves en tu banco.
+**Las ventas salen de los canales; de Meta sale solo el gasto.** Meta atribuye
+conversiones con su propio modelo y siempre reporta más: los números de acá son
+conservadores y cierran con lo que ves en tu banco.
+
+Y dentro de cada canal, la plataforma manda: los totales de Shopify se leen de
+ShopifyQL, la misma fuente que alimenta Analytics en su admin. El panel no
+recalcula ventas netas ni devoluciones por su cuenta, justamente para no
+diferir de lo que Shopify te muestra.
+
+**El gasto de anuncios no se parte por canal.** Un anuncio de Meta puede empujar
+una venta en Shopify y otra en Mercado Libre, y no hay forma honesta de saber
+cuál. Por eso las ventas se guardan por canal, pero CAC, ROAS, MER y
+contribución se calculan siempre contra el total. Repartir el gasto sería
+inventar un número.
 
 **Los cálculos viven en la base de datos**, en la vista `daily_metrics` y en las
 funciones `period_totals`, `campaign_totals` y `product_totals`. Ni el frontend
@@ -88,14 +113,15 @@ miente siempre.
 | `npm run test:realtime` | Diagnostica si Realtime entrega eventos |
 | `npm run nube:verificar` | Revisa que tu proyecto de Supabase esté bien armado |
 | `npm run usuario:crear -- mail@x.com` | Habilita a alguien para entrar al panel |
+| `npm run webhooks:registrar` | Le dice a Shopify a dónde avisar. Correrlo dos veces es seguro |
+| `npm run tipos:filtrar` | Regenera `lib/types.ts` dejando solo las tablas del panel |
 
-Los últimos tres necesitan las credenciales del proyecto por variable de
-entorno (`SUPABASE_URL`, `SUPABASE_SERVICE_KEY`). Nunca van en un archivo.
+Los que tocan la base necesitan las credenciales por variable de entorno
+(`SUPABASE_URL`, `SUPABASE_SERVICE_KEY`). Nunca van en un archivo.
 
-**Todo lo que sea SQL se lo pedís a Claude**, que lo ejecuta por el MCP de
-Supabase: aplicar migraciones, cargar `supabase/seed.sql`, borrar los datos
-demo, o correr los tests de métricas de `supabase/tests/`. No hay comandos de
-base de datos en este repo porque no hay base de datos local.
+**Las migraciones y las consultas sueltas se las pedís a Claude**, que las
+ejecuta por el MCP de Supabase. Eso es para instalar y para depurar: la
+sincronización de todos los días no necesita a nadie.
 
 ## Duplicar para otra tienda
 
@@ -103,12 +129,11 @@ base de datos en este repo porque no hay base de datos local.
 2. Creá un proyecto nuevo en Supabase, apuntá el MCP ahí y pedile a Claude que
    aplique las migraciones. **No cargues el seed**: son datos de mentira y se
    mezclan con los reales.
-3. Cambiá tres valores en `sync.config.json`: `shopDomain`, `adAccountId` y
-   `storeCurrency`.
-4. Completá `.env.local`.
-5. Corré `/sync`. Además de traer los datos, guarda la moneda de la tienda en la
-   base, que es de donde el panel la lee para formatear los montos.
-6. Deploy a Vercel.
+3. Deploy a Vercel.
+4. Cargá las variables de entorno (`.env.example` las lista todas, separadas
+   entre las públicas y las que nunca salen del servidor).
+5. Seguí [07 — Encender el sync](docs/07-encender-el-sync.md): registrar los
+   webhooks y arrancar el reloj.
 
 Sin tocar una línea de código. Si hace falta tocar código para adaptarlo a otra
 tienda, eso es un error del repo base.
@@ -117,7 +142,7 @@ La única excepción es el idioma de los números: las fechas y los separadores
 salen en `es-UY` (coma decimal, punto de miles). Si tu tienda es de otro país,
 cambiá `LOCALE` en `lib/format.ts` — está en un solo lugar y las gráficas lo
 importan de ahí. La moneda **no** se toca desde el código: sale de
-`sync.config.json`.
+`STORE_CURRENCY`.
 
 ## Stack
 
@@ -134,9 +159,10 @@ habilitás.
 |---|---|
 | [00 — Empezá acá](docs/00-empezar-aca.md) | Qué es y cómo probarlo sin configurar nada |
 | [01 — Supabase](docs/01-supabase.md) | Base de datos, tablas y acceso |
-| [02 — Shopify](docs/02-shopify-mcp.md) | Conectar la tienda |
-| [03 — Meta Ads](docs/03-meta-mcp.md) | Conectar los anuncios |
-| [04 — Primera sync](docs/04-primera-sync.md) | Traer tus datos reales |
+| [02 — Shopify](docs/02-shopify.md) | Crear la app y sacar el token |
+| [03 — Meta Ads](docs/03-meta-ads.md) | El token del gasto publicitario |
+| [04 — Mercado Libre](docs/04-mercado-libre.md) | El segundo canal de venta |
 | [05 — GitHub](docs/05-github.md) | Guardar el código |
 | [06 — Vercel](docs/06-vercel.md) | Publicarlo online |
-| [07 — Problemas](docs/07-problemas-comunes.md) | Cuando algo no anda |
+| [07 — Encender el sync](docs/07-encender-el-sync.md) | Que se actualice solo |
+| [08 — Problemas](docs/08-problemas-comunes.md) | Cuando algo no anda |

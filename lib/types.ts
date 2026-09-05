@@ -1,3 +1,9 @@
+// Tipos de la base. Generados con el MCP de Supabase y filtrados con
+// scripts/filtrar-tipos.js a las tablas, vistas y funciones del panel.
+//
+// No se editan a mano: se regeneran. Si agregas algo al esquema, sumalo a las
+// listas del script o TypeScript va a decir que no existe.
+
 export type Json =
   | string
   | number
@@ -7,33 +13,64 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
+      conexiones: {
+        Row: {
+          access_token: string
+          actualizado_at: string
+          bloqueado_hasta: string | null
+          cuenta_id: string
+          expires_at: string
+          fuente: string
+          refresh_token: string
+          ultimo_error: string | null
+        }
+        Insert: {
+          access_token: string
+          actualizado_at?: string
+          bloqueado_hasta?: string | null
+          cuenta_id: string
+          expires_at: string
+          fuente: string
+          refresh_token: string
+          ultimo_error?: string | null
+        }
+        Update: {
+          access_token?: string
+          actualizado_at?: string
+          bloqueado_hasta?: string | null
+          cuenta_id?: string
+          expires_at?: string
+          fuente?: string
+          refresh_token?: string
+          ultimo_error?: string | null
+        }
+        Relationships: []
+      }
+      config_servidor: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       daily_ad_campaigns: {
         Row: {
           campaign_id: string
@@ -96,8 +133,8 @@ export type Database = {
           date: string
           frequency: number | null
           impressions: number
-          meta_purchases: number
-          meta_revenue: number
+          meta_purchases: number | null
+          meta_revenue: number | null
           reach: number
           source: string
           spend: number
@@ -113,8 +150,8 @@ export type Database = {
           date: string
           frequency?: number | null
           impressions?: number
-          meta_purchases?: number
-          meta_revenue?: number
+          meta_purchases?: number | null
+          meta_revenue?: number | null
           reach?: number
           source?: string
           spend?: number
@@ -130,8 +167,8 @@ export type Database = {
           date?: string
           frequency?: number | null
           impressions?: number
-          meta_purchases?: number
-          meta_revenue?: number
+          meta_purchases?: number | null
+          meta_revenue?: number | null
           reach?: number
           source?: string
           spend?: number
@@ -141,6 +178,7 @@ export type Database = {
       }
       daily_products: {
         Row: {
+          canal: string
           date: string
           gross_sales: number
           net_sales: number
@@ -151,6 +189,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          canal?: string
           date: string
           gross_sales?: number
           net_sales?: number
@@ -161,6 +200,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          canal?: string
           date?: string
           gross_sales?: number
           net_sales?: number
@@ -175,6 +215,7 @@ export type Database = {
       daily_sales: {
         Row: {
           aov: number | null
+          canal: string
           currency: string
           customers: number
           date: string
@@ -192,6 +233,7 @@ export type Database = {
         }
         Insert: {
           aov?: number | null
+          canal?: string
           currency: string
           customers?: number
           date: string
@@ -209,6 +251,7 @@ export type Database = {
         }
         Update: {
           aov?: number | null
+          canal?: string
           currency?: string
           customers?: number
           date?: string
@@ -259,6 +302,24 @@ export type Database = {
         }
         Relationships: []
       }
+      dias_sucios: {
+        Row: {
+          canal: string
+          date: string
+          marcado_at: string
+        }
+        Insert: {
+          canal: string
+          date: string
+          marcado_at?: string
+        }
+        Update: {
+          canal?: string
+          date?: string
+          marcado_at?: string
+        }
+        Relationships: []
+      }
       fx_rates: {
         Row: {
           base_currency: string
@@ -280,6 +341,21 @@ export type Database = {
           fetched_at?: string
           quote_currency?: string
           rate?: number
+        }
+        Relationships: []
+      }
+      meli_compradores: {
+        Row: {
+          buyer_id: string
+          primera_compra: string
+        }
+        Insert: {
+          buyer_id: string
+          primera_compra: string
+        }
+        Update: {
+          buyer_id?: string
+          primera_compra?: string
         }
         Relationships: []
       }
@@ -337,6 +413,33 @@ export type Database = {
         }
         Relationships: []
       }
+      sync_state: {
+        Row: {
+          actualizado_at: string
+          completo: boolean
+          cursor_desde: string | null
+          cursor_hasta: string | null
+          fuente: string
+          ultimo_ok: string | null
+        }
+        Insert: {
+          actualizado_at?: string
+          completo?: boolean
+          cursor_desde?: string | null
+          cursor_hasta?: string | null
+          fuente: string
+          ultimo_ok?: string | null
+        }
+        Update: {
+          actualizado_at?: string
+          completo?: boolean
+          cursor_desde?: string | null
+          cursor_hasta?: string | null
+          fuente?: string
+          ultimo_ok?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       daily_metrics: {
@@ -383,6 +486,26 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_sales_total: {
+        Row: {
+          aov: number | null
+          canales_sin_tasa: number | null
+          currency: string | null
+          customers: number | null
+          date: string | null
+          discounts: number | null
+          gross_sales: number | null
+          net_sales: number | null
+          new_customers: number | null
+          orders: number | null
+          returning_customers: number | null
+          returns: number | null
+          shipping: number | null
+          taxes: number | null
+          total_sales: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       campaign_totals: {
@@ -400,6 +523,34 @@ export type Database = {
           reach: number
           spend: number
           status: string
+        }[]
+      }
+      channel_totals: {
+        Args: { desde: string; hasta: string }
+        Returns: {
+          aov: number
+          canal: string
+          currency: string
+          customers: number
+          gross_sales: number
+          net_sales: number
+          orders: number
+          total_sales: number
+        }[]
+      }
+      funnel_totals: {
+        Args: { desde: string; hasta: string }
+        Returns: {
+          carritos: number
+          checkouts_iniciados: number
+          conversion_total: number
+          dias: number
+          tasa_carrito: number
+          tasa_checkout: number
+          tasa_venta: number
+          ventas: number
+          visitantes: number
+          visitas: number
         }[]
       }
       period_totals: {
@@ -437,8 +588,14 @@ export type Database = {
         }[]
       }
       product_totals: {
-        Args: { desde: string; hasta: string; tope?: number }
+        Args: {
+          canal_filtro?: string
+          desde: string
+          hasta: string
+          tope?: number
+        }
         Returns: {
+          canal: string
           gross_sales: number
           net_sales: number
           orders: number
@@ -450,10 +607,8 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
     }
     CompositeTypes: {
-      [_ in never]: never
     }
   }
 }
@@ -466,12 +621,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -495,11 +650,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -520,11 +675,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -545,11 +700,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -562,11 +717,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -576,11 +731,8 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
-    Enums: {},
+    Enums: {
+    },
   },
 } as const
-

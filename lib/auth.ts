@@ -75,3 +75,21 @@ export function mensajeDeError(original: string): string {
 
   return `No pudimos continuar: ${original}`
 }
+
+/**
+ * Rutas que llama una maquina, no una persona.
+ *
+ * El webhook de Shopify se autentica con su HMAC y el cron con un secreto
+ * compartido con pg_cron. Ninguno tiene cookies de sesion, asi que si el
+ * middleware los manda al login, Shopify ve un 302 en vez de un 200 y termina
+ * desactivando el webhook, y el cron no sincroniza nunca. Las dos cosas fallan
+ * en silencio, porque una redireccion no parece un error.
+ *
+ * `/api/meli/*` NO entra aca: ese flujo lo arranca una persona desde el panel
+ * y tiene que exigir sesion.
+ */
+const RUTAS_DE_MAQUINA = ['/api/webhooks/', '/api/cron/']
+
+export function esRutaDeMaquina(ruta: string): boolean {
+  return RUTAS_DE_MAQUINA.some((prefijo) => ruta.startsWith(prefijo))
+}

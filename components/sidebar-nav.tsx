@@ -2,20 +2,31 @@
 
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { BarChart3, Megaphone, Package } from 'lucide-react'
+import { BarChart3, Filter, Megaphone, Package } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const SECCIONES = [
   { href: '/',          etiqueta: 'Resumen',   icono: BarChart3 },
+  { href: '/embudo',    etiqueta: 'Embudo',    icono: Filter },
   { href: '/ads',       etiqueta: 'Anuncios',  icono: Megaphone },
   { href: '/productos', etiqueta: 'Productos', icono: Package },
 ]
 
+// Filtros que se conservan al cambiar de seccion. Si agregas uno nuevo y no lo
+// sumas aca, se pierde en silencio cada vez que alguien navega.
+const FILTROS = ['r', 'ch']
+
 export function SidebarNav() {
   const ruta = usePathname()
   const params = useSearchParams()
-  // El rango elegido viaja entre secciones, asi no hay que volver a elegirlo.
-  const query = params.get('r') ? `?r=${params.get('r')}` : ''
+  // El rango y el canal elegidos viajan entre secciones, asi no hay que volver
+  // a elegirlos en cada pantalla.
+  const conservados = new URLSearchParams()
+  for (const filtro of FILTROS) {
+    const valor = params.get(filtro)
+    if (valor) conservados.set(filtro, valor)
+  }
+  const query = conservados.toString() ? `?${conservados.toString()}` : ''
 
   return (
     // En el sidebar va en columna; en el header de mobile, en fila.

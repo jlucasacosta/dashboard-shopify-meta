@@ -10,13 +10,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Dashboard Ecommerce — guía del proyecto
 
-Panel que cruza las ventas de Shopify con la inversión de Meta Ads y calcula
-CAC, ROAS, MER y contribución. No hay servidor sincronizando: la persona escribe
-`/sync` en Claude Code y vos traés los datos por MCP.
+Panel que cruza las ventas de Shopify y Mercado Libre con la inversión de Meta
+Ads y calcula CAC, ROAS, MER y contribución. Se sincroniza solo: `pg_cron`, en
+el Supabase de quien lo instala, le pega cada 5 minutos a `/api/cron/sync`, y el
+webhook de Shopify avisa en el momento cuando entra una venta.
 
 El repo es una **base clonable por tienda**. Si para adaptarlo a otra tienda hay
 que tocar código, eso es un bug del repo, no una tarea del usuario: lo que cambia
-va en `sync.config.json` y en `.env.local`.
+va en variables de entorno (ver `.env.example`).
 
 Está escrito para gente que recién arranca. Comentarios, mensajes de error y
 documentación van en español y explican el *por qué*, no el *qué*.
@@ -29,31 +30,68 @@ contribución se definen en la vista `daily_metrics` y en las funciones
 calculan métricas. Si un número no cierra con Shopify, el bug está en el mapeo
 del sync — **nunca** ajustes `daily_metrics` para que el número dé lindo.
 
-**2. Un dato que falta es NULL, jamás 0.** `aov` y `conversion_rate` son las
-únicas columnas de métrica nullable, y lo son a propósito: Shopify devuelve `""`
-(no `0`) cuando no hubo pedidos ni sesiones. El panel muestra "—" y avisa. Un
-dashboard que muestra un cero falso no falla nunca y miente siempre.
+**2. Un dato que falta es NULL, jamás 0.** Shopify devuelve `""` (no `0`) cuando
+no hubo pedidos ni sesiones, y `Number('')` es `0`: la conversión a número es
+donde se cuela el cero falso. Hay que preguntar por la ausencia **antes** de
+convertir (`aNumeroONull` en `lib/sync/shopify.ts`, `esAusente` en el embudo).
+
+Lo mismo en SQL: una tasa con denominador 0 es NULL, no 0%. Y si a un canal le
+falta el tipo de cambio del día, el total de ese día es NULL — no se suma "lo
+que se puede", porque daría un número más chico que la realidad con cara de
+estar completo.
+
+El panel muestra "—" y avisa. Un dashboard que muestra un cero falso no falla
+nunca y miente siempre.
 
 **3. El panel es privado.** El login usa `shouldCreateUser: false`. Sin eso
 cualquiera con un correo entra. No lo saques ni lo hagas configurable.
 
-**4. El panel es de solo lectura.** Los datos entran únicamente por `/sync`, a
-través de los MCP. Ninguna tabla tiene policy de insert ni de update para el
-navegador. Si te piden una pantalla que escriba en la base, eso es un cambio de
-arquitectura: planteálo antes de codearlo, no lo agregues de callado.
+**4. El navegador nunca escribe. El servidor sí.** Ninguna tabla tiene policy de
+insert ni de update para `anon` ni para `authenticated`: desde el navegador solo
+se lee. Quien escribe es el servidor, con la service key, y únicamente desde
+`lib/sync/` disparado por el cron o el webhook — nunca desde una acción del
+usuario.
+
+Tres tablas van más lejos y no tienen **ninguna** policy: `config_servidor`,
+`conexiones` y `meli_compradores`. Guardan secretos y datos de personas, y solo
+las ve la service key. Si alguna vez les agregás una policy de select, estás
+publicando el token de Mercado Libre y el secreto del cron a cualquiera que abra
+el panel.
+
+Si te piden una pantalla que escriba en la base, eso sigue siendo un cambio de
+arquitectura: planteálo antes de codearlo.
+
+**5. El webhook es un timbre, no una fuente de datos.** `/api/webhooks/shopify`
+verifica el HMAC, marca el día en `dias_sucios` y contesta 200. No escribe ni
+una métrica. El cron después le vuelve a preguntar a ShopifyQL cómo quedó ese
+día. Es lo que garantiza que los totales coincidan con el admin de Shopify, y
+de paso hace que los reintentos y los webhooks duplicados sean inofensivos.
 
 ## Cómo se mueve el dato
 
 ```
-MCP Shopify ─┐
-             ├─ /sync ─→ tablas crudas ─→ daily_metrics (view) ─→ period_totals
-MCP Meta ────┘           daily_sales         un renglón             campaign_totals
-                         daily_traffic       por día                product_totals
-                         daily_products                                   │
-                         daily_ad_spend                                   ↓
-                         daily_ad_campaigns                     páginas (server
-                         fx_rates                                components) + realtime
+pg_cron ──► /api/cron/sync ──► lib/sync/ ──► ShopifyQL, Mercado Libre, Meta
+Shopify ──► /api/webhooks/shopify ──► dias_sucios ──┘        │
+                                                             ▼
+                                                    tablas crudas
+                          daily_sales (date, canal)  daily_traffic
+                          daily_products             daily_ad_spend
+                          daily_ad_campaigns         fx_rates
+                                                             │
+                                                             ▼
+                          daily_sales_total ──► daily_metrics ──► period_totals
+                          (suma canales,        (un renglón        campaign_totals
+                           convierte moneda)     por día)          product_totals
+                                                                   channel_totals
+                                                             │     funnel_totals
+                                                             ▼
+                                                    páginas (server
+                                                    components) + realtime
 ```
+
+El gasto de ads se cruza contra `daily_sales_total`, nunca contra `daily_sales`:
+con dos canales, esa tabla tiene dos filas por día y el join duplicaría el gasto
+de cada campaña.
 
 `sync_log` es cómo el panel se entera de que algo se salteó. Si el sync no
 escribe ahí, el usuario no se entera de que le faltan datos.
@@ -62,7 +100,9 @@ escribe ahí, el usuario no se entera de que le faltan datos.
 
 | Ruta | Qué hay |
 |---|---|
-| `.claude/skills/sync-dashboard/SKILL.md` | **Cómo sincronizar.** Consultas y campos verificados contra los MCP reales. Leelo entero antes de tocar el sync. |
+| `lib/sync/` | **El motor.** `motor.ts` orquesta los cuatro trabajos; `shopify.ts`, `meta.ts`, `meli.ts` y `fx.ts` hablan con cada API; `firmas.ts` verifica HMAC. Leelo entero antes de tocar el sync. |
+| `app/api/` | Los tres puntos de entrada: cron, webhook de Shopify y OAuth de Mercado Libre. |
+| `docs/investigacion/` | Por qué el sistema es así, con las citas de la documentación oficial de cada plataforma. |
 | `supabase/migrations/` | Esquema. Una migración nueva y numerada por cambio; las aplicadas no se editan. |
 | `supabase/tests/` | Tests SQL de las métricas. Si tocás `daily_metrics` o las funciones, se corren sí o sí. |
 | `lib/queries.ts` | Todas las lecturas a Supabase. |
@@ -81,14 +121,21 @@ escribe ahí, el usuario no se entera de que le faltan datos.
 | `npm run test:realtime` | Realtime como usuario logueado — el caso real del panel. |
 | `npm run usuario:crear -- mail@x.com` | Habilita a alguien a entrar. |
 | `npm run nube:verificar` | Chequea que el proyecto de Supabase esté completo. |
+| `npm run webhooks:registrar` | Registra los webhooks en Shopify. Idempotente. |
+| `npm run tipos:filtrar` | Regenera `lib/types.ts` sin filtrar otras apps del proyecto. |
 
 **No hay base de datos local ni CLI de Supabase.** Todo el SQL se ejecuta por el
 MCP de Supabase, contra el proyecto en la nube: aplicar `supabase/migrations/`,
 cargar `supabase/seed.sql`, correr los tests de `supabase/tests/` (cada archivo
 en una sola llamada: son un `begin ... rollback`), o consultar cualquier tabla.
 
-Los tres scripts de arriba (menos `npm test`) necesitan `SUPABASE_URL`,
-`SUPABASE_ANON_KEY` y/o `SUPABASE_SERVICE_KEY` por variable de entorno.
+Ojo: un proyecto de Supabase puede alojar más de una aplicación. Los tipos
+generados traen el schema entero, así que después de regenerarlos hay que pasar
+`npm run tipos:filtrar` — este repo es público.
+
+Los scripts que tocan la base necesitan `SUPABASE_URL`, `SUPABASE_ANON_KEY`
+y/o `SUPABASE_SERVICE_KEY` por variable de entorno. El de webhooks necesita las
+de Shopify.
 
 ## Trampas ya pisadas
 
@@ -101,6 +148,22 @@ Los tres scripts de arriba (menos `npm test`) necesitan `SUPABASE_URL`,
   `to authenticated`. Para probar de verdad, `npm run test:realtime`.
 - **Filas de producto con `product_id` vacío son el total del día**, no un
   producto. Se descartan.
+- **El middleware se come las rutas de API.** El `matcher` de `proxy.ts` agarra
+  todo menos archivos estáticos, así que sin la excepción de `esRutaDeMaquina`
+  el webhook de Shopify recibe un **302 al login** en vez de un 200 — y Shopify
+  termina desactivando la suscripción. Falla en silencio: una redirección no
+  parece un error.
+- **`Number(null)` es `0`, y `0` es finito.** Chequear solo `Number.isFinite()`
+  convierte cada dato ausente en un cero perfecto. Ver la regla 2.
+- **Con dos canales, `join daily_sales on date` duplica.** Esa tabla tiene una
+  fila por canal. Cualquier cosa que cruce contra las ventas del día tiene que
+  ir a `daily_sales_total`. Hay un test que lo fija (`multicanal.test.sql`).
+- **`webhookSubscriptionCreate` no es idempotente.** Llamarla dos veces crea dos
+  suscripciones y cada pedido llega duplicado. Por eso el script consulta antes
+  de crear.
+- **El refresh token de Mercado Libre es de un solo uso y rota.** Dos procesos
+  refrescando a la vez matan la conexión. Se refresca bajo lock y solo cuando ya
+  venció, nunca por las dudas.
 - **`npx tsc --noEmit` con `.next` borrado inventa errores.** Tipos como
   `LayoutProps` los genera Next dentro de `.next/types`. Si vas a correr tsc
   suelto, corré `npm run build` antes. El build ya tipa igual, así que casi
