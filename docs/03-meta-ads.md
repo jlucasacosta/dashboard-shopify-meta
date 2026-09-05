@@ -13,8 +13,22 @@ números del panel son conservadores y cierran con la realidad.
 
 ## Lo bueno: no hace falta que Meta te apruebe nada
 
-La revisión de Meta solo aplica si querés leer cuentas publicitarias **de otros
-negocios**. Para leer las tuyas, una app en modo desarrollo alcanza.
+Está en la documentación oficial de Meta, textual:
+
+> *"Si tu app solo administra tu cuenta publicitaria, el acceso estándar a los
+> permisos `ads_read` y `ads_management` es suficiente. Si tu app administra
+> cuentas publicitarias de otras personas, necesitarás acceso avanzado."*
+
+Y el acceso estándar *"aprueba automáticamente todos los permisos y las
+funciones disponibles"* para apps de negocios. O sea: para leer lo tuyo, no hay
+trámite.
+
+> **La letra chica que sí importa.** Tu app arranca en el nivel *Acceso
+> limitado* de la Marketing API, que Meta describe como de límite de frecuencia
+> restrictivo y *"solo para desarrollo"*. Para lo que hace este panel —una
+> consulta por día sobre una cuenta— alcanza de sobra. Si algún día te topás
+> con límites, en el panel de tu app podés pedir *Acceso completo*: te lo dan
+> con 500 llamadas en 15 días y menos de 15% de errores.
 
 ## Crear la app
 

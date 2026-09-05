@@ -23,9 +23,12 @@ Me lo preguntaste y la respuesta honesta es: **casi todo, pero no todo.**
 | Mercado Libre: OAuth, notificaciones, órdenes | global-selling.mercadolibre.com/devsite | ✅ Sí — pero es la variante **Global Selling / CBT** |
 | Mercado Libre: vendedor **local** (MLA/MLU) | — | ❌ **No verificado.** `developers.mercadolibre.com.ar` bloquea el acceso automatizado (HTTP 403) |
 | Meta Ads: endpoints de Insights, `ads_read` | developers.facebook.com (§2bis) | ✅ Sí — **corregido**, la primera versión salía de blogs |
-| Meta Ads: System User token, "sin app review" | blogs de terceros | ⚠️ **Plausible, no confirmado en doc oficial** |
-| Vercel: límites de cron y plan Hobby | blogs que resumen vercel.com/docs | ⚠️ **A verificar en vercel.com/docs directo** |
-| Supabase: pg_cron / pg_net | supabase.com/docs | ✅ Sí |
+| Meta Ads: System User token | developers.facebook.com/docs/business-management-apis/system-users | ✅ Sí — *"Tokens sin vencimiento: nunca vence"* |
+| Meta Ads: sin app review para cuentas propias | developers.facebook.com/docs/marketing-api/access | ✅ Sí — *"Si tu app solo administra tu cuenta publicitaria, el acceso estándar [...] es suficiente"* |
+| Vercel: límites de cron y plan Hobby | vercel.com/docs/cron-jobs/usage-and-pricing | ✅ Sí — Hobby: 1 vez/día, precisión ±59 min |
+| Supabase: pg_cron / pg_net | supabase.com/docs + prueba en vivo (HTTP 200) | ✅ Sí |
+| API de tipo de cambio (fawazahmed0) | probada en vivo, incluso con fechas históricas | ✅ Sí |
+| MeLi: nombres de los parámetros de `/orders/search` | tabla oficial de Global Selling | ⚠️ **La tabla se contradice**: `order.status` con prefijo, `date_created.from` sin él. Centralizados en `PARAM` dentro de `lib/sync/meli.ts` |
 
 Lo marcado con ⚠️ no invalida las decisiones (todas las fuentes coinciden en el
 sentido general), pero conviene confirmarlo antes de escribir código. Lo marcado

@@ -154,6 +154,30 @@ type BusquedaOrdenes = {
 /** MeLi topea el tamaño de pagina en 50 cuando se filtra. */
 const LIMITE = 50
 
+/**
+ * Nombres de los parametros de /orders/search.
+ *
+ * ESTAN JUNTOS ACA A PROPOSITO. La documentacion que se pudo verificar es la de
+ * Global Selling (CBT), y su tabla de parametros lista `date_created.from` y
+ * `last_updated.from` SIN prefijo, pero `order.status` CON prefijo. Para el
+ * vendedor local (MLA, MLU) no hay documentacion verificable: el sitio
+ * developers.mercadolibre.com bloquea el acceso automatizado.
+ *
+ * Un nombre de filtro equivocado no da error: MeLi lo ignora y devuelve otra
+ * cosa. En la reconciliacion eso significa traer todo cada 5 minutos en vez de
+ * lo que cambio, sin que nadie se entere.
+ *
+ * Por eso: si en el primer deploy las ordenes no salen filtradas, se corrige
+ * ACA, en un solo lugar, sin tocar la logica.
+ */
+const PARAM = {
+  vendedor: 'seller',
+  estado: 'order.status',
+  actualizadoDesde: 'last_updated.from',
+  creadoDesde: 'date_created.from',
+  creadoHasta: 'date_created.to',
+} as const
+
 async function buscarOrdenes(
   conexion: Conexion,
   filtros: Record<string, string>,
@@ -163,7 +187,7 @@ async function buscarOrdenes(
 
   for (;;) {
     const params = new URLSearchParams({
-      seller: conexion.cuentaId,
+      [PARAM.vendedor]: conexion.cuentaId,
       limit: String(LIMITE),
       offset: String(offset),
       ...filtros,
@@ -205,7 +229,7 @@ export function ordenesActualizadasDesde(
   conexion: Conexion,
   desdeIso: string,
 ): Promise<OrdenMeli[]> {
-  return buscarOrdenes(conexion, { 'order.last_updated.from': desdeIso })
+  return buscarOrdenes(conexion, { [PARAM.actualizadoDesde]: desdeIso })
 }
 
 /** Ordenes creadas en una ventana. Es el backfill del historico. */
@@ -215,9 +239,22 @@ export function ordenesCreadasEntre(
   hastaIso: string,
 ): Promise<OrdenMeli[]> {
   return buscarOrdenes(conexion, {
-    'order.date_created.from': desdeIso,
-    'order.date_created.to': hastaIso,
+    [PARAM.creadoDesde]: desdeIso,
+    [PARAM.creadoHasta]: hastaIso,
   })
+}
+
+/**
+ * Chequeo de cordura del filtro, para la primera instalacion.
+ *
+ * Pide las ordenes actualizadas desde una fecha imposible (mañana). Si el
+ * filtro se esta aplicando, tiene que volver vacio. Si vuelve con ordenes, el
+ * nombre del parametro esta mal y MeLi lo esta ignorando.
+ */
+export async function filtroFunciona(conexion: Conexion): Promise<boolean> {
+  const mañana = new Date(Date.now() + 86400000).toISOString()
+  const ordenes = await buscarOrdenes(conexion, { [PARAM.actualizadoDesde]: mañana })
+  return ordenes.length === 0
 }
 
 // --------------------------------------------------------------- Agregacion
