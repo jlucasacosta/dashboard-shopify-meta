@@ -3,6 +3,16 @@
 Hasta acá tenés el panel online pero vacío. Este paso lo pone a traer datos
 solo, para siempre. Es el último de la instalación.
 
+> **El camino corto: escribí `/vincular` en Claude Code.**
+>
+> Te va guiando servicio por servicio, verifica cada uno antes de pasar al
+> siguiente y te avisa exactamente qué falló si algo falla. Nunca te pide que
+> pegues un token en el chat.
+>
+> Esta guía es el camino manual y la referencia de lo que hace `/vincular` por
+> debajo. Si preferís hacerlo a mano, o querés entender qué está pasando,
+> seguí leyendo.
+
 ## Cómo funciona, en dos renglones
 
 Tu base de datos tiene un reloj adentro. Cada 5 minutos le toca el timbre a tu

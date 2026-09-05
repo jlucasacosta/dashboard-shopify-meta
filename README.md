@@ -164,5 +164,5 @@ habilitás.
 | [04 — Mercado Libre](docs/04-mercado-libre.md) | El segundo canal de venta |
 | [05 — GitHub](docs/05-github.md) | Guardar el código |
 | [06 — Vercel](docs/06-vercel.md) | Publicarlo online |
-| [07 — Encender el sync](docs/07-encender-el-sync.md) | Que se actualice solo |
+| [07 — Encender el sync](docs/07-encender-el-sync.md) | Que se actualice solo — o escribí `/vincular` |
 | [08 — Problemas](docs/08-problemas-comunes.md) | Cuando algo no anda |

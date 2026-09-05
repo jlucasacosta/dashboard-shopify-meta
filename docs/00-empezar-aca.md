@@ -98,6 +98,10 @@ de verdad, mandado por Supabase.
 7. [Encender el sync](07-encender-el-sync.md) — que se actualice solo
 8. [Problemas comunes](08-problemas-comunes.md) — cuando algo no anda
 
+**Atajo para las guías 2 a 7:** una vez publicado el panel en Vercel, escribí
+**`/vincular`** en Claude Code. Te va conectando un servicio por vez y prueba
+cada uno antes de seguir. Las guías quedan como referencia por si algo falla.
+
 Hacelas en orden. Cada una arranca donde termina la anterior.
 
 ## Cómo saber que esta parte funcionó

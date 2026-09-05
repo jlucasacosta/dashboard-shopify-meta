@@ -103,6 +103,7 @@ escribe ahí, el usuario no se entera de que le faltan datos.
 | `lib/sync/` | **El motor.** `motor.ts` orquesta los cuatro trabajos; `shopify.ts`, `meta.ts`, `meli.ts` y `fx.ts` hablan con cada API; `firmas.ts` verifica HMAC. Leelo entero antes de tocar el sync. |
 | `app/api/` | Los tres puntos de entrada: cron, webhook de Shopify y OAuth de Mercado Libre. |
 | `docs/investigacion/` | Por qué el sistema es así, con las citas de la documentación oficial de cada plataforma. |
+| `.claude/skills/vincular/` | El instalador guiado (`/vincular`). Conecta un servicio por vez y verifica cada uno. Nunca pide tokens por chat: prueba llamando a `disparar_sync()` por el MCP. |
 | `supabase/migrations/` | Esquema. Una migración nueva y numerada por cambio; las aplicadas no se editan. |
 | `supabase/tests/` | Tests SQL de las métricas. Si tocás `daily_metrics` o las funciones, se corren sí o sí. |
 | `lib/queries.ts` | Todas las lecturas a Supabase. |
