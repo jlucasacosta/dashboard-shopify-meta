@@ -241,8 +241,8 @@ Para `CRON_SECRET`, que genere uno: `openssl rand -hex 32`. Si no tiene
 terminal a mano, cualquier cadena larga y al azar sirve.
 
 > **El atajo, y conviene usarlo:** en vez de cargar doce variables a mano en la
-> interfaz de Vercel, que complete `.env.local` (copiando `.env.example`) y
-> corra `npm run env:subir`. Las sube todas de una, saltea las que están
+> interfaz de Vercel, que complete `.env.local` (ya existe: lo creó
+> `npm install`; si no, `npm run env:crear`) y corra `npm run env:subir`. Las sube todas de una, saltea las que están
 > vacías, y le marca con `!` las que son obligatorias y le faltan. Cargarlas a
 > mano es donde la gente pega una con un espacio de más o se saltea una, y
 > después el panel falla con un error que no apunta a eso.

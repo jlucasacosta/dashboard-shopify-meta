@@ -98,7 +98,8 @@ diga `{{ .Token }}` en vez de `{{ .ConfirmationURL }}`.
 
 ## Conectar la app
 
-Copiá `.env.example` a `.env.local` y completá los dos valores. Los encontrás en
+Abrí `.env.local` (lo creó `npm install` a partir de `.env.example`; si no
+está, corré `npm run env:crear`) y completá los dos valores. Los encontrás en
 **Project Settings → API**:
 
 ```

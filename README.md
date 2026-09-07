@@ -42,7 +42,8 @@ de datos lo hace Claude por el MCP de Supabase.**
    (copiá `.mcp.json.example` a `.mcp.json` y poné tu `project_ref`).
 3. Pedile a Claude: *aplicá las migraciones de `supabase/migrations/` en mi
    proyecto de Supabase*.
-4. Copiá `.env.example` a `.env.local` y completá la URL y la anon key.
+4. Completá la URL y la anon key en `.env.local` (`npm install` lo crea solo
+   a partir de `.env.example`).
 
 ```bash
 npm install

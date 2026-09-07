@@ -12,6 +12,8 @@
     "nube:verificar": "node scripts/verificar-nube.mjs",
     "usuario:crear": "node scripts/crear-usuario.mjs",
     "webhooks:registrar": "node scripts/registrar-webhooks.mjs",
+    "postinstall": "node scripts/crear-env.mjs",
+    "env:crear": "node scripts/crear-env.mjs",
     "env:subir": "node scripts/subir-env.mjs",
     "tipos:filtrar": "node scripts/filtrar-tipos.js"
   },

@@ -40,7 +40,7 @@ const SERVICE = process.env.SUPABASE_SERVICE_KEY
 
 if (!URL || !ANON) {
   console.error('Falta NEXT_PUBLIC_SUPABASE_URL o NEXT_PUBLIC_SUPABASE_ANON_KEY.')
-  console.error('Copiá .env.example a .env.local y completá los dos valores.')
+  console.error('Completá los dos valores en .env.local (si no existe: npm run env:crear).')
   process.exit(1)
 }
 

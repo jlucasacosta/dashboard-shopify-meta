@@ -174,7 +174,9 @@ de Shopify.
 
 `.env.local` está ignorado y es el único archivo de configuración: sin él la app
 no arranca, porque no hay claves por defecto ni base local a la que caer. La
-plantilla versionada es `.env.example`.
+plantilla versionada es `.env.example`; `npm install` la copia a `.env.local`
+si no existe (`postinstall` → `scripts/crear-env.mjs`) y nunca pisa uno
+existente.
 
 `.mcp.json` también está ignorado: lleva el `project_ref` de quien clona. Lo
 versionado es `.mcp.json.example`.
