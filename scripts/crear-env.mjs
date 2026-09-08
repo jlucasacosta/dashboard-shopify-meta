@@ -7,7 +7,7 @@
 //
 // .env.local esta en .gitignore. La plantilla que se versiona es .env.example.
 
-import { existsSync, copyFileSync } from 'node:fs'
+import { existsSync, copyFileSync, statSync } from 'node:fs'
 
 const PLANTILLA = '.env.example'
 const DESTINO = '.env.local'
@@ -20,7 +20,11 @@ if (process.env.VERCEL || process.env.CI) {
   process.exit(0)
 }
 
-if (existsSync(DESTINO)) {
+// Un archivo de 0 bytes cuenta como "no existe": es lo que queda si la copia
+// se corto a la mitad o si alguien lo creo vacio a mano. Sin esto, existsSync
+// da true, la plantilla no se copia nunca y el archivo queda vacio para
+// siempre, en silencio. Pisar un archivo vacio no borra ninguna clave.
+if (existsSync(DESTINO) && statSync(DESTINO).size > 0) {
   process.exit(0)
 }
 
