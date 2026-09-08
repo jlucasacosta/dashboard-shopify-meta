@@ -11,6 +11,7 @@
     "test:realtime": "node scripts/probar-realtime-auth.mjs",
     "nube:verificar": "node scripts/verificar-nube.mjs",
     "usuario:crear": "node scripts/crear-usuario.mjs",
+    "shopify:probar": "node scripts/probar-shopify.mjs",
     "webhooks:registrar": "node scripts/registrar-webhooks.mjs",
     "postinstall": "node scripts/crear-env.mjs",
     "env:crear": "node scripts/crear-env.mjs",

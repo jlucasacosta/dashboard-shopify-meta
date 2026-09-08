@@ -250,6 +250,35 @@ sigue firmando un rato con el viejo.
 
 ---
 
+## Shopify no da token: `shop_not_permitted` o 401
+
+**Síntoma:** `sync_log` con `source = 'shopify'` y un error que dice
+`shop_not_permitted`, o que no acepta el Client ID / secreto.
+
+**Causa:** el panel pide el token con el *client credentials grant*, y eso solo
+funciona si la app y la tienda están en la **misma organización** del Dev
+Dashboard. O el secreto se rotó y Vercel tiene el viejo.
+
+**Solución:**
+
+1. En [dev.shopify.com/dashboard](https://dev.shopify.com/dashboard), mirá
+   arriba a la derecha qué organización está activa y que en **Tiendas** figure
+   la tuya. Si la app quedó en otra organización, creala de nuevo en la correcta
+   (guía 02) y cargá el nuevo ID y secreto.
+2. Probalo desde tu máquina antes de tocar Vercel: `npm run shopify:probar`.
+3. Si funciona local y no en Vercel, el valor de Vercel está mal pegado o el
+   deploy es anterior a cargarlo. `npm run env:subir` y **Redeploy**.
+
+El token guardado se puede ver (sin el valor) en:
+
+```sql
+select fuente, expires_at, ultimo_error from conexiones where fuente = 'shopify';
+```
+
+Si `expires_at` quedó en el pasado y no se renueva, el error está en `sync_log`.
+
+---
+
 ## Mercado Libre dejó de traer ventas
 
 **Síntoma:** las ventas de Shopify se actualizan, las de MeLi no.

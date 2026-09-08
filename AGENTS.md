@@ -122,6 +122,7 @@ escribe ahí, el usuario no se entera de que le faltan datos.
 | `npm run test:realtime` | Realtime como usuario logueado — el caso real del panel. |
 | `npm run usuario:crear -- mail@x.com` | Habilita a alguien a entrar. |
 | `npm run nube:verificar` | Chequea que el proyecto de Supabase esté completo. |
+| `npm run shopify:probar` | Pide un token con ID + secreto y hace una consulta. Prueba la app antes de desplegar. |
 | `npm run webhooks:registrar` | Registra los webhooks en Shopify. Idempotente. |
 | `npm run tipos:filtrar` | Regenera `lib/types.ts` sin filtrar otras apps del proyecto. |
 

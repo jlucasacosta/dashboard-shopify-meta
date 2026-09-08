@@ -32,9 +32,28 @@ trámite.
 
 ## Crear la app
 
-1. Entrá a **[developers.facebook.com/apps](https://developers.facebook.com/apps)**.
-2. **Crear app** → elegí el tipo **Otro** → **Empresa**.
-3. Ponele un nombre y creala. Queda en modo desarrollo, que es lo que querés.
+> Hay capturas de cada pantalla en [docs/guia-visual.html](guia-visual.html),
+> sección 06.
+
+Meta cambió el asistente en 2026: ya no se elige un "tipo" de app, se eligen
+**casos de uso**. Son cinco pasos:
+
+1. Entrá a **[developers.facebook.com/apps](https://developers.facebook.com/apps)**
+   → **Crear app**. Si aparece un cartel *"Hay una nueva manera de crear apps"*,
+   tocá **Crear app** ahí también.
+2. **Detalles de la app**: nombre (por ejemplo *Panel de metricas*) y tu correo.
+   **Siguiente**.
+3. **Casos de uso**: marcá **Crear y administrar anuncios con la API de
+   marketing**. Nada más. **Siguiente**.
+4. **Negocio**: elegí el portfolio comercial (Business Manager) que tiene tu
+   cuenta publicitaria. Tiene que ser ese, porque el usuario del sistema del
+   paso siguiente vive ahí. **Siguiente**.
+5. **Requisitos**: dice *"No se identificaron requisitos"*. Es la confirmación
+   de que no hay trámite. **Siguiente** → **Resumen** → **Crear app**.
+
+Meta te pide **volver a escribir tu contraseña** al final. Es normal.
+
+La app queda en modo desarrollo, que es lo que querés.
 
 ## Sacar un token que no se venza
 

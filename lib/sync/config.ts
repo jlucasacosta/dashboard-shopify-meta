@@ -65,25 +65,46 @@ function entero(nombre: string, alterna: number): number {
 
 export type ConfigShopify = {
   shopDomain: string
-  adminToken: string
-  /** Client secret de la app. Se usa para verificar el HMAC de los webhooks. */
+  /**
+   * Client ID de la app del Dev Dashboard. Junto con apiSecret, el panel pide
+   * el token solo (ver shopify-token.ts).
+   */
+  clientId: string | null
+  /**
+   * Client secret de la app. Dos usos: pedir el token, y verificar el HMAC de
+   * los webhooks.
+   */
   apiSecret: string | null
+  /**
+   * Token fijo. SOLO para apps viejas creadas desde el admin de Shopify, que
+   * ya no se pueden crear. Si esta, gana sobre clientId + apiSecret.
+   */
+  adminToken: string | null
 }
 
+const DONDE_CREDENCIALES =
+  'Entra a dev.shopify.com/dashboard > tu app > Configuracion de la app > ' +
+  'Credenciales: copia el ID de cliente (SHOPIFY_CLIENT_ID) y el Secreto (SHOPIFY_API_SECRET)'
+
 export function configShopify(): ConfigShopify {
-  return {
+  const cfg: ConfigShopify = {
     shopDomain: requerido(
       'SHOPIFY_SHOP_DOMAIN',
       'Es el dominio .myshopify.com de tu tienda (lo ves en la barra del admin)',
       configArchivo.shopDomain,
     ),
-    adminToken: requerido(
-      'SHOPIFY_ADMIN_TOKEN',
-      'Entra a shopify.dev/dashboard > tu app > API credentials > Admin API access token',
-    ),
-    // Opcional: sin el, el webhook disparador no arranca, pero el cron si.
+    clientId: opcional('SHOPIFY_CLIENT_ID'),
     apiSecret: opcional('SHOPIFY_API_SECRET'),
+    adminToken: opcional('SHOPIFY_ADMIN_TOKEN'),
   }
+
+  // Hace falta UNA de las dos formas de autenticarse. Se avisa aca, al leer la
+  // configuracion, y no en la primera llamada a Shopify.
+  if (!cfg.adminToken && !(cfg.clientId && cfg.apiSecret)) {
+    faltante('SHOPIFY_CLIENT_ID y SHOPIFY_API_SECRET', DONDE_CREDENCIALES)
+  }
+
+  return cfg
 }
 
 // ------------------------------------------------------------------- Meta

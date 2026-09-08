@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía visual de vinculación — Dashboard Ecommerce</title>
+<meta name="description" content="Cómo conectar Shopify, Vercel y Meta Ads al panel, pantalla por pantalla, con capturas reales.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#FAF9F7;--ink:#141317;--txt:#2C2A31;--mut:#5F5B68;--mut2:#8B8792;
+  --line:#E4E0DA;--line2:#CFC9C2;
+  --pur:#5B34C4;--pur-d:#421F9E;--pur-t:#F2EEFC;--pur-t2:#E0D7F7;--cop:#9C4F2B;
+  --disp:'Space Grotesk',system-ui,sans-serif;
+  --body:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+body{background:var(--bg);color:var(--txt);font-family:var(--body);font-size:18px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:0 32px}
+.wrap.w{max-width:940px}
+.mid{text-align:center}
+.mid p{margin-left:auto;margin-right:auto}
+
+.cover{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--pur-t);border-bottom:4px solid var(--pur);padding:80px 32px}
+.cover .kick{font-family:var(--mono);font-size:.78rem;font-weight:700;letter-spacing:.22em;color:var(--pur);margin-bottom:9px}
+.cover .kick2{font-family:var(--mono);font-size:.68rem;letter-spacing:.13em;color:var(--mut2);margin-bottom:60px}
+.cover h1{font-family:var(--disp);font-weight:700;font-size:clamp(2.6rem,7.5vw,4.8rem);line-height:1.02;letter-spacing:-.032em;color:var(--ink);max-width:13em}
+.cover .rule{width:72px;height:4px;background:var(--pur);margin:36px auto}
+.cover .sub{font-size:1.3rem;line-height:1.55;color:var(--mut);max-width:27em;margin:0 auto}
+.cover .facts{margin-top:56px;padding-top:28px;border-top:1px solid var(--pur-t2);font-family:var(--mono);font-size:.79rem;color:var(--mut);line-height:2.25;max-width:44em}
+.cover .facts b{color:var(--pur-d);font-weight:700}
+
+.mhead{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--pur-t);border-top:1px solid var(--pur-t2);border-bottom:4px solid var(--pur);padding:80px 32px}
+.mnum{font-family:var(--disp);font-weight:700;font-size:clamp(5.5rem,16vw,11rem);line-height:.8;letter-spacing:-.06em;color:var(--pur);display:block;margin-bottom:34px}
+.mkick{font-family:var(--mono);font-size:.76rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--pur);margin-bottom:18px}
+.mhead h2{font-family:var(--disp);font-weight:700;font-size:clamp(2.1rem,5.4vw,3.2rem);line-height:1.06;letter-spacing:-.03em;color:var(--ink);max-width:15em;margin:0 auto}
+.mlead{margin:26px auto 0;font-size:1.2rem;line-height:1.56;color:var(--txt);max-width:31em}
+.mlead strong{color:var(--pur-d);font-weight:700}
+
+.sec{padding:96px 0;border-bottom:1px solid var(--line)}
+.mbody{padding:80px 0 92px}
+.grp{margin-top:52px}
+.slbl{font-family:var(--mono);font-size:.74rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--pur);margin-bottom:16px}
+h2.sh{font-family:var(--disp);font-weight:700;font-size:clamp(2rem,5vw,2.8rem);line-height:1.09;letter-spacing:-.03em;color:var(--ink);max-width:16em;margin:0 auto}
+p{margin:22px 0}
+p.lead{font-size:1.2rem;line-height:1.58;color:var(--txt);margin-top:26px;max-width:32em}
+strong,b{color:var(--ink);font-weight:700}
+em{font-style:normal;color:var(--pur-d);font-weight:600}
+
+.blbl{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--pur);text-align:center;margin-bottom:22px}
+
+.cp{margin:44px auto 0;padding:24px 30px;background:var(--pur-t);border:1px solid var(--pur-t2);border-top:4px solid var(--pur);border-radius:0 0 4px 4px;font-size:1.07rem;color:var(--txt);text-align:center}
+.cp .k{display:block;font-family:var(--mono);font-size:.69rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--pur);margin-bottom:7px}
+.cp b{color:var(--ink)}
+
+.ojo{margin:32px auto 0;padding:22px 28px;border:1px solid var(--line2);border-left:4px solid var(--cop);border-radius:0 4px 4px 0;background:#fff;font-size:1.02rem;color:var(--txt);text-align:left}
+.ojo .k{display:block;font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cop);margin-bottom:6px}
+
+.idx{list-style:none;margin:0;text-align:left}
+.idx li{border-top:1px solid var(--line)}
+.idx li:first-child{border-top:2px solid var(--pur)}
+.idx li:last-child{border-bottom:1px solid var(--line)}
+.idx a{display:grid;grid-template-columns:60px minmax(0,1fr);gap:10px;align-items:baseline;padding:18px 0;text-decoration:none;color:inherit}
+.idx a:hover .ih{color:var(--pur)}
+.idx .in{font-family:var(--disp);font-size:1.2rem;font-weight:700;color:var(--pur);letter-spacing:-.02em}
+.idx .ih{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.14rem}
+.idx .id{color:var(--mut);font-size:1.01rem;display:block;font-weight:400;line-height:1.5}
+
+.shot{width:100%;display:block;border-radius:6px;border:1px solid var(--line2);box-shadow:0 20px 50px rgba(20,19,23,.18)}
+.shot-cap{margin-top:14px;text-align:center;font-family:var(--mono);font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--mut2)}
+
+.links{display:flex;flex-wrap:wrap;gap:11px;justify-content:center;margin:0}
+.lnk{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-family:var(--mono);font-size:.8rem;color:var(--pur-d);padding:.66em 1.05em;border:1px solid var(--pur-t2);border-radius:3px;background:var(--pur-t);max-width:100%;flex-wrap:wrap;word-break:break-all;line-height:1.55;text-align:left}
+.lnk:hover{border-color:var(--pur)}
+.lnk .lk{font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pur);border-right:1px solid var(--pur-t2);padding-right:9px;white-space:nowrap;word-break:normal}
+
+.foot{padding:60px 0 84px;background:var(--pur-t);border-top:4px solid var(--pur);text-align:center;font-family:var(--mono);font-size:.73rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--pur)}
+
+@media(max-width:720px){
+  body{font-size:17px}.wrap{padding:0 24px}
+  .cover,.mhead{padding:64px 24px;min-height:100svh}
+  .cover .kick2{margin-bottom:40px}.mnum{margin-bottom:24px}
+  .sec{padding:64px 0}.mbody{padding:56px 0 64px}.grp{margin-top:40px}
+  .idx a{grid-template-columns:46px minmax(0,1fr)}.cp{padding:22px 22px}
+}
+@media print{
+  @page{size:A4;margin:16mm 18mm}
+  body{background:#fff;font-size:10.8pt;line-height:1.55}
+  .wrap,.wrap.w{max-width:none;padding:0}
+  .cover,.mhead{min-height:0;display:block;padding:62mm 0 0;border:0;background:#fff;break-inside:avoid;break-after:page}
+  .mhead{break-before:page}
+  .cover h1{font-size:34pt}.cover .sub{font-size:13pt}.mnum{font-size:80pt;margin-bottom:10mm}.mhead h2{font-size:28pt}
+  .sec{break-before:page;padding:0;border:0}.mbody{padding:0}.grp{margin-top:10mm}
+  h2,.slbl,.blbl{break-after:avoid}
+  .idx li,.cp,.ojo,.shot{break-inside:avoid}
+  .shot{max-width:150mm;margin:0 auto;box-shadow:none}
+  .foot{break-before:avoid;padding:8mm 0 0;background:#fff;border-top:2pt solid var(--pur)}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="kick">CDIA × ECOM OPERATOR</div>
+  <div class="kick2">GUÍA VISUAL · DASHBOARD ECOMMERCE</div>
+  <h1>Vinculá tu tienda, pantalla por pantalla</h1>
+  <div class="rule"></div>
+  <p class="sub">Todas las capturas son reales, sacadas el 7 de septiembre de 2026 sobre una tienda de prueba. Si tu pantalla se ve distinta, la plataforma cambió algo: avisá.</p>
+  <div class="facts">
+    <b>Shopify</b> en 12 pantallas, con el cambio de 2026 ya incorporado<br>
+    <b>Cero</b> tokens de Shopify que copiar: el panel se los pide solo<br>
+    <b>Vercel</b> en 2 pantallas<br>
+    <b>Meta Ads</b> en 12 pantallas, con el asistente nuevo
+  </div>
+</header>
+
+<!-- ═══════════ ÍNDICE ═══════════ -->
+<section class="sec">
+  <div class="wrap mid">
+    <div class="slbl">Antes de empezar</div>
+    <h2 class="sh">Tres lugares, en este orden</h2>
+    <p class="lead">Vas a entrar a Shopify, a Vercel y a Meta. En cada uno anotás dos o tres valores; al final los cargás todos juntos en Vercel. No hay nada que instalar ni programar.</p>
+    <div class="ojo"><span class="k">Dos palabras que se repiten</span><b>Credencial</b> es cualquier valor que identifica a tu panel ante una plataforma: un ID, un secreto, un token. <b>Token</b> es una clave larga y al azar que le permite al panel leer tus datos sin usar tu contraseña. Se tratan como contraseñas: no se comparten ni se pegan en un chat.</div>
+  </div>
+  <div class="wrap grp">
+    <div class="blbl">Índice</div>
+    <ul class="idx">
+      <li><a href="#s1"><span class="in">01</span><span><span class="ih">Shopify</span><span class="id">Crear la app, darle permisos, instalarla en tu tienda y copiar dos credenciales.</span></span></a></li>
+      <li><a href="#s2"><span class="in">02</span><span><span class="ih">Vercel</span><span class="id">Dónde van esas credenciales, y el botón que nadie toca después.</span></span></a></li>
+      <li><a href="#s3"><span class="in">03</span><span><span class="ih">Meta Ads (opcional)</span><span class="id">Crear la app, un usuario del sistema, y el único token que sí se copia.</span></span></a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════ 01 SHOPIFY ═══════════ -->
+<section class="mhead" id="s1">
+  <div class="wrap">
+    <span class="mnum">01</span>
+    <div class="mkick">Shopify</div>
+    <h2>Crear la app y sacar las credenciales</h2>
+    <p class="mlead">Son cinco momentos: crear, dar permisos, lanzar, instalar, copiar. <strong>No hay ningún token que copiar.</strong> Eso cambió en 2026 y la mayoría de las guías que vas a encontrar todavía no lo saben.</p>
+    <p class="mlead">Al terminar vas a tener anotadas <strong>tres cosas</strong>: el dominio de tu tienda, un ID de cliente y un secreto.</p>
+  </div>
+</section>
+
+<section class="mbody">
+  <div class="wrap mid">
+    <div class="slbl">Por qué no alcanza con el admin</div>
+    <h2 class="sh">El camino viejo ya no existe</h2>
+    <p class="lead">Antes esto se hacía desde <b>Configuración → Apps → Desarrollar apps</b>. Si entrás hoy, esa pantalla solo dice que uses el Dev Dashboard. No pierdas tiempo buscando el botón: no está.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-00-admin-camino-viejo.jpg" alt="Admin de Shopify, Configuración → Apps → Desarrollo de apps: solo muestra un botón para ir al Dev Dashboard">
+    <div class="shot-cap">admin de shopify → configuración → apps → desarrollo de apps</div>
+  </div>
+
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 1 · Entrar al Dev Dashboard</div>
+    <p>Entrá a <b>dev.shopify.com/dashboard</b> con la misma cuenta con la que entrás a tu tienda. No hace falta cuenta de Partner ni instalar nada. El <em>Dev Dashboard</em> es la parte de Shopify donde se crean apps; aunque diga "dev", también es para dueños de tienda.</p>
+    <div class="links">
+      <a class="lnk" href="https://dev.shopify.com/dashboard" target="_blank" rel="noopener"><span class="lk">abrir</span>dev.shopify.com/dashboard</a>
+    </div>
+    <div class="ojo"><span class="k">Ojo con la dirección</span>Es <b>dev.shopify.com</b>, no <b>shopify.dev</b>. La segunda es la documentación y da <em>Page not found</em>.</div>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-01-dev-dashboard-vacio.jpg" alt="Dev Dashboard vacío, sin apps, con el botón Crear app abajo">
+    <div class="shot-cap">dev dashboard recién abierto · arriba a la derecha, la organización activa</div>
+  </div>
+  <div class="wrap grp">
+    <div class="ojo"><span class="k">Antes de crear nada</span>Mirá <b>arriba a la derecha</b> qué organización está activa. La <em>organización</em> es el nombre que Shopify le pone al conjunto de tus tiendas y apps; normalmente coincide con el nombre de tu tienda y hay una sola. La app tiene que quedar en la <b>misma organización que tu tienda</b>. Si no, más adelante Shopify se niega a conectarla y hay que crearla de nuevo.</div>
+  </div>
+
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 2 · Crear app</div>
+    <p>Abajo de todo, en <b>Obtener credenciales de API</b>, tocá <b>Crear app</b>. Se abren dos tarjetas: la de la izquierda es para programadores. <b>La tuya es la de la derecha</b>, <em>Empezar desde el Dev Dashboard</em>.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-02-crear-app.jpg" alt="Pantalla Crear una app con dos tarjetas: CLI de Shopify a la izquierda y Empezar desde el Dev Dashboard a la derecha">
+    <div class="shot-cap">crear una app · la tarjeta de la derecha</div>
+  </div>
+  <div class="wrap grp mid">
+    <p>Ponele un nombre corto, por ejemplo <b>Panel de metricas</b>, y <b>Crear app</b>.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-03-nombre-app.jpg" alt="Nombre de la app escrito: Panel de metricas">
+    <div class="shot-cap">nombre de la app · máximo 30 caracteres</div>
+  </div>
+
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 3 · Crear versión</div>
+    <p>Shopify te lleva directo a <b>Crear versión</b>. Es una sola pantalla larga. Lo de arriba <b>no se toca</b>: la <em>URL de la app</em> queda como está y la <em>versión de la API de webhooks</em> queda en la más nueva.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-04-crear-version.jpg" alt="Pantalla Crear versión: nombre, URL de la app y versión de la API de webhooks">
+    <div class="shot-cap">crear versión · nada de esto se cambia</div>
+  </div>
+  <div class="wrap grp mid">
+    <p>Bajá hasta <b>Acceso a la API → Alcances</b>. Un <em>alcance</em> es un permiso: qué parte de tu tienda va a poder leer la app. Escribí, tal cual, con la coma y sin espacios:</p>
+    <p style="font-family:var(--mono);font-size:1.15rem;color:var(--ink);font-weight:700">read_reports,read_orders</p>
+    <p>El primero es para leer tus ventas y tu tráfico. El segundo, para que Shopify pueda avisarle al panel cuando entra un pedido. Ninguno de los dos necesita aprobación de Shopify.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-05-scopes.jpg" alt="Campo Alcances con read_reports,read_orders escrito">
+    <div class="shot-cap">acceso a la api → alcances · esta captura es la que más vale guardar</div>
+  </div>
+  <div class="wrap grp">
+    <div class="ojo"><span class="k">No pidas nada más</span>En especial no pidas <b>read_all_orders</b>: suena necesario y no lo es, y te obliga a un trámite de aprobación con Shopify.</div>
+  </div>
+
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 4 · Lanzar</div>
+    <p>Abajo a la derecha, <b>Lanzar</b>. Aparece un cuadro con nombre y mensaje de la versión: los dos son opcionales. <b>Lanzar</b> otra vez.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-06-lanzar-confirmar.jpg" alt="Cuadro de confirmación ¿Lanzar esta nueva versión? con nombre y mensaje opcionales">
+    <div class="shot-cap">confirmación · se puede dejar vacío</div>
+  </div>
+  <div class="wrap grp mid">
+    <p>Quedan dos versiones: la <b>1</b>, vacía, que Shopify creó sola con la app, y la <b>2</b> con la etiqueta <em>Activa</em>. Esa es la tuya.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-07-version-activa.jpg" alt="Lista de versiones: panel-de-metricas-2 Activa y panel-de-metricas-1">
+    <div class="shot-cap">versiones · la 2 es la que tiene los permisos</div>
+  </div>
+
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 5 · Instalar en tu tienda</div>
+    <p>Volvé al <b>Panel general</b> (el nombre de la app, arriba en el menú de la izquierda). En la tarjeta <b>Instalaciones</b>, todavía en <b>0</b>, tocá <b>Instalar app</b>.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-08-home-instalar.jpg" alt="Panel general de la app con Instalaciones en 0 y el botón Instalar app">
+    <div class="shot-cap">panel general · instalaciones: 0</div>
+  </div>
+  <div class="wrap grp mid">
+    <p>Se abre una pestaña nueva con el admin de Shopify. Si tenés más de una tienda, elegí la tuya.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-09-elegir-tienda.jpg" alt="Selector de tiendas de Shopify: Welcome back, choose a store">
+    <div class="shot-cap">elegir tienda · si tenés una sola, puede que se saltee</div>
+  </div>
+  <div class="wrap grp mid">
+    <p>El cartel amarillo <em>"Esta app aún no se ha revisado"</em> es normal: la app es tuya y nadie de Shopify la revisa. Abajo lista lo que va a poder ver: pedidos, informes y estadísticas. <b>Instalar</b>.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-10-instalar-permisos.jpg" alt="Pantalla Instalar app con el cartel amarillo y la lista de permisos">
+    <div class="shot-cap">instalar app · el cartel amarillo es normal</div>
+  </div>
+  <div class="wrap grp">
+    <div class="ojo"><span class="k">Después de instalar</span>El admin abre la app y muestra <em>"Example Domain"</em>. También es normal. Cerrá esa pestaña y volvé al Dev Dashboard. <b>Instalaciones</b> ahora dice <b>1</b>.</div>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-11-home-instalada.jpg" alt="Panel general con Instalaciones en 1">
+    <div class="shot-cap">panel general · instalaciones: 1</div>
+  </div>
+
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 6 · Copiar las credenciales</div>
+    <p>En el menú de la izquierda, <b>Configuración de la app</b>. Arriba de todo, <b>Credenciales</b>: un <b>ID de cliente</b> y un <b>Secreto</b>. El ojo muestra el secreto; el botón de al lado lo copia. Guardá los dos en un lugar seguro: los vas a cargar en Vercel.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/02-12-configuracion-credenciales.jpg" alt="Configuración de la app: Credenciales con ID de cliente y Secreto tapado">
+    <div class="shot-cap">configuración de la app → credenciales · los valores están tapados en la captura</div>
+  </div>
+  <div class="wrap grp">
+    <div class="ojo"><span class="k">¿Y el token?</span>No hay. Las apps del Dev Dashboard <b>no muestran ningún token</b>: eso era de las apps viejas. El panel se lo pide a Shopify solo, con el ID y el secreto, y lo renueva cada día sin que hagas nada. Si una guía te manda a buscar el token, es vieja.</div>
+    <div class="ojo"><span class="k">Anotá también tu dominio</span>El que termina en <b>.myshopify.com</b>. Lo ves en la barra del navegador cuando estás en el admin de tu tienda.</div>
+  </div>
+  <div class="wrap">
+    <div class="cp"><span class="k">Checkpoint</span>Tenés tres valores anotados: <b>dominio</b>, <b>ID de cliente</b> y <b>secreto</b>. En el Dev Dashboard, la versión 2 está <b>Activa</b> e <b>Instalaciones</b> dice <b>1</b>.</div>
+  </div>
+</section>
+
+<!-- ═══════════ 02 VERCEL ═══════════ -->
+<section class="mhead" id="s2">
+  <div class="wrap">
+    <span class="mnum">02</span>
+    <div class="mkick">Vercel</div>
+    <h2>Dónde van las credenciales</h2>
+    <p class="mlead">Todo lo que anotaste en Shopify (y después en Meta) se carga en un solo lugar de Vercel. Y después hay un botón que <strong>siempre</strong> hay que tocar.</p>
+    <p class="mlead">Vercel es donde vive tu panel publicado en internet. Cada vez que publica una versión nueva, a eso le dice <em>deploy</em>. <em>Redeploy</em> es volver a publicarla para que tome lo que cargaste.</p>
+  </div>
+</section>
+<section class="mbody">
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 1 · Environment Variables</div>
+    <p>Entrá a <b>vercel.com</b> → tu proyecto → <b>Settings → Environment Variables</b>. Las <em>environment variables</em> son la lista de valores privados que tu panel usa para funcionar; es el único lugar donde se guardan las credenciales. Ahí se cargan, una por una o todas juntas, las de Shopify, tu dominio y las de Meta. Cuando termina, la lista se ve así.</p>
+    <div class="links">
+      <a class="lnk" href="https://vercel.com/dashboard" target="_blank" rel="noopener"><span class="lk">abrir</span>vercel.com/dashboard</a>
+    </div>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/03-01-vercel-env.jpg" alt="Vercel, Settings → Environment Variables: la lista de variables del proyecto, con los valores ocultos">
+    <div class="shot-cap">vercel → tu proyecto → settings → environment variables</div>
+  </div>
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 2 · Redeploy</div>
+    <p>Vercel <b>no aplica lo que cargaste a un deploy ya hecho</b>. Después de cargar: <b>Deployments</b> → en la primera fila, el menú <b>⋯</b> → <b>Redeploy</b>. Esperá a que termine en verde, <em>Ready</em>: quiere decir que la versión nueva ya está publicada y andando.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/03-02-vercel-deployments.jpg" alt="Vercel, Deployments: lista de deploys en Ready; el menú ⋯ de cada fila tiene Redeploy">
+    <div class="shot-cap">vercel → deployments · el ⋯ de la primera fila tiene redeploy</div>
+  </div>
+  <div class="wrap">
+    <div class="cp"><span class="k">Checkpoint</span>La lista de variables tiene todo lo que anotaste, y el último deploy es <b>posterior</b> a haberlas cargado y está en verde.</div>
+  </div>
+</section>
+
+<!-- ═══════════ 03 META ═══════════ -->
+<section class="mhead" id="s3">
+  <div class="wrap">
+    <span class="mnum">03</span>
+    <div class="mkick">Meta Ads · opcional</div>
+    <h2>El único token que sí se copia</h2>
+    <p class="mlead">De Meta sale una sola cosa: cuánto gastaste. Sin esto el panel muestra las ventas igual; lo que no vas a tener es <strong>CAC, ROAS, MER ni contribución</strong>.</p>
+    <p class="mlead">Al terminar vas a tener anotadas <strong>dos cosas</strong>: un token y el ID de tu cuenta publicitaria.</p>
+  </div>
+</section>
+<section class="mbody">
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 1 · Crear la app en Meta</div>
+    <p>Entrá a <b>developers.facebook.com/apps</b> → <b>Crear app</b>. Meta cambió el asistente en 2026: ya no se elige un "tipo" de app, se eligen <em>casos de uso</em>.</p>
+    <div class="links">
+      <a class="lnk" href="https://developers.facebook.com/apps" target="_blank" rel="noopener"><span class="lk">abrir</span>developers.facebook.com/apps</a>
+    </div>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-01-meta-apps.jpg" alt="Meta for Developers, lista de apps, con el botón Crear app arriba a la derecha">
+    <div class="shot-cap">developers.facebook.com/apps · crear app, arriba a la derecha</div>
+  </div>
+  <div class="wrap grp mid">
+    <p>Si aparece el cartel <em>"Hay una nueva manera de crear apps"</em>, tocá <b>Crear app</b> ahí también.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-01b-meta-modal.jpg" alt="Cartel 'Hay una nueva manera de crear apps con Meta' con el botón Crear app">
+    <div class="shot-cap">el cartel del asistente nuevo · crear app</div>
+  </div>
+  <div class="wrap grp mid">
+    <p><b>Detalles de la app</b>: nombre, por ejemplo <b>Panel de metricas</b>, y tu correo. <b>Siguiente</b>.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-01c-detalles-app.jpg" alt="Paso Detalles de la app con el nombre Panel de metricas">
+    <div class="shot-cap">detalles de la app</div>
+  </div>
+  <div class="wrap grp mid">
+    <p><b>Casos de uso</b>: marcá solo <b>Crear y administrar anuncios con la API de marketing</b>. <b>Siguiente</b>.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-02-casos-de-uso.jpg" alt="Paso Casos de uso con 'Crear y administrar anuncios con la API de marketing' marcado">
+    <div class="shot-cap">casos de uso · uno solo</div>
+  </div>
+  <div class="wrap grp mid">
+    <p><b>Negocio</b>: elegí el portfolio comercial que tiene tu cuenta publicitaria. El <em>portfolio comercial</em> (antes se llamaba <em>Business Manager</em>) es tu cuenta de empresa en Meta: la que agrupa tu página, tu Instagram y tu cuenta de anuncios. Si administrás varios negocios vas a ver varios; si tenés uno solo, es ese. Tiene que ser el que tiene los anuncios, porque el usuario del sistema del paso 2 vive ahí. <b>Siguiente</b>.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-03-negocio.jpg" alt="Paso Negocio: lista de portfolios comerciales para elegir uno">
+    <div class="shot-cap">negocio · el portfolio que tiene tu cuenta de anuncios</div>
+  </div>
+  <div class="wrap grp mid">
+    <p><b>Requisitos</b>: dice <em>"No se identificaron requisitos"</em>. Es la confirmación de que para leer tu propia cuenta no hay ningún trámite. <b>Siguiente</b>.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-04-requisitos.jpg" alt="Paso Requisitos: no se identificaron requisitos">
+    <div class="shot-cap">requisitos · ninguno</div>
+  </div>
+  <div class="wrap grp mid">
+    <p><b>Resumen</b>: revisá y <b>Crear app</b>. Meta te pide volver a escribir tu contraseña: es normal.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-05-resumen.jpg" alt="Paso Resumen con nombre, caso de uso, negocio y requisitos">
+    <div class="shot-cap">resumen · crear app</div>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-06-app-creada-bienvenida.jpg" alt="Panel de la app recién creada en Meta, con el cartel de bienvenida">
+    <div class="shot-cap">app creada · cerrá el cartel de bienvenida, no hace falta el recorrido</div>
+  </div>
+
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 2 · El usuario del sistema</div>
+    <p>Entrá a <b>business.facebook.com/settings</b> con el mismo portfolio comercial que elegiste al crear la app. En el menú: <b>Usuarios → Usuarios del sistema → Agregar</b>. Un <em>usuario del sistema</em> es un usuario de mentira, sin persona atrás: existe solo para que un programa (tu panel) lea datos por su cuenta, y por eso su token no vence.</p>
+    <div class="links">
+      <a class="lnk" href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener"><span class="lk">abrir</span>business.facebook.com/settings/system-users</a>
+    </div>
+    <div class="ojo"><span class="k">Por qué un usuario del sistema</span>Hay tres tipos de token en Meta. El del <em>Graph API Explorer</em> dura dos horas. El de <em>larga duración</em>, 60 días, y el panel deja de actualizarse sin avisar. El de <b>usuario del sistema</b> no vence. Es el único que sirve.</div>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-07-usuarios-del-sistema.jpg" alt="Configuración del negocio, Usuarios del sistema, vacío, con el botón Agregar">
+    <div class="shot-cap">usuarios → usuarios del sistema → agregar</div>
+  </div>
+  <div class="wrap grp mid">
+    <p>Nombre <b>panel</b>, rol <b>Employee</b>. <b>Create system user</b>.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-08-crear-usuario-sistema.jpg" alt="Diálogo Create system user con nombre panel y rol Employee">
+    <div class="shot-cap">create system user · employee alcanza</div>
+  </div>
+  <div class="wrap grp mid">
+    <p>Queda creado, sin activos. Los dos botones que importan están arriba a la derecha: <b>Asignar activos</b> ahora, <b>Generar token</b> después.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-09-usuario-creado.jpg" alt="Usuario del sistema panel creado, sin activos asignados, con los botones Generar token y Asignar activos">
+    <div class="shot-cap">usuario creado · asignar activos</div>
+  </div>
+  <div class="wrap grp mid">
+    <p><b>Asignar activos</b> → a la izquierda <b>Cuentas publicitarias</b> → marcá la tuya → a la derecha activá <b>Ver rendimiento</b> (nada más) → <b>Asignar activos</b>.</p>
+  </div>
+  <div class="wrap w grp">
+    <img class="shot" src="img/06-10-asignar-cuentas-publicitarias.jpg" alt="Diálogo Seleccionar activos y asignar permisos, con Cuentas publicitarias elegido a la izquierda">
+    <div class="shot-cap">cuentas publicitarias · la tuya · ver rendimiento</div>
+  </div>
+
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 3 · El token</div>
+    <p>En el usuario <b>panel</b>, <b>Generar token</b> → elegí la app <b>Panel de metricas</b> → vencimiento <b>Nunca</b> → marcá solo <b>ads_read</b> → <b>Generar</b>.</p>
+    <div class="ojo"><span class="k">Se muestra una sola vez</span>Copialo y guardalo antes de cerrar el cuadro. Si lo perdés, se genera otro desde el mismo botón; lo que no se puede es recuperar el viejo.</div>
+  </div>
+  <div class="wrap grp mid">
+    <div class="blbl">Paso 4 · El ID de tu cuenta publicitaria</div>
+    <p>En el <b>Administrador de anuncios</b>, arriba a la izquierda, al lado del nombre de la cuenta hay un número largo. Anotalo. Con o sin el prefijo <em>act_</em>, da lo mismo.</p>
+    <div class="links">
+      <a class="lnk" href="https://adsmanager.facebook.com" target="_blank" rel="noopener"><span class="lk">abrir</span>adsmanager.facebook.com</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="cp"><span class="k">Checkpoint</span>Tenés dos valores más: el <b>token</b> y el <b>ID de la cuenta</b>. Van a Vercel, igual que los de Shopify (sección 02), y después <b>Redeploy</b>.</div>
+  </div>
+</section>
+
+<!-- ═══════════ CIERRE ═══════════ -->
+<section class="sec">
+  <div class="wrap mid">
+    <div class="slbl">Y ahora</div>
+    <h2 class="sh">Terminaste la parte de pantallas</h2>
+    <p class="lead">Con los cinco valores cargados en Vercel y el Redeploy hecho, no queda nada más que hacer en Shopify, Vercel ni Meta. Lo que sigue (probar la conexión, encender la actualización automática y ver los primeros números) se hace desde Claude Code, guiado paso a paso: escribí <b>/vincular</b> y seguí lo que te va pidiendo.</p>
+    <div class="cp"><span class="k">Si algo no cierra</span>Volvé a la captura del paso donde te trabaste y compará con tu pantalla. Si son distintas, la plataforma cambió algo: avisá, y esta guía se actualiza.</div>
+  </div>
+</section>
+
+<footer class="foot">CDIA × Ecom Operator · Guía visual de vinculación · Capturas del 7 de septiembre de 2026</footer>
+
+</body>
+</html>

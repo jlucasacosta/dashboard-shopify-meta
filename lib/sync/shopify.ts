@@ -11,9 +11,12 @@
 //      tiene ese limite (verificado: SINCE 2023-01-01 devuelve el rango entero).
 //
 // Scopes que necesita: read_reports. Nada protegido.
+//
+// El token no se lee de la configuracion: lo resuelve shopify-token.ts (lo
+// pide a Shopify y lo cachea). Aca solo llega una credencial lista para usar.
 
 import { monedaTienda } from './config'
-import type { ConfigShopify } from './config'
+import type { CredencialShopify } from './shopify-token'
 
 /** Version de la API. Shopify recomienda subirla una vez por trimestre. */
 export const API_VERSION = '2026-07'
@@ -84,16 +87,16 @@ const DOCUMENTO = `query ($q: String!) {
 export type Fila = Record<string, string>
 
 export async function consultar(
-  cfg: ConfigShopify,
+  cred: CredencialShopify,
   shopifyql: string,
 ): Promise<Fila[]> {
   const res = await fetch(
-    `https://${cfg.shopDomain}/admin/api/${API_VERSION}/graphql.json`,
+    `https://${cred.shopDomain}/admin/api/${API_VERSION}/graphql.json`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': cfg.adminToken,
+        'X-Shopify-Access-Token': cred.token,
       },
       body: JSON.stringify({ query: DOCUMENTO, variables: { q: shopifyql } }),
     },
@@ -104,7 +107,7 @@ export async function consultar(
     throw new Error(
       `Shopify respondio ${res.status}. ` +
         (res.status === 401 || res.status === 403
-          ? 'Revisa SHOPIFY_ADMIN_TOKEN y que la app tenga el scope read_reports. '
+          ? 'Revisa las credenciales de Shopify y que la app tenga el scope read_reports. '
           : '') +
         cuerpo.slice(0, 300),
     )
@@ -217,12 +220,12 @@ export type FilaProducto = {
 }
 
 export async function traerVentas(
-  cfg: ConfigShopify,
+  cred: CredencialShopify,
   desde: string,
   hasta: string,
 ): Promise<FilaVentas[]> {
   const moneda = monedaTienda()
-  const filas = await consultar(cfg, consultaVentas(desde, hasta))
+  const filas = await consultar(cred, consultaVentas(desde, hasta))
 
   return filas
     .filter((f) => fecha(f) !== '')
@@ -247,11 +250,11 @@ export async function traerVentas(
 }
 
 export async function traerTrafico(
-  cfg: ConfigShopify,
+  cred: CredencialShopify,
   desde: string,
   hasta: string,
 ): Promise<FilaTrafico[]> {
-  const filas = await consultar(cfg, consultaTrafico(desde, hasta))
+  const filas = await consultar(cred, consultaTrafico(desde, hasta))
 
   return filas
     .filter((f) => fecha(f) !== '')
@@ -268,11 +271,11 @@ export async function traerTrafico(
 }
 
 export async function traerProductos(
-  cfg: ConfigShopify,
+  cred: CredencialShopify,
   desde: string,
   hasta: string,
 ): Promise<FilaProducto[]> {
-  const filas = await consultar(cfg, consultaProductos(desde, hasta))
+  const filas = await consultar(cred, consultaProductos(desde, hasta))
 
   return filas
     .filter((f) => fecha(f) !== '')

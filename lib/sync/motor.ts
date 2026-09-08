@@ -25,6 +25,7 @@ import {
   monedaTienda,
 } from './config'
 import { traerProductos, traerTrafico, traerVentas } from './shopify'
+import { credencialShopify } from './shopify-token'
 import { monedaCuenta, traerGastoDiario, traerGastoPorCampana } from './meta'
 import { traerTasas } from './fx'
 import { agregarPorDia, compradoresDe, ordenesActualizadasDesde, ordenesCreadasEntre } from './meli'
@@ -61,13 +62,14 @@ async function escribirShopify(
   desde: string,
   hasta: string,
 ): Promise<number> {
-  const cfg = configShopify()
+  // El token se pide o se lee de la cache en `conexiones`; ver shopify-token.ts.
+  const cred = await credencialShopify(supabase, configShopify())
   let filas = 0
 
   const [ventas, trafico, productos] = await Promise.all([
-    traerVentas(cfg, desde, hasta),
-    traerTrafico(cfg, desde, hasta),
-    traerProductos(cfg, desde, hasta),
+    traerVentas(cred, desde, hasta),
+    traerTrafico(cred, desde, hasta),
+    traerProductos(cred, desde, hasta),
   ])
 
   if (ventas.length) {

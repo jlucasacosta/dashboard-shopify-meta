@@ -114,6 +114,7 @@ miente siempre.
 | `npm run test:realtime` | Diagnostica si Realtime entrega eventos |
 | `npm run nube:verificar` | Revisa que tu proyecto de Supabase esté bien armado |
 | `npm run usuario:crear -- mail@x.com` | Habilita a alguien para entrar al panel |
+| `npm run shopify:probar` | Prueba que la app de Shopify esté bien creada, antes de desplegar |
 | `npm run webhooks:registrar` | Le dice a Shopify a dónde avisar. Correrlo dos veces es seguro |
 | `npm run tipos:filtrar` | Regenera `lib/types.ts` dejando solo las tablas del panel |
 

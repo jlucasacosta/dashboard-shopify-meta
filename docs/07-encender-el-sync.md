@@ -32,8 +32,8 @@ que juntaste en las guías anteriores:
 |---|---|
 | `SUPABASE_SERVICE_KEY` | Supabase → Project Settings → API Keys → `service_role` |
 | `SHOPIFY_SHOP_DOMAIN` | Tu dominio `.myshopify.com` (guía 02) |
-| `SHOPIFY_ADMIN_TOKEN` | Guía 02 |
-| `SHOPIFY_API_SECRET` | Guía 02 (client secret) |
+| `SHOPIFY_CLIENT_ID` | Guía 02 (ID de cliente) |
+| `SHOPIFY_API_SECRET` | Guía 02 (Secreto) |
 | `META_ACCESS_TOKEN` | Guía 03 — opcional |
 | `META_AD_ACCOUNT_ID` | Guía 03 — opcional |
 | `MELI_APP_ID` | Guía 04 — opcional |
@@ -59,10 +59,11 @@ nuevo. Alcanza con **Deployments → … → Redeploy**.
 
 ## 2. Avisarle a Shopify a dónde escribir
 
-Desde tu computadora, en la carpeta del proyecto, todo en una línea:
+Desde tu computadora, en la carpeta del proyecto (lee los valores de tu
+`.env.local`, no hay que pasarle nada):
 
 ```bash
-SHOPIFY_SHOP_DOMAIN=tu-tienda.myshopify.com SHOPIFY_ADMIN_TOKEN=shpat_... APP_URL=https://tu-panel.vercel.app npm run webhooks:registrar
+npm run webhooks:registrar
 ```
 
 Tiene que terminar diciendo:

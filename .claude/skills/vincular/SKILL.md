@@ -211,27 +211,44 @@ conectamos nada.
 
 Guiala por `docs/02-shopify.md`, **de a una pantalla por mensaje**:
 
-1. `shopify.dev/dashboard` → **Create app** → **Start from Dev Dashboard**
-2. Versions → scopes: `read_reports,read_orders` → **Release**
-3. Home → **Install app** → su tienda
+1. `dev.shopify.com/dashboard` (no `shopify.dev`: ese da 404) → mirar la
+   **organización** activa arriba a la derecha → **Crear app** → tarjeta
+   **Empezar desde el Dev Dashboard** → nombre → **Crear app**
+2. Cae en **Crear versión** → Alcances: `read_reports,read_orders` → **Lanzar**
+   → **Lanzar** (confirmación)
+3. **Panel general** → **Instalar app** → su tienda → **Instalar** (el cartel
+   amarillo "aún no se ha revisado" es normal; la pestaña con "Example Domain"
+   también, que la cierre)
+4. **Configuración de la app → Credenciales**: **ID de cliente** y **Secreto**
 
-> El camino viejo (Ajustes → Apps → Desarrollar apps) **ya no existe**. Si te
-> dice que no lo encuentra, es esto. No la mandes a buscarlo.
+> El camino viejo (Configuración → Apps → Desarrollar apps) **ya no existe**. Si
+> te dice que no lo encuentra, es esto. No la mandes a buscarlo.
 
-**Pedí captura de la pantalla de scopes antes del Release.** Es el error más
-caro de arreglar después: si falta `read_reports`, no hay datos, y el mensaje de
+> **No existe el "Admin API access token"** en estas apps. Si lo busca, o si vos
+> lo buscás, es una guía vieja. El panel pide el token solo con ID + secreto
+> (client credentials, 24 h, se renueva). Lo único que necesita son esos dos.
+
+**Pedí captura de la pantalla de scopes antes de Lanzar.** Es el error más caro
+de arreglar después: si falta `read_reports`, no hay datos, y el mensaje de
 Shopify no lo explica.
+
+**Antes de tocar Vercel, que pruebe local:** con `SHOPIFY_SHOP_DOMAIN`,
+`SHOPIFY_CLIENT_ID` y `SHOPIFY_API_SECRET` en `.env.local`,
+`npm run shopify:probar`. Tiene que listar los dos scopes y responder una
+consulta. Si dice `shop_not_permitted`, la app quedó en otra organización que la
+tienda: se crea de nuevo en la correcta. Pedile que pegue la salida (no tiene
+secretos).
 
 ### 2.2 Cargar en Vercel
 
-Que copie de **API credentials** y pegue en
+Que copie de **Credenciales** y pegue en
 **Vercel → Settings → Environment Variables**:
 
 | Variable | De dónde |
 |---|---|
 | `SHOPIFY_SHOP_DOMAIN` | su dominio `.myshopify.com` |
-| `SHOPIFY_ADMIN_TOKEN` | Admin API access token |
-| `SHOPIFY_API_SECRET` | Client secret |
+| `SHOPIFY_CLIENT_ID` | ID de cliente |
+| `SHOPIFY_API_SECRET` | Secreto |
 | `STORE_CURRENCY` | `UYU`, `ARS`, `USD`… |
 | `SUPABASE_SERVICE_KEY` | Supabase → API Keys → service_role |
 | `APP_URL` | la URL del paso 0 |
@@ -249,9 +266,6 @@ terminal a mano, cualquier cadena larga y al azar sirve.
 >
 > Ese archivo no se sube al repo, así que los secretos siguen sin pasar por
 > ningún lado que no sea su máquina y Vercel.
-
-> El token de Shopify **se muestra una sola vez**. Avisale antes de que cierre
-> la pantalla.
 
 **Después de cargarlas, tiene que volver a desplegar**: Deployments → ⋯ →
 **Redeploy**. Vercel no aplica variables a un deploy ya hecho. Pedí captura del
@@ -294,15 +308,19 @@ select source, status, rows_written, error from sync_log order by started_at des
 | `status_code` 404 | La `app_url` está mal escrita |
 | `status_code` 500 | Falta una variable en Vercel — el cuerpo dice cuál |
 | sin fila en `net._http_response` | Esperá más; si no aparece, `pg_net` no está habilitado |
-| `sync_log` con error 401/403 | El `SHOPIFY_ADMIN_TOKEN` está mal o le falta `read_reports` |
+| `sync_log` con `shop_not_permitted` | La app está en otra organización que la tienda |
+| `sync_log` con "no acepto el Client ID" | ID o secreto mal pegados, o secreto rotado |
+| `sync_log` con "no tiene el scope read_reports" | Falta el scope: nueva versión + reinstalar |
+| `sync_log` con "conexiones_fuente_check" | Falta aplicar la migración 0013 |
 | `sync_log` con "Column Not Found" | La app no tiene `read_reports` |
 
 ### 2.5 Registrar los webhooks
 
-En su terminal:
+En su terminal, en la carpeta del proyecto (lee `.env.local`; `APP_URL` tiene
+que estar cargado ahí):
 
 ```bash
-SHOPIFY_SHOP_DOMAIN=... SHOPIFY_ADMIN_TOKEN=... APP_URL=https://SU-PANEL.vercel.app npm run webhooks:registrar
+npm run webhooks:registrar
 ```
 
 Tiene que terminar con los tres topics en `ok`. **Pedile que te pegue la salida**

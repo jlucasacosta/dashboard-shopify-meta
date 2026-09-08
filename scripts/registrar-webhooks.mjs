@@ -1,9 +1,11 @@
 // Registra en Shopify los webhooks que avisan cuando algo cambio.
 //
 //   SHOPIFY_SHOP_DOMAIN=tu-tienda.myshopify.com \
-//   SHOPIFY_ADMIN_TOKEN=shpat_... \
+//   SHOPIFY_CLIENT_ID=... SHOPIFY_API_SECRET=... \
 //   APP_URL=https://tu-panel.vercel.app \
 //   npm run webhooks:registrar
+//
+// (Si .env.local ya tiene esos valores, alcanza con `npm run webhooks:registrar`.)
 //
 // LA TRAMPA QUE ESTE SCRIPT EVITA:
 //
@@ -17,7 +19,31 @@
 //   despues crea, actualiza o borra segun el estado real. Correrlo diez veces
 //   deja lo mismo que correrlo una.
 
+import { readFileSync, existsSync } from 'node:fs'
+import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { tokenDeShopify } from './lib/shopify-token.mjs'
+
 const API_VERSION = '2026-07'
+
+// .env.local, si existe, completa lo que no venga por el entorno. Asi el
+// comando queda en `npm run webhooks:registrar` a secas.
+const raiz = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const archivoEnv = resolve(raiz, '.env.local')
+if (existsSync(archivoEnv)) {
+  for (const linea of readFileSync(archivoEnv, 'utf8').split('\n')) {
+    const limpia = linea.trim()
+    if (!limpia || limpia.startsWith('#')) continue
+    const corte = limpia.indexOf('=')
+    if (corte === -1) continue
+    const nombre = limpia.slice(0, corte).trim()
+    let valor = limpia.slice(corte + 1)
+    const marca = valor.indexOf('#')
+    if (marca !== -1) valor = valor.slice(0, marca)
+    valor = valor.trim().replace(/^["']|["']$/g, '')
+    if (valor && !process.env[nombre]) process.env[nombre] = valor
+  }
+}
 
 // Solo lo que hace falta para saber que un dia cambio. `orders/cancelled` no
 // esta porque una cancelacion tambien dispara `orders/updated`.
@@ -36,16 +62,15 @@ const shopDomain = exigir(
   'SHOPIFY_SHOP_DOMAIN',
   'Es el dominio .myshopify.com de tu tienda.',
 )
-const token = exigir(
-  'SHOPIFY_ADMIN_TOKEN',
-  'shopify.dev/dashboard > tu app > API credentials > Admin API access token.',
-)
 const appUrl = exigir(
   'APP_URL',
   'La URL publica de tu panel, por ejemplo https://mi-panel.vercel.app',
 ).replace(/\/$/, '')
 
 const destino = `${appUrl}/api/webhooks/shopify`
+
+// Se resuelve una sola vez, al arrancar main(). Ver scripts/lib/shopify-token.mjs.
+let token = ''
 
 async function graphql(query, variables = {}) {
   const res = await fetch(`https://${shopDomain}/admin/api/${API_VERSION}/graphql.json`, {
@@ -118,6 +143,16 @@ function fallarSiHayUserErrors(bloque, etiqueta) {
 async function main() {
   console.log(`Tienda:  ${shopDomain}`)
   console.log(`Destino: ${destino}\n`)
+
+  const cred = await tokenDeShopify()
+  token = cred.token
+  if (cred.scopes && !cred.scopes.includes('read_orders')) {
+    throw new Error(
+      `La app no tiene el scope read_orders (tiene: ${cred.scopes.join(', ') || 'ninguno'}). ` +
+        'Sin el, Shopify no deja crear los webhooks de pedidos. Crea una version ' +
+        'nueva con read_reports,read_orders, lanzala y reinstala la app.',
+    )
+  }
 
   const data = await graphql(CONSULTA)
   const existentes = data.webhookSubscriptions.edges
