@@ -174,6 +174,13 @@ de Shopify.
 - **El refresh token de Mercado Libre es de un solo uso y rota.** Dos procesos
   refrescando a la vez matan la conexión. Se refresca bajo lock y solo cuando ya
   venció, nunca por las dudas.
+- **Dos jobs de pg_cron en el mismo minuto se pisan.** `*/10` es un
+  subconjunto de `*/5`: coinciden a las :00, :10, :20, siempre. Cuando el
+  backfill escribe un lote grande en `daily_sales` y `sync-hoy` quiere la misma
+  tabla, PostgREST corta con 504 y en `sync_log` queda `daily_sales: Gateway
+  Timeout` — que parece un problema de red y es una colisión propia. Los
+  minutos de `programar_sync()` (migración 0014) están elegidos para no
+  compartir ninguno: 0/5, 3-59/10, 17 y 04:07.
 - **`npx tsc --noEmit` con `.next` borrado inventa errores.** Tipos como
   `LayoutProps` los genera Next dentro de `.next/types`. Si vas a correr tsc
   suelto, corré `npm run build` antes. El build ya tipa igual, así que casi
