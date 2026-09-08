@@ -291,15 +291,25 @@ deploy terminado en verde.
 
 ### 2.3 Guardar el secreto del cron en la base
 
-Ahora sí, por el MCP de Supabase (pedile que te dicte **solo** la URL, el
-`cron_secret` lo pega ella en el SQL o te lo dicta — es el único valor que
-puede pasar por acá, y aun así es mejor que lo escriba ella):
+El `cron_secret` tiene que estar en dos lugares y ser el mismo: en Vercel (lo
+lee el panel para autorizar el pedido) y en `config_servidor` (lo lee
+`disparar_sync` para firmarlo).
+
+Que lo cargue con el script, en **su** terminal. Lee los dos valores de
+`.env.local` y no los imprime nunca, así que el secreto no pasa por el chat:
+
+```bash
+SUPABASE_SERVICE_KEY=eyJ... npm run config:cargar
+```
+
+Termina diciendo qué `app_url` guardó. El `cron_secret` no lo muestra: no lo
+necesitás para verificar nada.
+
+**Verificación:** que `config_servidor` tenga las dos claves, sin mirar los
+valores.
 
 ```sql
-insert into config_servidor (key, value) values
-  ('app_url', 'https://SU-PANEL.vercel.app'),
-  ('cron_secret', 'EL-MISMO-QUE-PUSO-EN-VERCEL')
-on conflict (key) do update set value = excluded.value;
+select key, value is not null and value <> '' as cargado from config_servidor order by key;
 ```
 
 ### 2.4 Probar — acá empieza la verdad

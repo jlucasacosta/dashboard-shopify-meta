@@ -16,6 +16,7 @@
     "postinstall": "node scripts/crear-env.mjs",
     "env:crear": "node scripts/crear-env.mjs",
     "env:subir": "node scripts/subir-env.mjs",
+    "config:cargar": "node scripts/cargar-config.mjs",
     "tipos:filtrar": "node scripts/filtrar-tipos.js"
   },
   "dependencies": {
