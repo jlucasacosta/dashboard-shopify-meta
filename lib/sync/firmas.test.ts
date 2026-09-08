@@ -103,9 +103,25 @@ describe('diaAResincronizar', () => {
     expect(diaAResincronizar(cuerpo, hoy)).toBe('2026-09-05')
   })
 
-  it('convierte a UTC, que es como se guardan los dias', () => {
-    // 2026-08-20 22:00 en UTC-3 es 2026-08-21 01:00 UTC.
+  it('respeta el calendario de la tienda, no el UTC', () => {
+    // 2026-08-20 22:00 en UTC-3 es 2026-08-21 01:00 UTC. ShopifyQL cuenta esa
+    // venta el 20, porque reporta en la zona horaria de la tienda. Si aca
+    // marcaramos el 21, el dia 20 quedaria desactualizado para siempre: el
+    // cron refrescaria un dia que no cambio y nunca el que si.
     const cuerpo = JSON.stringify({ created_at: '2026-08-20T22:00:00-03:00' })
-    expect(diaAResincronizar(cuerpo, hoy)).toBe('2026-08-21')
+    expect(diaAResincronizar(cuerpo, hoy)).toBe('2026-08-20')
+  })
+
+  it('respeta el calendario de la tienda tambien con offset positivo', () => {
+    // El caso real que destapo esto: tienda en Asia/Dubai (+04). Un pedido de
+    // las 20:36 UTC es 00:36 del dia siguiente en la tienda, y asi lo cuenta
+    // ShopifyQL.
+    const cuerpo = JSON.stringify({ created_at: '2026-09-09T00:36:50+04:00' })
+    expect(diaAResincronizar(cuerpo, hoy)).toBe('2026-09-09')
+  })
+
+  it('acepta una fecha que ya viene en UTC', () => {
+    const cuerpo = JSON.stringify({ created_at: '2026-08-20T22:00:00Z' })
+    expect(diaAResincronizar(cuerpo, hoy)).toBe('2026-08-20')
   })
 })

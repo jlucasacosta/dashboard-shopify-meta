@@ -156,6 +156,13 @@ de Shopify.
   el webhook de Shopify recibe un **302 al login** en vez de un 200 — y Shopify
   termina desactivando la suscripción. Falla en silencio: una redirección no
   parece un error.
+- **ShopifyQL no reporta en UTC: reporta en la zona de la tienda.** `TIMESERIES
+  day` corta los días según la zona configurada en Shopify. Con una tienda en
+  Montevideo (UTC-3), toda venta después de las 21:00 cae en el día UTC
+  siguiente: el panel muestra menos que el admin y el `sync_log` dice `ok`. Por
+  eso el motor pregunta la zona (`zonaHorariaTienda`) y calcula el día con
+  `hoyEnZona`, y el webhook lee el día del `created_at` tal como viene —
+  Shopify ya lo manda con el offset de la tienda, y `new Date(...)` lo pierde.
 - **`Number(null)` es `0`, y `0` es finito.** Chequear solo `Number.isFinite()`
   convierte cada dato ausente en un cero perfecto. Ver la regla 2.
 - **Con dos canales, `join daily_sales on date` duplica.** Esa tabla tiene una

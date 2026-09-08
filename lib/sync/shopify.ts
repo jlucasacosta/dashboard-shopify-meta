@@ -21,6 +21,80 @@ import type { CredencialShopify } from './shopify-token'
 /** Version de la API. Shopify recomienda subirla una vez por trimestre. */
 export const API_VERSION = '2026-07'
 
+// ------------------------------------------------------- Zona de la tienda
+
+/**
+ * El dia de hoy en el calendario de una tienda.
+ *
+ * Existe porque ShopifyQL **no reporta en UTC**: `TIMESERIES day` corta los
+ * dias en la zona horaria configurada en la tienda. Pedirle el dia UTC a una
+ * tienda que no esta en UTC devuelve el dia equivocado, y lo peor es como
+ * falla: el sync termina `ok`, escribe filas, y los numeros no cierran con el
+ * admin de Shopify sin que nada lo señale.
+ *
+ * Con una tienda en Montevideo (UTC-3), toda venta despues de las 21:00 cae en
+ * el dia UTC siguiente. Verificado en una instalacion real que ademas tenia la
+ * tienda en Asia/Dubai: un pedido de las 20:36 UTC aparecio en ShopifyQL con
+ * fecha del dia siguiente.
+ *
+ * `en-CA` es el atajo estandar para que Intl devuelva YYYY-MM-DD.
+ */
+export function hoyEnZona(zona: string, ahora = new Date()): string {
+  try {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: zona,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(ahora)
+  } catch {
+    // Una zona invalida hace tirar a Intl. Un sync que corre con el dia UTC es
+    // mucho mejor que uno que no corre.
+    return ahora.toISOString().slice(0, 10)
+  }
+}
+
+/**
+ * Cache de la zona por dominio de tienda.
+ *
+ * La zona de una tienda no cambia nunca en la practica, y esto se llama una vez
+ * por job. Sin cache serian cuatro consultas de mas por cada tick del cron.
+ */
+const zonasConocidas = new Map<string, string>()
+
+const DOCUMENTO_ZONA = `query { shop { ianaTimezone } }`
+
+/** La zona horaria IANA de la tienda ('America/Montevideo'). UTC si falla. */
+export async function zonaHorariaTienda(cred: CredencialShopify): Promise<string> {
+  const cacheada = zonasConocidas.get(cred.shopDomain)
+  if (cacheada) return cacheada
+
+  try {
+    const res = await fetch(
+      `https://${cred.shopDomain}/admin/api/${API_VERSION}/graphql.json`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Access-Token': cred.token,
+        },
+        body: JSON.stringify({ query: DOCUMENTO_ZONA }),
+      },
+    )
+    if (res.ok) {
+      const json = (await res.json()) as { data?: { shop?: { ianaTimezone?: string } } }
+      const zona = json.data?.shop?.ianaTimezone
+      if (zona) {
+        zonasConocidas.set(cred.shopDomain, zona)
+        return zona
+      }
+    }
+  } catch {
+    // Sin red o sin permiso: seguimos en UTC, que es como se comportaba antes.
+  }
+  return 'UTC'
+}
+
 // --------------------------------------------------------------- Consultas
 
 /**

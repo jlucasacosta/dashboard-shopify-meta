@@ -54,6 +54,15 @@ export function hmacShopifyValido(
  * Es la fecha de CREACION del pedido, no la de hoy: un reembolso de hoy sobre
  * una venta de la semana pasada cambia la fila de la semana pasada. Usar hoy
  * dejaria ese dia viejo desactualizado para siempre.
+ *
+ * Y es el dia en el calendario de la TIENDA, no en UTC. Shopify manda la fecha
+ * con el offset de la tienda ya puesto ("2026-08-20T22:00:00-03:00"), y
+ * ShopifyQL cuenta esa venta el 20. Convertirla a UTC daria el 21: marcariamos
+ * sucio un dia que no cambio, y el que si cambio no se refrescaria nunca.
+ *
+ * Por eso se leen los primeros diez caracteres del string en vez de pasarlo por
+ * Date: esos diez caracteres YA son el dia local. `new Date(...)` normaliza a
+ * UTC y pierde exactamente el dato que necesitamos.
  */
 export function diaAResincronizar(cuerpoCrudo: string, hoy = new Date()): string {
   try {
@@ -62,9 +71,13 @@ export function diaAResincronizar(cuerpoCrudo: string, hoy = new Date()): string
       updated_at?: string
     }
     const referencia = payload.created_at ?? payload.updated_at
-    if (referencia) {
-      const d = new Date(referencia)
-      if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10)
+    if (typeof referencia === 'string') {
+      const dia = referencia.slice(0, 10)
+      // El regex descarta basura; el Date descarta fechas imposibles como
+      // 2026-02-31, que pasan el regex pero no existen.
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dia) && !Number.isNaN(new Date(referencia).getTime())) {
+        return dia
+      }
     }
   } catch {
     // Payload ilegible: se cae al dia de hoy, que es lo mas probable.

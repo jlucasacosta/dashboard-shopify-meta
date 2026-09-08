@@ -24,7 +24,7 @@ import {
   diasPrimeraCorrida,
   monedaTienda,
 } from './config'
-import { traerProductos, traerTrafico, traerVentas } from './shopify'
+import { hoyEnZona, traerProductos, traerTrafico, traerVentas, zonaHorariaTienda } from './shopify'
 import { credencialShopify } from './shopify-token'
 import { monedaCuenta, traerGastoDiario, traerGastoPorCampana } from './meta'
 import { traerTasas } from './fx'
@@ -42,11 +42,27 @@ export function esJob(v: string): v is Job {
   return (JOBS as string[]).includes(v)
 }
 
-// -------------------------------------------------------------- Fechas UTC
+// ----------------------------------------------------- Fechas de la tienda
 
-/** Todo el sistema trabaja en UTC. Shopify y MeLi reportan en UTC. */
-function hoyUtc(): string {
-  return new Date().toISOString().slice(0, 10)
+/**
+ * Que dia es "hoy" para la tienda.
+ *
+ * NO es el dia UTC, aunque durante mucho tiempo este archivo asumio que si.
+ * ShopifyQL corta los dias en la zona horaria configurada en la tienda: con una
+ * tienda en Montevideo (UTC-3), toda venta despues de las 21:00 cae en el dia
+ * UTC siguiente, y el panel mostraria menos de lo que dice el admin sin que
+ * nada falle. El sync diria `ok`.
+ *
+ * Si Shopify no esta configurado (una instalacion que solo usa Mercado Libre),
+ * se cae a UTC, que es como se comportaba antes.
+ */
+async function hoyEnTienda(supabase: Cliente): Promise<string> {
+  try {
+    const cred = await credencialShopify(supabase, configShopify())
+    return hoyEnZona(await zonaHorariaTienda(cred))
+  } catch {
+    return new Date().toISOString().slice(0, 10)
+  }
 }
 
 function sumarDias(fecha: string, dias: number): string {
@@ -327,7 +343,7 @@ async function jobShopifyYMeli(
 }
 
 async function jobDiario(supabase: Cliente): Promise<Resultado[]> {
-  const hasta = hoyUtc()
+  const hasta = await hoyEnTienda(supabase)
   const desde = sumarDias(hasta, -30)
   const resultados: Resultado[] = []
 
@@ -376,7 +392,7 @@ async function jobBackfill(supabase: Cliente): Promise<Resultado[]> {
 
   if (estado?.completo) return []
 
-  const hoy = hoyUtc()
+  const hoy = await hoyEnTienda(supabase)
   const limite = sumarDias(hoy, -diasPrimeraCorrida())
   const lote = diasPorLote()
 
@@ -429,7 +445,7 @@ async function jobBackfill(supabase: Cliente): Promise<Resultado[]> {
 
 export async function ejecutarJob(job: Job): Promise<Resumen> {
   const supabase = createAdminClient()
-  const hoy = hoyUtc()
+  const hoy = await hoyEnTienda(supabase)
 
   switch (job) {
     case 'hoy':
