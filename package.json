@@ -18,7 +18,7 @@
     "env:crear": "node scripts/crear-env.mjs",
     "env:subir": "node scripts/subir-env.mjs",
     "config:cargar": "node scripts/cargar-config.mjs",
-    "tipos:filtrar": "node scripts/filtrar-tipos.js"
+    "tipos:filtrar": "node scripts/filtrar-tipos.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -32,6 +32,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "recharts": "^3.10.1",
+    "server-only": "^0.0.1",
     "shadcn": "^4.19.0",
     "tailwind-merge": "^3.6.0",
     "tw-animate-css": "^1.4.0"

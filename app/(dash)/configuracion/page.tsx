@@ -17,7 +17,7 @@
 
 import Link from 'next/link'
 import { CheckCircle2, CircleAlert, CircleDashed, ExternalLink, RefreshCw } from 'lucide-react'
-import { getConexiones } from '@/lib/queries'
+import { getConexiones } from '@/lib/integraciones-server'
 import { estadoDeConexion, type EstadoConexion } from '@/lib/integraciones'
 import { configMeli, configMeta, configShopify } from '@/lib/sync/config'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

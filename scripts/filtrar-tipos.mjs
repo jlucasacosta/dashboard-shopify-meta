@@ -7,17 +7,22 @@
 // Uso:
 //   1. Pedile a Claude que genere los tipos con el MCP de Supabase.
 //   2. Guarda la salida cruda en un archivo, por ejemplo tipos-crudos.ts
-//   3. node scripts/filtrar-tipos.js tipos-crudos.ts
+//   3. node scripts/filtrar-tipos.mjs tipos-crudos.ts
 //
 // Acepta el .ts crudo o el JSON que devuelve el MCP.
 //
 // Sin expresiones regulares a proposito: el escapeo entre el shell y JS ya
 // rompio una version de este script en silencio, dejando el archivo vacio.
 
-const fs = require('fs')
-const path = require('path')
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const DESTINO = path.join(__dirname, '..', 'lib', 'types.ts')
+// __dirname no existe en modulos ES. El resto de los scripts de esta carpeta ya
+// son .mjs; este quedo en CommonJS y era lo unico que hacia fallar npm run lint.
+const aca = path.dirname(fileURLToPath(import.meta.url))
+
+const DESTINO = path.join(aca, '..', 'lib', 'types.ts')
 
 // Lo que el panel realmente usa. Si agregas una tabla o funcion nueva y no la
 // sumas aca, TypeScript te va a decir que no existe.
@@ -38,7 +43,7 @@ const FUNCS = new Set([
 
 const entrada = process.argv[2]
 if (!entrada) {
-  console.error('Uso: node scripts/filtrar-tipos.js <archivo-con-los-tipos-crudos>')
+  console.error('Uso: node scripts/filtrar-tipos.mjs <archivo-con-los-tipos-crudos>')
   process.exit(1)
 }
 
@@ -136,7 +141,7 @@ const salida = lines.slice()
 for (const s of secciones) salida.splice(s.ini, s.fin - s.ini, ...s.contenido)
 
 const cabecera = `// Tipos de la base. Generados con el MCP de Supabase y filtrados con
-// scripts/filtrar-tipos.js a las tablas, vistas y funciones del panel.
+// scripts/filtrar-tipos.mjs a las tablas, vistas y funciones del panel.
 //
 // No se editan a mano: se regeneran. Si agregas algo al esquema, sumalo a las
 // listas del script o TypeScript va a decir que no existe.

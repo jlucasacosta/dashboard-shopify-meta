@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generado por Supabase (npm run tipos:filtrar). No se edita a mano, asi
+    // que marcar sus `{}` no lleva a ningun arreglo: se regenera y vuelven.
+    "lib/types.ts",
   ]),
 ]);
 

@@ -8,11 +8,14 @@
 //   1. Este archivo solo se importa desde codigo de servidor (route handlers y
 //      lib/sync). Si aparece importado desde un componente 'use client', la
 //      service key termina en el bundle del navegador y la base queda abierta.
+//      El `import 'server-only'` de abajo hace que eso sea un error de BUILD y
+//      no una regla que alguien tiene que recordar.
 //   2. La service key bypassa RLS por completo. Las policies de lectura del
 //      panel siguen intactas: el navegador sigue sin poder escribir nada.
 //   3. Nunca se expone por una accion del usuario. Solo la usan el cron y el
 //      webhook, y los dos estan detras de un secreto.
 
+import 'server-only'
 import { createClient as crearCliente } from '@supabase/supabase-js'
 import type { Database } from '@/lib/types'
 import { supabaseUrl } from './env'
