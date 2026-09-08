@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { BarChart3, Filter, Megaphone, Package } from 'lucide-react'
+import { BarChart3, Filter, Megaphone, Package, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const SECCIONES = [
@@ -10,6 +10,9 @@ const SECCIONES = [
   { href: '/embudo',    etiqueta: 'Embudo',    icono: Filter },
   { href: '/ads',       etiqueta: 'Anuncios',  icono: Megaphone },
   { href: '/productos', etiqueta: 'Productos', icono: Package },
+  // Ultima a proposito: no se mira todos los dias, pero tiene que estar a la
+  // vista. Es el unico lugar desde donde se reconecta Mercado Libre.
+  { href: '/configuracion', etiqueta: 'Configuración', icono: Settings },
 ]
 
 // Filtros que se conservan al cambiar de seccion. Si agregas uno nuevo y no lo

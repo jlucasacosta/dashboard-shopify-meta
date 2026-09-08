@@ -484,7 +484,12 @@ dos lados está mal.
 `MELI_APP_ID`, `MELI_SECRET_KEY` y `MELI_AUTH_HOST` (con su país) en Vercel →
 Redeploy.
 
-Después que entre a `https://SU-PANEL.vercel.app/api/meli/conectar` y autorice.
+Después, que entre al panel y vaya a **Configuración → Integraciones →
+Conectar Mercado Libre**. Ese botón es el que arranca la autorización.
+
+(El endpoint sigue siendo `/api/meli/conectar`, pero no hace falta que nadie lo
+escriba a mano: la pantalla lo linkea y además muestra en qué estado quedó la
+conexión.)
 
 ### 4.3 Probar
 
@@ -515,9 +520,13 @@ select canal, count(*) from daily_sales group by canal;
 reconecte por el mismo link.
 
 **Si `sync_log` dice 403 con `PolicyAgent`:** Mercado Libre está bloqueando el
-pedido. **Esto es lo primero que hay que descartar en la primera instalación**
-y todavía no está confirmado que Vercel pueda llegarle. Si aparece, avisá y
-frená ese paso: no es algo que se arregle cambiando variables.
+pedido desde el datacenter. No se arregla cambiando variables: avisá y frená
+ese paso.
+
+> **Ya no es el riesgo que era.** Estaba anotado como sin confirmar. Verificado
+> el 8/9/2026 en una instalación real: desde Vercel (región `iad1`) el OAuth
+> completo y `/orders/search` responden bien, `sync_log` marca `meli ok`. Si
+> igual te aparece, es algo de esa cuenta o de esa región, no del diseño.
 
 **Verificación final:** captura del panel con el selector de canal en Mercado
 Libre, mostrando sus ventas.
