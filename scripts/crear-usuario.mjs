@@ -20,13 +20,43 @@
 // necesita cuando el panel no tiene pantalla de recuperación.
 
 import { randomInt } from 'node:crypto'
-import { writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { writeFileSync, readFileSync, existsSync } from 'node:fs'
+import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const url = process.env.SUPABASE_URL
-const key = process.env.SUPABASE_SERVICE_KEY
+/**
+ * Lee .env.local para no obligar a escribir la service key en la terminal.
+ *
+ * Tipearla a mano en la linea de comandos la deja en el historial del shell y
+ * la muestra en pantalla, que es justo lo que el resto de la instalacion
+ * evita. El archivo ya la tiene y esta en .gitignore.
+ */
+function leerEnvLocal() {
+  const archivo = resolve(dirname(fileURLToPath(import.meta.url)), '..', '.env.local')
+  const vars = new Map()
+  if (!existsSync(archivo)) return vars
+  for (const linea of readFileSync(archivo, 'utf8').split(/\r?\n/)) {
+    const limpia = linea.trim()
+    if (!limpia || limpia.startsWith('#')) continue
+    const corte = limpia.indexOf('=')
+    if (corte === -1) continue
+    let valor = limpia.slice(corte + 1).trim()
+    if (valor.length >= 2 && valor[0] === valor.at(-1) && (valor[0] === '"' || valor[0] === "'")) {
+      valor = valor.slice(1, -1)
+    }
+    if (valor) vars.set(limpia.slice(0, corte).trim(), valor)
+  }
+  return vars
+}
+
+// El entorno gana: si alguien pasa la clave a mano, es porque quiere esa.
+const archivoVars = leerEnvLocal()
+const tomar = (nombre) => process.env[nombre] ?? archivoVars.get(nombre)
+
+const url = tomar('SUPABASE_URL') ?? tomar('NEXT_PUBLIC_SUPABASE_URL')
+const key = tomar('SUPABASE_SERVICE_KEY')
 const email = (process.argv[2] ?? '').trim().toLowerCase()
-const panel = (process.argv[3] ?? process.env.PANEL_URL ?? '').trim().replace(/\/$/, '')
+const panel = (process.argv[3] ?? process.env.PANEL_URL ?? archivoVars.get('APP_URL') ?? '').trim().replace(/\/$/, '')
 
 if (!email || !email.includes('@')) {
   console.error('Uso: npm run usuario:crear -- vos@tutienda.com [https://tu-panel.vercel.app]')
@@ -35,7 +65,7 @@ if (!email || !email.includes('@')) {
 
 if (!url || !key) {
   console.error('Faltan las credenciales de tu proyecto de Supabase.\n')
-  console.error('Corré el comando así, en una sola línea:\n')
+  console.error('Completala en .env.local, o corré el comando así, en una sola línea:\n')
   console.error('  SUPABASE_URL=https://xxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- ' + email)
   console.error('\nEn PowerShell:\n')
   console.error('  $env:SUPABASE_URL="https://xxx.supabase.co"; $env:SUPABASE_SERVICE_KEY="eyJ..."; npm run usuario:crear -- ' + email)
