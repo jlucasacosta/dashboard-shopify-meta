@@ -22,11 +22,19 @@ definitiva. Si todavía no la tenés, hacé primero
 
 ## Crear la app
 
-1. Entrá al devcenter de Mercado Libre de tu país:
-   **[developers.mercadolibre.com.uy](https://developers.mercadolibre.com.uy)**
+1. Entrá al devcenter de Mercado Libre de tu país. La direccion es
+   **[developers.mercadolibre.com.uy/devcenter](https://developers.mercadolibre.com.uy/devcenter)**
    (cambiá `.com.uy` por `.com.ar`, `.com.br`, `.com.mx`, según corresponda).
-2. **Crear aplicación**.
-3. Completá nombre y descripción.
+
+   > El `/devcenter` del final no es opcional. Sin eso caés en la portada de
+   > documentación —"Crear. Conectar. Crecer."— que no tiene por ningún lado el
+   > botón para crear una app, y no es evidente que estés en la página
+   > equivocada.
+
+2. **Crear nueva aplicación**.
+3. Completá nombre (tiene que ser único en todo Mercado Libre), descripción de
+   hasta 150 caracteres —es la que ve la persona cuando la app le pide
+   autorización— y un **logo**, que es obligatorio.
 
 ## Los tres campos que importan
 
@@ -37,7 +45,8 @@ https://tu-panel.vercel.app/api/meli/callback
 ```
 
 > Tiene que coincidir **carácter por carácter** con tu URL. Sin barra al final,
-> sin `www` de más, y con `https`. La documentación de Mercado Libre lo dice
+> sin `www` de más, y con `https` — que además Mercado Libre **exige**: rechaza
+> los redirect URI que no sean HTTPS. La documentación de Mercado Libre lo dice
 > así: *"the URL cannot contain variable information"*. Si no coincide, la
 > conexión falla con un error que no explica cuál de los dos lados está mal.
 

@@ -466,7 +466,10 @@ su propia app de Mercado Libre**. No se puede compartir una.
 El motivo: MeLi exige que la dirección de retorno coincida exacto con la del
 panel, y la de cada persona es distinta.
 
-Guiala por `docs/04-mercado-libre.md`:
+Guiala por `docs/04-mercado-libre.md`. **Mandale la URL con `/devcenter`**:
+`developers.mercadolibre.com.uy/devcenter` (con el dominio de su país). Sin ese
+sufijo cae en la portada de documentación, que no tiene el botón de crear app y
+no parece la página equivocada. El botón se llama **Crear nueva aplicación**.
 
 - **URI de redirect**: `https://SU-PANEL.vercel.app/api/meli/callback`
 - **Scopes**: `read` y `offline_access`
