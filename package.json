@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:realtime": "node scripts/probar-realtime-auth.mjs",
+    "verificar": "node scripts/verificar-instalacion.mjs",
     "nube:verificar": "node scripts/verificar-nube.mjs",
     "usuario:crear": "node scripts/crear-usuario.mjs",
     "shopify:probar": "node scripts/probar-shopify.mjs",

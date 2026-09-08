@@ -587,8 +587,19 @@ Repasá con ella qué quedó conectado y qué no, sin adornos:
   `sync_log`, y que `docs/08-problemas-comunes.md` tiene los casos con su
   diagnóstico.
 
-**Última verificación:** captura del panel con datos reales y el cartel *En
-vivo* en verde.
+**Última verificación.** Corré el verificador de punta a punta, que revisa de
+un saque todo lo que fuiste probando por separado:
+
+```bash
+SUPABASE_SERVICE_KEY=eyJ... npm run verificar
+```
+
+Tiene que terminar en `Listo: la instalacion esta completa.` o con avisos que
+entiendas (el histórico a medio cargar es el más común). Cada falla dice cómo se
+arregla.
+
+No reemplaza mirar el panel: pedí también una captura con datos reales y el
+cartel *En vivo* en verde.
 
 Si algo quedó a medias, decilo explícitamente en el cierre. Una instalación con
 un paso pendiente que nadie anotó es una instalación que va a fallar en dos
