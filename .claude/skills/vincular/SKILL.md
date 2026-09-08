@@ -394,7 +394,21 @@ Es el error más común de todo el proceso: el del Explorer dura **dos horas**, 
 de larga duración **60 días**, y el panel deja de actualizarse sin avisar. El de
 usuario del sistema no vence.
 
-Permiso: **`ads_read`**. Nada más.
+Permiso: **`ads_read`**. Nada más. Alcanza porque el panel solo lee
+(`/insights`, `/campaigns` y la moneda de la cuenta). `ads_management` da
+permiso de crear y modificar campañas: no lo pidas.
+
+**Al usuario del sistema hay que darle DOS activos, no uno.** La cuenta
+publicitaria (*Ver rendimiento*) y **la app** (*Desarrollar app*). Si solo le
+das la cuenta, el generador de tokens dice *"No hay permisos disponibles: asigna
+un rol de app al usuario del sistema"* — y ese mensaje no deja claro que habla
+de otro activo.
+
+**Y después de asignar la app, que recargue con F5.** El diálogo de *Generar
+token* se queda con los permisos que había cuando se abrió: sigue diciendo "No
+hay permisos disponibles" aunque el rol ya esté bien puesto. Verificado en una
+instalación real; se pierde un rato largo buscando el problema en la app, en el
+portfolio y en el caso de uso, cuando ya estaba resuelto.
 
 ### 3.2 Cargar y probar
 

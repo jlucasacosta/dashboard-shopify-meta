@@ -74,9 +74,28 @@ corren solos, sin una persona con la sesión abierta.
    (por ejemplo *panel*) y rol **Empleado**.
 3. Con el usuario creado, **Agregar activos** → pestaña **Cuentas
    publicitarias** → elegí la tuya → activá **Ver rendimiento**.
-4. **Generar nuevo token** → elegí tu app → marcá el permiso **`ads_read`** →
-   generar.
-5. Copialo. **Se muestra una sola vez.** Se va a llamar `META_ACCESS_TOKEN`.
+4. **Agregar activos** otra vez → pestaña **Apps** → elegí la app que creaste
+   arriba → activá **Desarrollar app**.
+
+   Meta trata la cuenta publicitaria y la app como dos activos separados. Sin
+   este paso el generador de tokens dice *"No hay permisos disponibles: asigna
+   un rol de app al usuario del sistema"*, y no es obvio que hable de otro
+   activo.
+
+5. **Recargá la página con F5.** No es un consejo genérico: el diálogo de
+   *Generar token* se queda con los permisos que había cuando lo abriste. Si
+   acabás de asignar la app, va a seguir diciendo *"No hay permisos
+   disponibles"* aunque el rol ya esté puesto. Se pierde mucho rato buscando el
+   error en otro lado.
+
+6. **Generar nuevo token** → elegí tu app → marcá el permiso **`ads_read`**, y
+   solo ese → generar.
+
+   `ads_read` alcanza porque el panel únicamente lee: `/insights`, `/campaigns`
+   y la moneda de la cuenta. No marques `ads_management`: da permiso de crear y
+   modificar campañas, que el panel no usa ni debería poder hacer.
+
+7. Copialo. **Se muestra una sola vez.** Se va a llamar `META_ACCESS_TOKEN`.
 
 ## Anotar el ID de tu cuenta publicitaria
 
