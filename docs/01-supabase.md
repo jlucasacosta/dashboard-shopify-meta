@@ -64,37 +64,38 @@ Abrí cada archivo, copiá todo el contenido, pegalo en el SQL Editor y apretá
 
 ## Habilitar a quien puede entrar
 
-Este panel es privado: **nadie se da de alta solo**. Vos decidís qué correos
-pueden entrar, y el resto recibe un "no estás habilitado".
+Este panel es privado: **nadie se da de alta solo**. Vos creás las cuentas, y
+cada una entra con su correo y su contraseña.
 
-Para habilitar a alguien, desde la terminal, con las credenciales del proyecto
+Para dar de alta a alguien, desde la terminal, con las credenciales del proyecto
 en la misma línea:
 
 ```bash
-SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com
+SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com https://tu-panel.vercel.app
 ```
 
 La `service_role key` está en **Project Settings → API**. Usala solo en ese
 comando y **no la guardes en ningún archivo del proyecto**: se saltea todos los
 permisos.
 
-También podés hacerlo con el mouse, en **Authentication → Users → Add user**.
-Marcá *Auto Confirm User*.
+La URL del final es opcional: si la ponés, el HTML de credenciales trae el botón
+para entrar.
 
-## Hacer que el correo mande el código
+El comando no te pide una contraseña, la genera: 19 caracteres, sin letras que
+se confundan al copiarlas. Te la muestra en la terminal y además deja un archivo
+`credenciales-vos-tutienda-com.html` en la carpeta del proyecto, con la marca
+del panel, para abrir en el navegador y pasarle a quien la va a usar.
 
-Por defecto Supabase manda un link, y nosotros queremos un código.
+> Ese archivo tiene la contraseña en claro. Está en `.gitignore` para que no se
+> suba al repo por descuido, pero mandalo por un canal privado y borralo cuando
+> la otra persona ya la guardó en su navegador.
 
-En **Authentication → Emails → Magic Link**, reemplazá el contenido por el de
-`supabase/templates/magic_link.html`. Lo único que importa de verdad es que
-diga `{{ .Token }}` en vez de `{{ .ConfirmationURL }}`.
+**¿Se la olvidó?** Corré el mismo comando de nuevo: le pone una contraseña nueva
+y regenera el HTML. La anterior deja de servir. No hay pantalla de recuperación
+en el panel, y es a propósito: menos cosas que configurar y que se rompan.
 
-> Si te salteás este paso, el correo va a llegar con un link en vez de un
-> código, y la pantalla te va a seguir pidiendo el código.
-
-> **El largo del código lo decide tu proyecto**, y por defecto son 8 dígitos.
-> La pantalla acepta entre 6 y 10, así que no tenés que configurar nada: copiá
-> el código completo que te llegó, sea del largo que sea.
+También podés hacerlo con el mouse, en **Authentication → Users → Add user**,
+con *Auto Confirm User* marcado y escribiendo vos la contraseña.
 
 ## Conectar la app
 

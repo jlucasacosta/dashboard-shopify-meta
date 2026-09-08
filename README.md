@@ -61,7 +61,8 @@ de borrarlos antes de la primera sync real.
 
 Habilitá tu correo con
 `SUPABASE_URL=... SUPABASE_SERVICE_KEY=... npm run usuario:crear -- vos@tutienda.com`.
-El código de acceso llega a tu casilla de verdad.
+El comando genera la contraseña y la deja en un HTML de credenciales, en la
+carpeta del proyecto.
 
 Después seguí **[docs/00-empezar-aca.md](docs/00-empezar-aca.md)**.
 
@@ -113,7 +114,7 @@ miente siempre.
 | `npm test` | Tests unitarios |
 | `npm run test:realtime` | Diagnostica si Realtime entrega eventos |
 | `npm run nube:verificar` | Revisa que tu proyecto de Supabase esté bien armado |
-| `npm run usuario:crear -- mail@x.com` | Habilita a alguien para entrar al panel |
+| `npm run usuario:crear -- mail@x.com` | Crea la cuenta, genera su contraseña y el HTML de credenciales |
 | `npm run shopify:probar` | Prueba que la app de Shopify esté bien creada, antes de desplegar |
 | `npm run webhooks:registrar` | Le dice a Shopify a dónde avisar. Correrlo dos veces es seguro |
 | `npm run tipos:filtrar` | Regenera `lib/types.ts` dejando solo las tablas del panel |

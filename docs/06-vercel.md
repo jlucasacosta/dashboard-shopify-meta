@@ -30,16 +30,17 @@ Los usuarios que creaste en tu máquina no existen en tu Supabase de la nube.
 Habilitá el tuyo allá:
 
 ```bash
-SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com
+SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com https://tu-panel.vercel.app
 ```
 
-Y verificá que la plantilla del correo en la nube mande el código y no un link
-(ver [la guía de Supabase](01-supabase.md)). Es el paso que más se saltea.
+El comando te devuelve la contraseña y deja el HTML de credenciales en la
+carpeta del proyecto. Esas son las de **producción**: las que creaste en tu
+máquina no sirven acá.
 
-> **Bueno saber:** como se entra con un código escrito en la misma pantalla, no
-> hay ninguna URL de retorno que configurar. Si seguiste tutoriales de link
-> mágico, ese paso acá no existe — y es justamente el que más problemas da al
-> publicar.
+> **Bueno saber:** como se entra con correo y contraseña, no hay ninguna URL de
+> retorno ni plantilla de correo que configurar. Si seguiste tutoriales de link
+> mágico, esos pasos acá no existen — y son justamente los que más problemas dan
+> al publicar.
 
 ## Entrar desde el celular
 

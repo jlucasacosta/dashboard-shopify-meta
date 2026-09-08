@@ -52,3 +52,6 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# Credenciales que genera `npm run usuario:crear`: contraseña en claro.
+credenciales-*.html

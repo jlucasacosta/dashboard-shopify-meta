@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { normalizarEmail, normalizarCodigo, codigoCompleto, LARGO_MAX, mensajeDeError , esRutaDeMaquina } from './auth'
+import {
+  normalizarEmail, normalizarPassword, passwordCompleta, LARGO_MIN_PASSWORD,
+  mensajeDeError, esRutaDeMaquina,
+} from './auth'
 
 describe('normalizarEmail', () => {
   it('saca espacios y pasa a minusculas', () => {
@@ -7,56 +10,66 @@ describe('normalizarEmail', () => {
   })
 })
 
-describe('normalizarCodigo', () => {
-  // La gente copia el código del correo y se trae espacios, guiones o saltos
-  // de línea. Rechazarlo por eso sería un error nuestro, no del usuario.
+describe('normalizarPassword', () => {
+  // La contraseña se copia del HTML de credenciales, y copiar y pegar se trae
+  // un espacio o un salto de linea con muchisima frecuencia. Supabase lo cuenta
+  // como parte de la clave: el resultado es "credenciales invalidas" con la
+  // clave correcta a la vista.
   it.each([
-    ['123456', '123456'],
-    [' 123456 ', '123456'],
-    ['123 456', '123456'],
-    ['123-456', '123456'],
-    ['123\n456', '123456'],
-  ])('limpia %s', (entrada, esperado) => {
-    expect(normalizarCodigo(entrada)).toBe(esperado)
+    ['kq7m-3ptz-9wrf-x2nd', 'kq7m-3ptz-9wrf-x2nd'],
+    [' kq7m-3ptz-9wrf-x2nd ', 'kq7m-3ptz-9wrf-x2nd'],
+    ['kq7m-3ptz-9wrf-x2nd\n', 'kq7m-3ptz-9wrf-x2nd'],
+  ])('limpia los bordes de %s', (entrada, esperado) => {
+    expect(normalizarPassword(entrada)).toBe(esperado)
   })
 
-  it('descarta cualquier cosa que no sea un digito', () => {
-    expect(normalizarCodigo('12a3b4c56')).toBe('123456')
+  // Lo del medio no se toca: ahi si podria ser parte de la contraseña de
+  // alguien que la eligio a mano en Supabase.
+  it('no toca los espacios del medio', () => {
+    expect(normalizarPassword(' dos palabras ')).toBe('dos palabras')
+  })
+})
+
+describe('passwordCompleta', () => {
+  it('exige el minimo de Supabase', () => {
+    expect(passwordCompleta('a'.repeat(LARGO_MIN_PASSWORD))).toBe(true)
+    expect(passwordCompleta('a'.repeat(LARGO_MIN_PASSWORD - 1))).toBe(false)
   })
 
-  it('nunca devuelve mas digitos de los que tiene el codigo', () => {
-    expect(normalizarCodigo('123456789012345')).toHaveLength(LARGO_MAX)
+  it('acepta la que genera el script', () => {
+    expect(passwordCompleta('kq7m-3ptz-9wrf-x2nd')).toBe(true)
   })
 
-  // Un proyecto de Supabase en la nube manda 8 digitos por defecto, no 6.
-  // Cuando la app recortaba a 6, Supabase respondia "otp_expired" y no habia
-  // forma de entrar. Estos dos casos son ese bug, congelado.
-  it('no recorta un codigo de 8 digitos, como el que manda la nube', () => {
-    expect(normalizarCodigo('63075525')).toBe('63075525')
-  })
-
-  it('acepta como completo tanto 6 digitos como 8', () => {
-    expect(codigoCompleto('123456')).toBe(true)
-    expect(codigoCompleto('63075525')).toBe(true)
-    expect(codigoCompleto('12345')).toBe(false)
+  // Sin esto, el boton se habilita con lo que en realidad es una clave vacia y
+  // el error llega recien despues del viaje al servidor.
+  it('no acepta solo espacios', () => {
+    expect(passwordCompleta('          ')).toBe(false)
   })
 })
 
 describe('mensajeDeError', () => {
   // Traducimos los errores de Supabase, que vienen en inglés y no siempre
   // dicen lo que realmente pasó.
+  it('nombra las salidas posibles de "invalid login credentials"', () => {
+    // Supabase responde lo mismo si el correo no existe, si la contraseña esta
+    // mal y si el usuario fue borrado. No podemos distinguirlos, asi que el
+    // mensaje tiene que cubrir las dos cosas que la persona puede hacer.
+    const m = mensajeDeError('Invalid login credentials')
+    expect(m).toMatch(/espacio/i)
+    expect(m).toMatch(/contraseña nueva/i)
+  })
+
+  it('explica el usuario sin confirmar', () => {
+    expect(mensajeDeError('Email not confirmed')).toMatch(/sin confirmar/i)
+  })
+
   it('explica que el email no esta habilitado', () => {
-    expect(mensajeDeError('Signups not allowed for otp')).toMatch(/no está habilitado/i)
+    expect(mensajeDeError('Signups not allowed for this instance')).toMatch(/no está habilitado/i)
     expect(mensajeDeError('User not found')).toMatch(/no está habilitado/i)
   })
 
-  it('distingue codigo equivocado de codigo vencido', () => {
-    expect(mensajeDeError('Token has expired')).toMatch(/venció/i)
-    expect(mensajeDeError('Invalid token')).toMatch(/no es correcto/i)
-  })
-
-  it('avisa cuando se piden demasiados codigos seguidos', () => {
-    expect(mensajeDeError('email rate limit exceeded')).toMatch(/esperá/i)
+  it('avisa cuando se prueba demasiadas veces seguidas', () => {
+    expect(mensajeDeError('Request rate limit reached')).toMatch(/esperá/i)
   })
 
   it('ante un error desconocido no inventa una explicacion', () => {

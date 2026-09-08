@@ -40,42 +40,41 @@ nube (ver [la guía de Vercel](06-vercel.md)). Un usuario creado en tu máquina
 **no** existe en la nube: son dos bases distintas.
 
 ---
+## Me dice "Correo o contraseña incorrectos"
 
-## El correo me llega con un link, no con un código
+**Síntoma:** *"Correo o contraseña incorrectos."*
 
-**Síntoma:** la pantalla te pide un código pero el correo trae un botón o un link.
+**Causa:** Supabase responde lo mismo en tres casos distintos y no dice cuál: el
+correo no existe, la contraseña está mal, o el usuario fue borrado.
 
-**Causa:** la plantilla del correo en tu proyecto de la nube sigue siendo la de
-Supabase por defecto.
+**Qué revisar, en este orden:**
 
-**Solución:** **Authentication → Emails → Magic Link**, y cambiá
-`{{ .ConfirmationURL }}` por `{{ .Token }}`. El contenido completo está en
-`supabase/templates/magic_link.html`.
+- **Un espacio al pegar.** Es lo más común: copiar la contraseña del HTML se
+  trae un espacio o un salto de línea. Tocá *Mostrar* en la pantalla de entrada
+  y mirá lo que quedó escrito.
+- **Estás mirando el HTML viejo.** Si generaste credenciales más de una vez,
+  solo sirve la última: cada corrida pisa la contraseña anterior.
+- **Es otra base.** Un usuario creado en tu máquina **no** existe en la nube.
 
----
+**Solución definitiva:** generá una contraseña nueva. Es el mismo comando que
+para crear el usuario:
 
-## El código no me lo toma
-
-**Síntoma:** *"Ese código no es correcto"* o *"El código venció"*.
-
-**Causas y qué hacer:**
-
-- **Venció:** dura 15 minutos. Pedí uno nuevo con *Usar otro correo* y volvé a
-  entrar tu email.
-- **Es viejo:** si pediste varios códigos, solo sirve el último.
-- **Está mal copiado:** la pantalla ignora espacios y guiones, así que podés
-  pegarlo como venga. Lo que no perdona es un dígito cambiado.
+```bash
+SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com
+```
 
 ---
 
-## Pedí muchos códigos y ahora no me manda ninguno
+## Perdí el HTML con la contraseña
 
-**Síntoma:** *"Pediste varios códigos seguidos. Esperá un minuto."*
+**Síntoma:** no tenés el archivo de credenciales y no te acordás la contraseña.
 
-**Causa:** Supabase limita cuántos correos manda seguidos, para que nadie use tu
-proyecto para spamear.
+**Causa:** la contraseña no queda guardada en claro en ningún lado. El HTML era
+la única copia, y por eso conviene guardarla en el navegador la primera vez.
 
-**Solución:** esperá un minuto. No hay nada roto.
+**Solución:** corré `npm run usuario:crear` de nuevo con el mismo correo. Genera
+una contraseña nueva, regenera el HTML, y la anterior deja de servir. No perdés
+nada: los datos del panel no dependen de la contraseña.
 
 ---
 

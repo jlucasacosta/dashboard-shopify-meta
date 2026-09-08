@@ -16,11 +16,11 @@ online, mandala a `docs/06-vercel.md` y frená.
 **1. Un servicio por vez.** No adelantes el siguiente hasta que el anterior
 esté verificado. Si se mezclan y algo falla, no hay forma de saber cuál fue.
 
-**2. Nunca pidas que peguen un token en el chat.** Ni una vez, ni "solo para
-probar". Los tokens van del navegador a Vercel y de ahí no salen. Todo lo que
-vos verificás, lo verificás por otro lado (ver abajo). Si alguien pega un token
-igual, decíselo: que lo rote en el proveedor antes de seguir, porque quedó
-escrito en el historial de la conversación.
+**2. Nunca pidas que peguen un token ni una contraseña en el chat.** Ni una vez,
+ni "solo para probar". Los tokens van del navegador a Vercel y de ahí no salen,
+y la contraseña del panel vive en su HTML de credenciales. Todo lo que vos
+verificás, lo verificás por otro lado (ver abajo). Si igual pegan algo, decíselo:
+que lo roten antes de seguir, porque quedó escrito en el historial.
 
 **3. Verificá vos, no preguntes si funcionó.** "¿Te anduvo?" no es una
 verificación. Corré la prueba y mirá la salida. Solo pedí captura de pantalla
@@ -94,8 +94,8 @@ Apagalo con `update_project_deployment_protection` y
 `ssoProtection: {"enabled": false}`.
 
 > Tranquilizala si pregunta: el panel no queda abierto. Sigue teniendo su propio
-> login por correo, y solo entran las direcciones dadas de alta. Lo que se apaga
-> es una segunda puerta de Vercel que además bloquea a las máquinas.
+> login con correo y contraseña, y solo entran las cuentas dadas de alta. Lo que
+> se apaga es una segunda puerta de Vercel que además bloquea a las máquinas.
 
 **Verificación.** Golpeá el endpoint del cron **sin** el secreto, desde Postgres:
 
@@ -118,12 +118,24 @@ middleware no está mandando `/api/*` al login.
 
 ### 0.2 Que el panel cargue
 
-Pedile que abra la URL. Tiene que ver la pantalla de entrada pidiendo un correo.
-Si ve un error de variable faltante, las de Supabase no están en Vercel.
+Pedile que abra la URL. Tiene que ver la pantalla de entrada pidiendo correo y
+contraseña. Si ve un error de variable faltante, las de Supabase no están en
+Vercel.
 
 > **Acordate del redeploy.** Vercel no aplica variables a un deploy ya hecho.
 > Cada vez que se agrega una, hay que volver a desplegar. Es la causa número uno
 > de "ya la cargué y sigue fallando".
+
+### 0.3 Con qué correo va a entrar
+
+Preguntale ahora, aunque el usuario recién se cree en el paso 1:
+
+> ¿Con qué correo querés entrar al panel? Puede ser el de la tienda o
+> cualquier otro tuyo.
+
+Anotalo, es el único dato de esta parte. **No le pidas que invente una
+contraseña:** la genera el instalador y se la entregamos en el paso 1.4, en un
+HTML con la marca del panel.
 
 ---
 
@@ -172,37 +184,43 @@ ok    funciones del cron fuera del alcance del navegador (401)
 **Si alguna de esas dice `falla`:** falta la migración `0010` o la `0012`.
 Aplicalas y volvé a correr.
 
-### 1.4 El correo de entrada — pedí captura
+### 1.4 Crear su usuario y entregarle la contraseña
 
-Esto no se puede verificar desde acá. Pedile que vaya a
-**Authentication → Emails → Magic Link** en Supabase y **te mande una captura**.
+El panel no deja entrar a cualquiera: solo a los correos dados de alta, y cada
+uno entra con su contraseña. No hay registro ni pantalla de "olvidé mi
+contraseña": las cuentas las creás vos, con este comando.
 
-Lo que mirás: la plantilla tiene que usar `{{ .Token }}`, **no**
-`{{ .ConfirmationURL }}`. Si usa la URL, el correo llega con un link y la
-pantalla de entrada pide un código: no hay forma de entrar y el error no lo dice.
-
-El reemplazo está en `supabase/templates/magic_link.html`.
-
-### 1.5 La URL de retorno — pedí captura
-
-**Authentication → URL Configuration**. Pedile captura y confirmá que la URL de
-Vercel esté en los redirect URLs.
-
-### 1.6 Habilitar su correo
-
-El panel no deja entrar a cualquiera: solo a los correos dados de alta.
+Usá el correo del paso 0.3 y la URL del paso 0.
 
 ```bash
-SUPABASE_URL=https://xxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com
+SUPABASE_URL=https://xxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com https://mi-panel.vercel.app
 ```
 
 > La service key va en **su** terminal, no en el chat. Si te la pega, decile que
 > la rote en Supabase antes de seguir.
 
+El comando hace tres cosas: crea el usuario, le genera una contraseña de 19
+caracteres y deja un `credenciales-vos-tutienda-com.html` en la raíz del
+proyecto, con el correo, la contraseña y el botón para entrar. Está en
+`.gitignore`, así que no se sube al repo.
+
+Decile que lo abra en el navegador: eso es lo que tiene que guardar.
+
+**No le pidas que te pegue la contraseña en el chat.** No la necesitás para
+verificar nada, y una vez pegada acá deja de ser suya.
+
+**Si el correo ya estaba dado de alta**, el mismo comando le pone una contraseña
+nueva y regenera el HTML. Es también el "me la olvidé".
+
 **Verificación:** que entre al panel y **te mande captura** de la pantalla ya
 adentro. Va a estar vacía o con datos de ejemplo: está bien, todavía no
 conectamos nada.
 
+**Si dice "Correo o contraseña incorrectos"** y está copiando del HTML, casi
+siempre se coló un espacio al pegar: que toque *Mostrar* en la pantalla de
+entrada y mire lo que quedó escrito antes de mandar. Si aun así no entra, corré
+
+el comando de nuevo — la contraseña nueva pisa a la anterior.
 ---
 
 ## Paso 2 — Shopify

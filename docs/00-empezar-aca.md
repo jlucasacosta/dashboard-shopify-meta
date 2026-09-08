@@ -84,8 +84,10 @@ con las credenciales de tu proyecto):
 SUPABASE_URL=https://xxxxx.supabase.co SUPABASE_SERVICE_KEY=eyJ... npm run usuario:crear -- vos@tutienda.com
 ```
 
-Después poné ese correo en la pantalla de entrada. El código llega a tu casilla
-de verdad, mandado por Supabase.
+El comando no te pide una contraseña: la genera y te la muestra en la terminal.
+Además deja un `credenciales-vos-tutienda-com.html` en la carpeta del proyecto
+con el correo y la contraseña, para abrir en el navegador. Con eso entrás en la
+pantalla de entrada.
 
 ## El orden de las guías
 

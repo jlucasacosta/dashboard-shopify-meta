@@ -219,11 +219,11 @@ if (!SERVICE) {
 // --- 4. lo que este script no puede ver ------------------------------------
 
 titulo('Esto revisalo a mano (no se puede desde acá)')
-console.log('  - Authentication → Emails → Magic Link tiene que usar {{ .Token }},')
-console.log('    no {{ .ConfirmationURL }}. Copiá supabase/templates/magic_link.html.')
-console.log('    Si no, el correo llega con un link y la pantalla te pide 6 dígitos.')
-console.log('  - Authentication → URL Configuration: agregá la URL de Vercel')
-console.log('    a los redirect URLs.')
+console.log('  - Authentication → Providers → Email tiene que estar habilitado,')
+console.log('    con "Confirm email" y "Allow new users to sign up" APAGADOS: las')
+console.log('    cuentas las crea `npm run usuario:crear`, nadie se da de alta solo.')
+console.log('  - Si subiste el largo mínimo de contraseña, dejalo en 19 o menos:')
+console.log('    es el largo de la que genera el script.')
 
 // --- cierre ----------------------------------------------------------------
 

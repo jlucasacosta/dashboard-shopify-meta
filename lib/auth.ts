@@ -1,43 +1,40 @@
-// Helpers del inicio de sesión con código.
+// Helpers del inicio de sesión con contraseña.
 //
 // Separados de la pantalla para poder testearlos sin navegador. Lo que hacen
 // es poco, pero es lo que evita los dos motivos más tontos por los que alguien
-// no puede entrar: un código pegado con espacios, y un error en inglés que no
-// explica nada.
+// no puede entrar: un correo pegado con espacios o mayúsculas, y un error en
+// inglés que no explica nada.
 
 /**
- * Largo del código que manda Supabase.
+ * Largo mínimo de la contraseña.
  *
- * Acá vivía `LARGO_CODIGO = 6`, heredado de la configuración de un Supabase
- * local. Un proyecto en la nube emite el largo que tenga configurado en
- * Authentication > Emails, y por defecto son 8.
- *
- * Con el largo fijo en 6, la app recortaba el código de 8 a sus primeros 6
- * dígitos y Supabase respondía `otp_expired`: un error que miente, porque el
- * código no venció, llegó cortado. No había forma de entrar y el mensaje te
- * mandaba a buscar al lugar equivocado.
- *
- * Por eso la app ya no impone un largo: acepta lo que llegue, dentro del rango
- * que Supabase permite configurar.
+ * Es el default de Supabase (Authentication > Providers > Email). No lo
+ * subimos: la contraseña la genera `npm run usuario:crear` con 19 caracteres,
+ * así que este mínimo solo existe para que el botón no se habilite con dos
+ * letras y la persona descubra el problema recién después del viaje al
+ * servidor.
  */
-export const LARGO_MIN = 6
-export const LARGO_MAX = 10
+export const LARGO_MIN_PASSWORD = 6
 
 export function normalizarEmail(valor: string): string {
   return valor.trim().toLowerCase()
 }
 
 /**
- * Deja solo los dígitos del código.
- * La gente lo copia del correo y se trae espacios, guiones o saltos de línea;
- * rechazarlo por eso sería un error nuestro, no del usuario.
+ * Deja la contraseña como la escribió la persona, salvo por los espacios de
+ * los bordes.
+ *
+ * Copiar y pegar del HTML de credenciales se trae un espacio o un salto de
+ * línea con muchísima frecuencia, y Supabase lo cuenta como parte de la clave:
+ * el resultado es "credenciales inválidas" con la clave correcta a la vista.
+ * Lo del medio no se toca, porque ahí sí podría ser parte de la contraseña.
  */
-export function normalizarCodigo(valor: string): string {
-  return valor.replace(/\D/g, '').slice(0, LARGO_MAX)
+export function normalizarPassword(valor: string): string {
+  return valor.trim()
 }
 
-export function codigoCompleto(valor: string): boolean {
-  return normalizarCodigo(valor).length >= LARGO_MIN
+export function passwordCompleta(valor: string): boolean {
+  return normalizarPassword(valor).length >= LARGO_MIN_PASSWORD
 }
 
 /**
@@ -48,17 +45,21 @@ export function codigoCompleto(valor: string): boolean {
 export function mensajeDeError(original: string): string {
   const e = original.toLowerCase()
 
+  // El más común de todos, y el que peor informa: Supabase responde lo mismo
+  // si el correo no existe, si la contraseña está mal y si el usuario fue
+  // borrado. No podemos distinguirlos, así que nombramos las tres salidas en
+  // vez de mandar a la persona a adivinar cuál de ellas le tocó.
+  if (e.includes('invalid login credentials') || e.includes('invalid credentials')) {
+    return 'Correo o contraseña incorrectos. Revisá que no se haya colado un espacio al pegar; si seguís sin poder entrar, pedile al dueño del panel una contraseña nueva.'
+  }
+  if (e.includes('email not confirmed')) {
+    return 'Ese usuario quedó sin confirmar. Pedile al dueño del panel que vuelva a darte de alta.'
+  }
   if (e.includes('signups not allowed') || e.includes('user not found')) {
     return 'Ese email no está habilitado para entrar. Pedile al dueño del panel que te agregue.'
   }
-  if (e.includes('expired')) {
-    return 'El código venció. Pedí uno nuevo.'
-  }
-  if (e.includes('invalid') && (e.includes('token') || e.includes('otp'))) {
-    return 'Ese código no es correcto. Revisalo y probá de nuevo.'
-  }
   if (e.includes('rate limit') || e.includes('too many')) {
-    return 'Pediste varios códigos seguidos. Esperá un minuto y volvé a intentar.'
+    return 'Probaste varias veces seguidas. Esperá un minuto y volvé a intentar.'
   }
   if (e.includes('invalid email') || e.includes('unable to validate email')) {
     return 'Ese correo no parece válido.'

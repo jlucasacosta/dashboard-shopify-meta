@@ -26,9 +26,9 @@ if (!URL || !ANON || !SERVICE) {
 const admin = createClient(URL, SERVICE, { auth: { persistSession: false } })
 const email = 'realtime-test@tutienda.com'
 
-// Usuario descartable con contraseña: es la vía más directa para obtener una
-// sesión real en un script. El dashboard usa magic link, pero la sesión que
-// resulta es la misma y es lo único que importa acá.
+// Usuario descartable con contraseña, igual que los del panel: la sesión que
+// sale de acá es exactamente la que tiene una persona adentro, así que lo que
+// pruebe este script vale para el panel de verdad.
 const password = 'prueba-realtime-1234'
 await admin.auth.admin.deleteUser(
   (await admin.auth.admin.listUsers()).data.users.find((u) => u.email === email)?.id ?? '',
@@ -42,8 +42,8 @@ const { error: errUser } = await admin.auth.admin.createUser({
 if (errUser) { console.error('No se pudo crear el usuario:', errUser.message); process.exit(1) }
 
 const cliente = createClient(URL, ANON, { auth: { persistSession: false } })
-const { data: sesion, error: errOtp } = await cliente.auth.signInWithPassword({ email, password })
-if (errOtp) { console.error('No se pudo iniciar sesión:', errOtp.message); process.exit(1) }
+const { data: sesion, error: errLogin } = await cliente.auth.signInWithPassword({ email, password })
+if (errLogin) { console.error('No se pudo iniciar sesión:', errLogin.message); process.exit(1) }
 
 const token = sesion.session?.access_token
 console.log('1) sesión creada para', sesion.user?.email)

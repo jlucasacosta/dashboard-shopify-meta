@@ -4,58 +4,32 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
-  normalizarEmail, normalizarCodigo, codigoCompleto,
-  mensajeDeError, LARGO_MAX,
+  normalizarEmail, normalizarPassword, passwordCompleta, mensajeDeError,
 } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-type Paso =
-  | { en: 'email' }
-  | { en: 'codigo'; email: string }
-
 export default function LoginPage() {
   const router = useRouter()
-  const [paso, setPaso] = useState<Paso>({ en: 'email' })
   const [email, setEmail] = useState('')
-  const [codigo, setCodigo] = useState('')
+  const [password, setPassword] = useState('')
+  const [verClave, setVerClave] = useState(false)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function pedirCodigo(e: React.FormEvent) {
+  async function entrar(e: React.FormEvent) {
     e.preventDefault()
     setCargando(true)
     setError(null)
 
-    const limpio = normalizarEmail(email)
     const supabase = createClient()
-
-    const { error: err } = await supabase.auth.signInWithOtp({
-      email: limpio,
-      // Sin esto, Supabase crea el usuario en el momento y cualquiera con un
-      // correo entra. Es lo único que hace que el panel sea realmente privado.
-      options: { shouldCreateUser: false },
-    })
-
-    setCargando(false)
-    if (err) return setError(mensajeDeError(err.message))
-
-    setPaso({ en: 'codigo', email: limpio })
-  }
-
-  async function verificarCodigo(e: React.FormEvent) {
-    e.preventDefault()
-    if (paso.en !== 'codigo') return
-
-    setCargando(true)
-    setError(null)
-
-    const supabase = createClient()
-    const { error: err } = await supabase.auth.verifyOtp({
-      email: paso.email,
-      token: normalizarCodigo(codigo),
-      type: 'email',
+    // Sin signUp en ningún lado de la app: las cuentas las crea el dueño del
+    // panel con `npm run usuario:crear`. Es lo único que hace que el panel sea
+    // realmente privado.
+    const { error: err } = await supabase.auth.signInWithPassword({
+      email: normalizarEmail(email),
+      password: normalizarPassword(password),
     })
 
     if (err) {
@@ -69,63 +43,14 @@ export default function LoginPage() {
     router.refresh()
   }
 
-  if (paso.en === 'codigo') {
-    return (
-      <Marco>
-        <h1 className="text-lg font-semibold tracking-tight">Escribí tu código</h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          Te mandamos un código a{' '}
-          <span className="text-foreground">{paso.email}</span>. Vence en 15 minutos.
-        </p>
-
-        <form onSubmit={verificarCodigo} className="mt-6 space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="codigo">Código</Label>
-            <Input
-              id="codigo"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              autoFocus
-              placeholder="000000"
-              maxLength={LARGO_MAX + 6}
-              value={codigo}
-              onChange={(ev) => setCodigo(normalizarCodigo(ev.target.value))}
-              disabled={cargando}
-              className="text-center font-mono text-xl tracking-[0.4em]"
-            />
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={cargando || !codigoCompleto(codigo)}
-          >
-            {cargando ? 'Verificando…' : 'Entrar'}
-          </Button>
-
-          {error && (
-            <p role="alert" className="text-sm text-destructive">{error}</p>
-          )}
-        </form>
-
-        <button
-          onClick={() => { setPaso({ en: 'email' }); setCodigo(''); setError(null) }}
-          className="mt-6 text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
-        >
-          Usar otro correo
-        </button>
-      </Marco>
-    )
-  }
-
   return (
     <Marco>
       <h1 className="text-lg font-semibold tracking-tight">Entrar</h1>
       <p className="mt-1.5 text-sm text-muted-foreground">
-        Te mandamos un código por correo. No hace falta contraseña.
+        Con el correo y la contraseña que te pasaron.
       </p>
 
-      <form onSubmit={pedirCodigo} className="mt-6 space-y-4">
+      <form onSubmit={entrar} className="mt-6 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Correo</Label>
           <Input
@@ -133,7 +58,7 @@ export default function LoginPage() {
             type="email"
             required
             autoFocus
-            autoComplete="email"
+            autoComplete="username"
             placeholder="vos@tutienda.com"
             value={email}
             onChange={(ev) => setEmail(ev.target.value)}
@@ -141,14 +66,48 @@ export default function LoginPage() {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={cargando}>
-          {cargando ? 'Enviando…' : 'Enviar código'}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Contraseña</Label>
+            {/* Mostrarla es lo que evita el intento a ciegas cuando la copiaron
+                a mano de la hoja de credenciales. */}
+            <button
+              type="button"
+              onClick={() => setVerClave((v) => !v)}
+              className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            >
+              {verClave ? 'Ocultar' : 'Mostrar'}
+            </button>
+          </div>
+          <Input
+            id="password"
+            type={verClave ? 'text' : 'password'}
+            required
+            autoComplete="current-password"
+            placeholder="••••-••••-••••-••••"
+            value={password}
+            onChange={(ev) => setPassword(ev.target.value)}
+            disabled={cargando}
+            className="font-mono"
+          />
+        </div>
+
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={cargando || !email || !passwordCompleta(password)}
+        >
+          {cargando ? 'Entrando…' : 'Entrar'}
         </Button>
 
         {error && (
           <p role="alert" className="text-sm text-destructive">{error}</p>
         )}
       </form>
+
+      <p className="mt-6 text-sm text-muted-foreground">
+        ¿Perdiste la contraseña? Pedile al dueño del panel que te genere una nueva.
+      </p>
     </Marco>
   )
 }
