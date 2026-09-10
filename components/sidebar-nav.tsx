@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { BarChart3, Filter, Megaphone, Package, Settings } from 'lucide-react'
+import { BarChart3, Megaphone, Package, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const SECCIONES = [
+  // El embudo no tiene seccion propia: va en el Resumen, con las metricas.
   { href: '/',          etiqueta: 'Resumen',   icono: BarChart3 },
-  { href: '/embudo',    etiqueta: 'Embudo',    icono: Filter },
   { href: '/ads',       etiqueta: 'Anuncios',  icono: Megaphone },
   { href: '/productos', etiqueta: 'Productos', icono: Package },
   // Ultima a proposito: no se mira todos los dias, pero tiene que estar a la

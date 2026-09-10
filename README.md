@@ -75,7 +75,7 @@ Después seguí **[docs/00-empezar-aca.md](docs/00-empezar-aca.md)**.
 | **Cruce** | CAC, ROAS, MER, % de facturación en ads, contribución |
 | **Clientes** | Nuevos vs recurrentes |
 | **Tráfico** | Sesiones, visitantes, tasa de conversión |
-| **Embudo** | Visitas → agregados al carrito → pagos iniciados → ventas |
+| **Embudo** | Visitas → agregados al carrito → pagos iniciados → ventas, en el Resumen |
 | **Productos** | Top 20 por facturación, filtrable por canal |
 
 ## Tres decisiones que definen este proyecto

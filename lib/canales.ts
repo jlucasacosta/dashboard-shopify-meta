@@ -33,14 +33,3 @@ export function etiquetaCanal(canal: Canal): string {
 export function filtroCanal(canal: Canal): string | undefined {
   return canal === 'todos' ? undefined : canal
 }
-
-/**
- * Si el embudo tiene sentido para este canal.
- *
- * Mercado Libre expone visitas por item, pero no tiene "agregado al carrito"
- * ni "pago iniciado": su checkout es de MeLi, no del vendedor. Mezclar los dos
- * canales en un embudo daria un numero falso, asi que el embudo es de Shopify.
- */
-export function tieneEmbudo(canal: Canal): boolean {
-  return canal !== 'meli'
-}

@@ -4,7 +4,6 @@ import {
   esCanal,
   etiquetaCanal,
   filtroCanal,
-  tieneEmbudo,
 } from './canales'
 
 describe('esCanal', () => {
@@ -32,22 +31,6 @@ describe('filtroCanal', () => {
   it('pasa el canal tal cual cuando hay filtro', () => {
     expect(filtroCanal('shopify')).toBe('shopify')
     expect(filtroCanal('meli')).toBe('meli')
-  })
-})
-
-describe('tieneEmbudo', () => {
-  it('Shopify tiene embudo completo', () => {
-    expect(tieneEmbudo('shopify')).toBe(true)
-  })
-
-  it('Mercado Libre no: su checkout no es del vendedor', () => {
-    // Si esto cambia a true, el panel muestra un embudo con dos pasos vacios
-    // como si fueran ceros reales.
-    expect(tieneEmbudo('meli')).toBe(false)
-  })
-
-  it('con "todos" se muestra, porque los datos son de Shopify', () => {
-    expect(tieneEmbudo('todos')).toBe(true)
   })
 })
 

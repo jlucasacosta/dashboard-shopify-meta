@@ -1,5 +1,5 @@
 // El embudo: cuatro magnitudes en orden fijo, y cuanto queda de la primera en
-// cada paso.
+// cada paso. Vive en el Resumen, junto a las demas metricas.
 //
 // Decisiones de la forma, y por que:
 //
@@ -14,13 +14,10 @@
 //   de la marca arriba, azul de facturacion abajo) es el mismo en todas, asi
 //   que no carga ningun dato: es identidad visual, no una escala.
 //
-// - CADA COLUMNA CON SU NUMERO debajo, en tinta normal y no en el color de la
-//   barra. El porcentaje grande es "cuanto queda de las visitas"; el conteo
-//   chico, el valor absoluto. Con cuatro marcas, etiquetar todas es lo correcto.
-//
-// - LA CAIDA ENTRE PASOS (visita -> carrito, etc.) ya esta en las tarjetas de
-//   arriba de la pagina. Aca queda en el tooltip y para lectores de pantalla,
-//   para no repetir seis numeros en un grafico de cuatro columnas.
+// - CADA COLUMNA CON SUS NUMEROS debajo, en tinta normal y no en el color de
+//   la barra. El porcentaje grande es "cuanto queda de las visitas"; el conteo,
+//   el valor absoluto; y la linea chica, cuanto paso desde el paso anterior,
+//   que es la caida que la gente viene a buscar.
 
 import { formatMetric, LOCALE, SIN_DATO } from '@/lib/format'
 
@@ -77,8 +74,8 @@ export function Embudo({ pasos }: { pasos: PasoEmbudo[] }) {
       <figcaption className="mb-6">
         <h2 className="text-sm font-semibold tracking-tight">Embudo de conversión</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          De cada visita a la tienda hasta la venta. El alto es proporcional a
-          las visitas del período.
+          De cada visita a la tienda de Shopify hasta la venta. Mercado Libre no
+          informa carrito ni pago iniciado, así que no entra acá.
         </p>
       </figcaption>
 
@@ -92,14 +89,9 @@ export function Embudo({ pasos }: { pasos: PasoEmbudo[] }) {
             const ausente = esAusente(paso.valor)
             const p = proporcion(paso.valor, tope)
             const tasa = formatMetric(paso.tasaDesdeAnterior, 'pct', 'USD')
-            const caida = i > 0 && tasa !== SIN_DATO ? `${tasa} pasa desde el paso anterior` : null
 
             return (
-              <li
-                key={paso.etiqueta}
-                className="group flex min-w-0 flex-col"
-                title={[paso.ayuda, caida].filter(Boolean).join(' · ') || undefined}
-              >
+              <li key={paso.etiqueta} className="group flex min-w-0 flex-col" title={paso.ayuda}>
                 {/* Zona de dibujo de alto fijo, con todo anclado abajo: el
                     rotulo viaja pegado al techo de su columna, como en un
                     grafico de barras rotulado. */}
@@ -138,7 +130,12 @@ export function Embudo({ pasos }: { pasos: PasoEmbudo[] }) {
                 <p className="text-center text-xs text-muted-foreground tabular-nums sm:text-sm">
                   {formatMetric(paso.valor, 'int', 'USD')}
                 </p>
-                {caida && <span className="sr-only">{caida}</span>}
+                {i > 0 && (
+                  <p className="mt-1 text-center text-[0.6875rem] leading-4 text-muted-foreground tabular-nums">
+                    {/* Sin paso anterior no hay tasa: se dice, no se inventa. */}
+                    {tasa === SIN_DATO ? SIN_DATO : `${tasa} del anterior`}
+                  </p>
+                )}
               </li>
             )
           })}

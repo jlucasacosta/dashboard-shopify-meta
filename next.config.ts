@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
   // React no arranca, y los botones dejan de responder sin ningun error visible.
   // Listar los dos hace que ande igual escribas lo que escribas.
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
+
+  // El embudo tenia pantalla propia y ahora vive en el Resumen. La redireccion
+  // mantiene andando los links guardados; Next conserva ?r= y ?ch= solo.
+  async redirects() {
+    return [{ source: '/embudo', destination: '/', permanent: true }]
+  },
 }
 
 export default nextConfig

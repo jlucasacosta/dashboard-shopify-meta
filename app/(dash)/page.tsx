@@ -1,7 +1,8 @@
 import { resolveRange, rangoAnterior, etiquetaDe, PRESET_POR_DEFECTO, esPreset } from '@/lib/ranges'
-import { getTotales, getSerie, getMonedaTienda, getEstadoSync } from '@/lib/queries'
+import { getTotales, getSerie, getMonedaTienda, getEstadoSync, getEmbudo } from '@/lib/queries'
 import { KpiCard } from '@/components/kpi-card'
 import { AvisoDatos } from '@/components/aviso-datos'
+import { Embudo, type PasoEmbudo } from '@/components/charts/embudo'
 import { RevenueVsSpend } from '@/components/charts/revenue-vs-spend'
 import { RoasTrend, CacTrend, OrdersBar } from '@/components/charts/simple-charts'
 import { RealtimeRefresh } from '@/components/realtime-refresh'
@@ -24,16 +25,41 @@ export default async function ResumenPage({
   const rango = resolveRange(preset)
   const previo = rangoAnterior(rango)
 
-  const [currency, totales, anteriores, serie, sync] = await Promise.all([
+  const [currency, totales, anteriores, serie, sync, embudo] = await Promise.all([
     getMonedaTienda(),
     getTotales(rango),
     getTotales(previo),
     getSerie(rango),
     getEstadoSync(),
+    getEmbudo(rango),
   ])
 
   const sinAds = !totales || totales.ad_spend === null
   const motivoAds = sinAds ? 'Falta la inversión de Meta' : undefined
+
+  // El embudo es solo de Shopify: Mercado Libre no informa carrito ni checkout.
+  // Por eso no depende del filtro de canal, y el grafico lo dice en su rotulo.
+  const pasos: PasoEmbudo[] = [
+    { etiqueta: 'Visitas', valor: embudo?.visitas ?? null, ayuda: 'Sesiones en la tienda' },
+    {
+      etiqueta: 'Agregados al carrito',
+      valor: embudo?.carritos ?? null,
+      tasaDesdeAnterior: embudo?.tasa_carrito ?? null,
+      ayuda: 'Sesiones que sumaron algo',
+    },
+    {
+      etiqueta: 'Pagos iniciados',
+      valor: embudo?.checkouts_iniciados ?? null,
+      tasaDesdeAnterior: embudo?.tasa_checkout ?? null,
+      ayuda: 'Llegaron al checkout',
+    },
+    {
+      etiqueta: 'Ventas',
+      valor: embudo?.ventas ?? null,
+      tasaDesdeAnterior: embudo?.tasa_venta ?? null,
+      ayuda: 'Compra completada',
+    },
+  ]
 
   return (
     <div className="space-y-6">
@@ -81,6 +107,8 @@ export default async function ResumenPage({
         <KpiCard etiqueta="Tasa de conversión" valor={totales?.conversion_rate} tipo="pct" currency={currency}
           delta={delta(totales?.conversion_rate, anteriores?.conversion_rate)} />
       </section>
+
+      <Embudo pasos={pasos} />
 
       <section className="grid gap-4 xl:grid-cols-2">
         <div className="xl:col-span-2">
